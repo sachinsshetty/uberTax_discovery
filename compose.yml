@@ -34,7 +34,7 @@ services:
   server:
     build:
       context: .
-      dockerfile: Dockerfile.server  # Assumes the second Dockerfile snippet is saved as Dockerfile.server
+      dockerfile: server.Dockerfile  # Assumes the second Dockerfile snippet is saved as Dockerfile.server
     ports:
       - "18889:18889"
     environment:
@@ -48,7 +48,7 @@ services:
   client:
     build:
       context: .
-      dockerfile: Dockerfile.client  # Assumes the first Dockerfile snippet is saved as Dockerfile.client
+      dockerfile: client.Dockerfile  # Assumes the first Dockerfile snippet is saved as Dockerfile.client
     ports:
       - "8000:8000"  # Maps the Gradio app's default port 8000
     environment:
