@@ -12,7 +12,7 @@ Pitch Deck - https://docs.google.com/presentation/d/1B0Yzv0tG1B0KZf5wnjUIklYcSSu
 docker build -t dwani/ubertax_ux:latest -f client.Dockerfile .
 docker push dwani/ubertax_ux:latest
 
-docker run -p 80:8000 --env DWANI_API_BASE_URL=$DWANI_API_BASE_URL dwani/ubertax_ux:latest
+docker run -p 80:8000  dwani/ubertax_ux:latest
 
 Server
 
