@@ -1,0 +1,7 @@
+fastapi 
+uvicorn 
+gradio 
+openai 
+pdf2image 
+requests
+pytesseract
