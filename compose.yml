@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   vllm:
     image: vllm/vllm-openai:latest
@@ -7,7 +5,7 @@ services:
       - "9000:9000"
     command: [
       "serve",
-      "RedHatAI/gemma-3-27b-it-FP8-dynamic",
+      "--model", "RedHatAI/gemma-3-27b-it-FP8-dynamic",
       "--served-model-name", "gemma3",
       "--host", "0.0.0.0",
       "--port", "9000",
@@ -21,7 +19,6 @@ services:
       "--max-num-batched-tokens", "8192",
       "--chat-template-content-format", "openai"
     ]
-    # Add GPU support if needed
     deploy:
       resources:
         reservations:
@@ -34,25 +31,25 @@ services:
   server:
     build:
       context: .
-      dockerfile: server.Dockerfile  # Assumes the second Dockerfile snippet is saved as Dockerfile.server
+      dockerfile: server.Dockerfile  
     ports:
       - "18889:18889"
     environment:
-      - DWANI_API_BASE_URL=vllm  # Points to the vllm service for model inference on port 9000
+      - DWANI_API_BASE_URL=vllm  
     depends_on:
       - vllm
     volumes:
-      - ./data:/data  # For session storage, adjust path as needed
+      - ./data:/data  
     restart: unless-stopped
 
   client:
     build:
       context: .
-      dockerfile: client.Dockerfile  # Assumes the first Dockerfile snippet is saved as Dockerfile.client
+      dockerfile: client.Dockerfile  
     ports:
-      - "8000:8000"  # Maps the Gradio app's default port 8000
+      - "80:8000" 
     environment:
-      - DWANI_API_BASE_URL=server  # Points to the server service on port 18889
+      - DWANI_API_BASE_URL=server  
     depends_on:
       - server
     restart: unless-stopped
