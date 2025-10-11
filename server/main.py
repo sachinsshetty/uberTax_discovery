@@ -77,13 +77,13 @@ def encode_image(image: BytesIO) -> str:
     return base64.b64encode(image.read()).decode("utf-8")
 
 def get_openai_client(model: str) -> AsyncOpenAI:
-    """Initialize AsyncOpenAI client with model-specific base URL."""
+    """Initialize AsyncOpenAI client with model-specific base_url."""
     valid_models = ["gemma3", "gpt-oss"]
     if model not in valid_models:
         raise ValueError(f"Invalid model: {model}. Choose from: {', '.join(valid_models)}")
     
     model_ports = {
-        "gemma3": "19000",
+        "gemma3": "9000",
         "gpt-oss": "9500",
     }
     base_url = f"http://{dwani_api_base_url}:{model_ports[model]}/v1"
@@ -193,7 +193,7 @@ async def render_pdf_to_png(pdf_file):
     return images
 
 @app.post("/process_pdf")
-async def process_pdf(file: UploadFile = File(...), prompt: str = Form(...), sessionId: str = Form(None), model: str = Form(default="gemma3")):
+async def process_pdf(file: UploadFile = File(...), prompt: str = Form(...), sessionId: str = Form(None), model: str = Form(default="gemma3"), is_extraction: bool = Form(False)):
     """Endpoint to process PDF and extract text based on prompt."""
     if not file:
         raise HTTPException(status_code=400, detail="Please upload a PDF file")
@@ -287,6 +287,15 @@ async def process_pdf(file: UploadFile = File(...), prompt: str = Form(...), ses
             status_code=400
         )
 
+    session_id = sessionId if sessionId else f"session_{int(time.time())}_{str(uuid4())}"
+
+    if is_extraction:
+        return {
+            "extracted_text": all_results,
+            "skipped_pages": skipped_pages,
+            "sessionId": session_id
+        }
+
     dwani_prompt = (
         "You are dwani, a helpful assistant. Provide a concise response in one sentence maximum. "
     )
@@ -299,7 +308,6 @@ async def process_pdf(file: UploadFile = File(...), prompt: str = Form(...), ses
 
     combined_prompt = f"{dwani_prompt}\nUser prompt: {prompt}\nExtracted text: {results_str}"
 
-    session_id = sessionId if sessionId else f"session_{int(time.time())}_{str(uuid4())}"
     session_data = session_store.get(f"sessions.{session_id}", {"chatHistory": []})
     chat_history = session_data.get("chatHistory", [])
     chat_history.append({"role": "user", "content": prompt})
