@@ -21,7 +21,11 @@ Pitch Deck - [link](https://docs.google.com/presentation/d/1B0Yzv0tG1B0KZf5wnjUI
 --
 
 With H100 GPU 
-    - docker compose -f lite-compose.yml up -d 
+    - Build 
+- docker compose -f lite-compose.yml build --no-cache
+
+    - Run 
+- docker compose -f lite-compose.yml up -d 
 
 --
 -->
