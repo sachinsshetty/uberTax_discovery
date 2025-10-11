@@ -2,60 +2,65 @@
 <Landesprofil>
 
     <AllgemeineDaten>
-        <Land>[Name des Landes]</Land>
-        <RechtsstatusMandat>[Gesetz verabschiedet / Konsultation / Mandat erwartet]</RechtsstatusMandat>
+        <Land>Deutschland</Land>
+        <RechtsstatusMandat>Konsultation</RechtsstatusMandat>
         <ArchivierungsfristInJahren>10</ArchivierungsfristInJahren>
     </AllgemeineDaten>
 
     <Anwendungsbereich>
+        <AusloeserDerPflicht>
+            <GiltFuerAnsaessige>Ja</GiltFuerAnsaessige>
+            <GiltFuerNichtAnsaessigeMitUStID>Ja</GiltFuerNichtAnsaessigeMitUStID>
+            <Logik>ODER</Logik>
+        </AusloeserDerPflicht>
+
         <B2B>
-            <Status>Obligatorisch / Freiwillig / "Buyer's Choice"</Status>
-            <Starttermin>[Datum]</Starttermin>
-            <B2BAnPOSRelevant>Ja / Nein</B2BAnPOSRelevant>
+            <Status>Freiwillig</Status>
+            <Starttermin>01.01.2025</Starttermin>
+            <B2BAnPOSRelevant>Nein</B2BAnPOSRelevant>
             <GestaffelteEinfuehrung>
                 <Gilt>Ja</Gilt>
-                <Schwellenwert typ="Umsatz">[800000 EUR]</Schwellenwert>
+                <Schwellenwert typ="Umsatz">800000 EUR</Schwellenwert>
             </GestaffelteEinfuehrung>
         </B2B>
         <B2G>
-            <Status>Obligatorisch / Empfangspflicht</Status>
-            <Starttermin>[Datum]</Starttermin>
+            <Status>Obligatorisch</Status>
+            <Starttermin>01.01.2020</Starttermin>
         </B2G>
         <B2C>
-            <Reportingpflicht>Ja / Nein</Reportingpflicht>
-            <Starttermin>[Datum]</Starttermin>
+            <Reportingpflicht>Nein</Reportingpflicht>
+            <Starttermin></Starttermin>
         </B2C>
         <BuyersChoice>
             <Gilt>Ja</Gilt>
-            <Bedingung>Umsatz > 10.000 EUR</Bedingung>
+            <Bedingung>Umsatz > 10000 EUR oder Jahresumsatz > 500000 EUR</Bedingung>
         </BuyersChoice>
     </Anwendungsbereich>
 
     <Architektur>
         <Modell>
-            <Typ>Zentralisiertes Clearance (CTC) / Dezentral / Hybrid</Typ>
-            <CornerModell>4-Corner / 5-Corner</CornerModell>
-            <Beschreibung>[z.B. "Y-Modell" in Frankreich]</Beschreibung>
+            <Typ>Dezentral</Typ>
+            <CornerModell>4-Corner</CornerModell>
+            <Beschreibung>PEPPOL-Netzwerk als bevorzugter Übertragungsweg</Beschreibung>
         </Modell>
         <Formate>
             <EuropaeischeNormEN16931>
-                <Status>Erforderlich / Akzeptiert</Status>
-                <Version>[Spezifische Version]</Version>
+                <Status>Akzeptiert</Status>
+                <Version>1.0</Version>
             </EuropaeischeNormEN16931>
             <NationaleCIUS>
                 <Gilt>Ja</Gilt>
-                <SchemaBezeichnung>[z.B. FatturaPA, Facturae]</SchemaBezeichnung>
+                <SchemaBezeichnung>XRechnung</SchemaBezeichnung>
             </NationaleCIUS>
             <ErlaubteSyntaxen>
                 <Syntax>UBL</Syntax>
                 <Syntax>CII</Syntax>
-                <Syntax>Factur-X</Syntax>
             </ErlaubteSyntaxen>
             <PDFAlsRechnungKonform>Nein</PDFAlsRechnungKonform>
         </Formate>
         <Uebertragungswege>
             <PEPPOL>
-                <Status>Obligatorisch / Standard / Erlaubt</Status>
+                <Status>Standard</Status>
             </PEPPOL>
         </Uebertragungswege>
     </Architektur>
@@ -63,33 +68,33 @@
     <Meldepflichten>
         <StaatlichePlattform>
             <Gilt>Ja</Gilt>
-            <Name>[z.B. KSeF, SdI, myDATA]</Name>
-            <Nutzungspflicht>Obligatorisch</Nutzungspflicht>
+            <Name>ELSTER</Name>
+            <Nutzungspflicht>Obligatorisch für Meldung</Nutzungspflicht>
         </StaatlichePlattform>
         <ClearanceAnforderungen>
-            <EchtzeitClearanceCTC>Ja</EchtzeitClearanceCTC>
-            <GueltigkeitNachFreigabe>Ja</GueltigkeitNachFreigabe>
+            <EchtzeitClearanceCTC>Nein</EchtzeitClearanceCTC>
+            <GueltigkeitNachFreigabe>Nein</GueltigkeitNachFreigabe>
         </ClearanceAnforderungen>
         <ReportingAnforderungen>
             <DigitalReportingRequirementDRR>Ja</DigitalReportingRequirementDRR>
-            <Echtzeitmeldung>Ja / Nein</Echtzeitmeldung>
-            <Frequenz>Monatlich / Vierteljährlich / Echtzeit</Frequenz>
+            <Echtzeitmeldung>Nein</Echtzeitmeldung>
+            <Frequenz>Monatlich</Frequenz>
         </ReportingAnforderungen>
     </Meldepflichten>
 
     <Zusatzanforderungen>
-        <SystemZertifizierung>Ja / Nein</SystemZertifizierung>
+        <SystemZertifizierung>Nein</SystemZertifizierung>
         <SAFT>
-            <Pflicht>Ja / Nein / Geplant</Pflicht>
-            <Abgabe>Auf Anfrage / Monatlich</Abgabe>
+            <Pflicht>Nein</Pflicht>
+            <Abgabe>Auf Anfrage</Abgabe>
         </SAFT>
         <LokaleIdentifikatoren>
-            <Pflicht>Ja</Pflicht>
-            <Typ>[z.B. ATCUD, QR-Code, KSeF-ID]</Typ>
+            <Pflicht>Nein</Pflicht>
+            <Typ></Typ>
         </LokaleIdentifikatoren>
-        <MeldungTransaktionsstatus>Ja / Nein</MeldungTransaktionsstatus>
-        <Besonderheiten>[Offline-Modus, QES-Pflicht, etc.]</Besonderheiten>
-        <Sanktionen>[Spezifische Strafen bei Nichteinhaltung]</Sanktionen>
+        <MeldungTransaktionsstatus>Ja</MeldungTransaktionsstatus>
+        <Besonderheiten>Digitale Signatur für elektronische Rechnungen empfohlen.</Besonderheiten>
+        <Sanktionen>Geldstrafen bei verspäteter oder fehlerhafter Meldung.</Sanktionen>
     </Zusatzanforderungen>
 
 </Landesprofil>
