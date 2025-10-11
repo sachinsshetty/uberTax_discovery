@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from datetime import date  # Added for date parsing
 import os
 
 # Database setup
@@ -54,7 +55,7 @@ async def startup_event():
                 "company_name": "Innoute AG",
                 "country": "Germany",
                 "new_regulation": "UNDER REVIEW",
-                "deadline": "2024-12-31",
+                "deadline": "2024-12-31",  # String will be parsed below
                 "status": "UNDER REVIEW"
             },
             {
@@ -83,7 +84,10 @@ async def startup_event():
             }
         ]
         for data in mock_data:
-            client = ClientProfile(**data)
+            # Parse deadline string to date object
+            parsed_data = data.copy()
+            parsed_data["deadline"] = date.fromisoformat(data["deadline"])
+            client = ClientProfile(**parsed_data)
             db.add(client)
         db.commit()
     db.close()
