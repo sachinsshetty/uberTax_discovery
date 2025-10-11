@@ -1,6 +1,6 @@
 
 
-Which of these demo companies are obliged to imnplement e-invoicing by 2026
+Which of these companies are obliged to implement e-invoicing by 2026 ?
 
 
 
