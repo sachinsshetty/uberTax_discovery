@@ -97,26 +97,26 @@ def extract_texts(pdf_paths: List[str], session_id: str) -> Tuple[str, str]:
 
     return combined_text.strip(), final_session_id
 
-def process_message(history: List[Dict], message: str, pdf_files: Optional[List[str]], session_id: str) -> Tuple[List[Dict], str, str]:
+def process_message(history: List[Dict], message: str, pdf_files: Optional[List[str]], session_id: str, language: str) -> Tuple[List[Dict], str, str, str]:
     """Handle chat messages, using server session management."""
     pdf_files = pdf_files or []
     current_paths = sorted(pdf_files)
 
     # Validate input
     if not message.strip():
-        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ Please enter a valid question!"}], "", session_id
+        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ Please enter a valid question!"}], "", session_id, language
     if not current_paths:
-        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ Please upload at least one PDF first!"}], "", session_id
+        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ Please upload at least one PDF first!"}], "", session_id, language
 
     try:
         # Extract text from PDFs
         extracted_text, new_session_id = extract_texts(current_paths, session_id)
         if not extracted_text:
-            return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ No text could be extracted from the provided PDFs!"}], "", new_session_id
+            return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ No text could be extracted from the provided PDFs!"}], "", new_session_id, language
 
         # Send query to API
         data = {
-            "prompt": message,
+            "prompt": f"Answer in {language}: {message}",
             "extracted_text": extracted_text,
             "sessionId": new_session_id
         }
@@ -127,21 +127,21 @@ def process_message(history: List[Dict], message: str, pdf_files: Optional[List[
         # Update history with server response
         history.append({"role": "user", "content": message})
         history.append({"role": "assistant", "content": result['response']})
-        return history, "", result['sessionId']
+        return history, "", result['sessionId'], language
     except requests.RequestException as e:
         logger.error(f"API request failed for session {session_id}: {str(e)}")
-        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": f"❌ Error: Failed to process your request. Please try again later."}], "", session_id
+        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": f"❌ Error: Failed to process your request. Please try again later."}], "", session_id, language
     except Exception as e:
         logger.error(f"Unexpected error for session {session_id}: {str(e)}")
-        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": f"❌ Error: {str(e)}"}], "", session_id
+        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": f"❌ Error: {str(e)}"}], "", session_id, language
 
 def clear_chat(session_id: str) -> List:
     """Clear the chat history for a session."""
     return []
 
-def new_chat(session_id: str) -> Tuple[List, None, str]:
+def new_chat(session_id: str, language: str) -> Tuple[List, None, str, str]:
     """Clear chat history and reset PDF state for a session."""
-    return [], None, f"session_{int(time())}"
+    return [], None, f"session_{int(time())}", "English"
 
 # Custom styling
 css = """
@@ -176,6 +176,11 @@ def create_gradio_app() -> gr.Blocks:
                     file_types=[".pdf"],
                     file_count="multiple"
                 )
+                language = gr.Dropdown(
+                    choices=["English", "Spanish", "French", "German"],
+                    value="English",
+                    label="Response Language"
+                )
                 with gr.Row():
                     clear = gr.Button("Clear Chat")
                     new_chat_button = gr.Button("New Chat")
@@ -195,8 +200,8 @@ def create_gradio_app() -> gr.Blocks:
         # Event bindings
         msg.submit(
             process_message,
-            inputs=[chatbot, msg, pdf_input, session_id],
-            outputs=[chatbot, msg, session_id]
+            inputs=[chatbot, msg, pdf_input, session_id, language],
+            outputs=[chatbot, msg, session_id, language]
         )
         clear.click(
             clear_chat,
@@ -205,8 +210,8 @@ def create_gradio_app() -> gr.Blocks:
         )
         new_chat_button.click(
             new_chat,
-            inputs=[session_id],
-            outputs=[chatbot, pdf_input, session_id]
+            inputs=[session_id, language],
+            outputs=[chatbot, pdf_input, session_id, language]
         )
 
     return demo
