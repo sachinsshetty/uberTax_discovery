@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Landesprofil>
+    <AllgemeineDaten>
+        <Land>Kroatien</Land>
+        <RechtsstatusMandat>Gesetz verabschiedet (B2G), Konsultation (B2B)</RechtsstatusMandat>
+        <ArchivierungsfristInJahren></ArchivierungsfristInJahren>
+    </AllgemeineDaten>
+    <Anwendungsbereich>
+        <AusloeserDerPflicht>
+            <GiltFuerAnsaessige>Ja</GiltFuerAnsaessige>
+            <GiltFuerNichtAnsaessigeMitUStID>Ja</GiltFuerNichtAnsaessigeMitUStID>
+            <Logik>ODER</Logik>
+        </AusloeserDerPflicht>
+        <B2B>
+            <Status>Obligatorisch (ab 01.01.2026)</Status>
+            <Starttermin>01.01.2026</Starttermin>
+            <B2BAnPOSRelevant></B2BAnPOSRelevant>
+            <GestaffelteEinfuehrung>
+                <Gilt>Ja</Gilt>
+                <Schwellenwert typ="Umsatz">Kein Umsatzschwellenwert, aber nach Unternehmenstyp gestaffelt</Schwellenwert>
+            </GestaffelteEinfuehrung>
+        </B2B>
+        <B2G>
+            <Status>Obligatorisch</Status>
+            <Starttermin>01.07.2019</Starttermin>
+            <GestaffelteEinfuehrung>
+                <Gilt>Nein</Gilt>
+                <Schwellenwert typ="Umsatz"></Schwellenwert>
+            </GestaffelteEinfuehrung>
+        </B2G>
+        <B2C>
+            <Reportingpflicht>Nein</Reportingpflicht>
+            <Starttermin></Starttermin>
+        </B2C>
+        <BuyersChoice>
+            <Gilt></Gilt>
+            <Bedingung></Bedingung>
+        </BuyersChoice>
+    </Anwendungsbereich>
+    <Architektur>
+        <Modell>
+            <Typ>Zentralisiertes Clearance (CTC)</Typ>
+            <CornerModell>4-Corner</CornerModell>
+            <Beschreibung>Servis eRačun za državu, verwaltet durch FINA</Beschreibung>
+        </Modell>
+        <Formate>
+            <EuropaeischeNormEN16931>
+                <Status>Erforderlich</Status>
+                <Version></Version>
+            </EuropaeischeNormEN16931>
+            <NationaleCIUS>
+                <Gilt>Ja</Gilt>
+                <SchemaBezeichnung>Nationaler CIUS, der die kroatische Mehrwertsteuergesetzgebung abdeckt</SchemaBezeichnung>
+            </NationaleCIUS>
+            <ErlaubteSyntaxen>
+                <Syntax>UBL 2.1</Syntax>
+                <Syntax>CII</Syntax>
+            </ErlaubteSyntaxen>
+            <PDFAlsRechnungKonform>Nein</PDFAlsRechnungKonform>
+        </Formate>
+        <Uebertragungswege>
+            <PEPPOL>
+                <Status>Erlaubt</Status>
+            </PEPPOL>
+        </Uebertragungswege>
+    </Architektur>
+    <Meldepflichten>
+        <StaatlichePlattform>
+            <Gilt>Ja</Gilt>
+            <Name>Servis eRačun za državu</Name>
+            <Nutzungspflicht>Obligatorisch</Nutzungspflicht>
+        </StaatlichePlattform>
+        <ClearanceAnforderungen>
+            <EchtzeitClearanceCTC>Nein (erwartet ab 2026)</EchtzeitClearanceCTC>
+            <GueltigkeitNachFreigabe></GueltigkeitNachFreigabe>
+        </ClearanceAnforderungen>
+        <ReportingAnforderungen>
+            <DigitalReportingRequirementDRR>Nein (erwartet ab 2026)</DigitalReportingRequirementDRR>
+            <Echtzeitmeldung>Nein</Echtzeitmeldung>
+            <Frequenz></Frequenz>
+        </ReportingAnforderungen>
+    </Meldepflichten>
+    <Zusatzanforderungen>
+        <SystemZertifizierung></SystemZertifizierung>
+        <SAFT>
+            <Pflicht></Pflicht>
+            <Abgabe></Abgabe>
+        </SAFT>
+        <LokaleIdentifikatoren>
+            <Pflicht></Pflicht>
+            <Typ></Typ>
+        </LokaleIdentifikatoren>
+        <MeldungTransaktionsstatus>Ja</MeldungTransaktionsstatus>
+        <Besonderheiten>B2G-Pflicht gilt auch für Beschaffungen unterhalb der EU-Schwellenwerte.</Besonderheiten>
+        <Sanktionen></Sanktionen>
+    </Zusatzanforderungen>
+</Landesprofil>

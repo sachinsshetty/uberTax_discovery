@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Landesprofil>
+    <AllgemeineDaten>
+        <Land>Dänemark</Land>
+        <RechtsstatusMandat>Gesetz verabschiedet</RechtsstatusMandat>
+        <ArchivierungsfristInJahren></ArchivierungsfristInJahren>
+    </AllgemeineDaten>
+    <Anwendungsbereich>
+        <AusloeserDerPflicht>
+            <GiltFuerAnsaessige>Ja</GiltFuerAnsaessige>
+            <GiltFuerNichtAnsaessigeMitUStID>Ja</GiltFuerNichtAnsaessigeMitUStID>
+            <Logik>ODER</Logik>
+        </AusloeserDerPflicht>
+        <B2B>
+            <Status>Fähigkeit obligatorisch (ab 2026)</Status>
+            <Starttermin>01.01.2026</Starttermin>
+            <B2BAnPOSRelevant></B2BAnPOSRelevant>
+            <GestaffelteEinfuehrung>
+                <Gilt>Ja</Gilt>
+                <Schwellenwert typ="Umsatz">&gt; 300.000 DKK</Schwellenwert>
+            </GestaffelteEinfuehrung>
+        </B2B>
+        <B2G>
+            <Status>Obligatorisch</Status>
+            <Starttermin>18.04.2019</Starttermin>
+            <GestaffelteEinfuehrung>
+                <Gilt>Nein</Gilt>
+                <Schwellenwert typ="Umsatz"></Schwellenwert>
+            </GestaffelteEinfuehrung>
+        </B2G>
+        <B2C>
+            <Reportingpflicht>Nein</Reportingpflicht>
+            <Starttermin></Starttermin>
+        </B2C>
+        <BuyersChoice>
+            <Gilt></Gilt>
+            <Bedingung></Bedingung>
+        </BuyersChoice>
+    </Anwendungsbereich>
+    <Architektur>
+        <Modell>
+            <Typ>Dezentral</Typ>
+            <CornerModell>4-Corner</CornerModell>
+            <Beschreibung>NemHandel Plattform</Beschreibung>
+        </Modell>
+        <Formate>
+            <EuropaeischeNormEN16931>
+                <Status>Erforderlich</Status>
+                <Version></Version>
+            </EuropaeischeNormEN16931>
+            <NationaleCIUS>
+                <Gilt>Ja</Gilt>
+                <SchemaBezeichnung>OIOUBL</SchemaBezeichnung>
+            </NationaleCIUS>
+            <ErlaubteSyntaxen>
+                <Syntax>UBL</Syntax>
+            </ErlaubteSyntaxen>
+            <PDFAlsRechnungKonform>Nein</PDFAlsRechnungKonform>
+        </Formate>
+        <Uebertragungswege>
+            <PEPPOL>
+                <Status>Standard</Status>
+            </PEPPOL>
+        </Uebertragungswege>
+    </Architektur>
+    <Meldepflichten>
+        <StaatlichePlattform>
+            <Gilt>Ja</Gilt>
+            <Name>NemHandel</Name>
+            <Nutzungspflicht>Obligatorisch</Nutzungspflicht>
+        </StaatlichePlattform>
+        <ClearanceAnforderungen>
+            <EchtzeitClearanceCTC>Nein</EchtzeitClearanceCTC>
+            <GueltigkeitNachFreigabe></GueltigkeitNachFreigabe>
+        </ClearanceAnforderungen>
+        <ReportingAnforderungen>
+            <DigitalReportingRequirementDRR>Ja (auf Anfrage)</DigitalReportingRequirementDRR>
+            <Echtzeitmeldung>Nein</Echtzeitmeldung>
+            <Frequenz>Auf Anfrage</Frequenz>
+        </ReportingAnforderungen>
+    </Meldepflichten>
+    <Zusatzanforderungen>
+        <SystemZertifizierung>Ja</SystemZertifizierung>
+        <SAFT>
+            <Pflicht>Ja</Pflicht>
+            <Abgabe>Auf Anfrage</Abgabe>
+        </SAFT>
+        <LokaleIdentifikatoren>
+            <Pflicht></Pflicht>
+            <Typ></Typ>
+        </LokaleIdentifikatoren>
+        <MeldungTransaktionsstatus>Ja</MeldungTransaktionsstatus>
+        <Besonderheiten>Pflicht zur Nutzung zertifizierter digitaler Buchhaltungssysteme (ab 2026). NemKonto (öffentliches Zahlungskonto) für Zahlungen von Behörden erforderlich.</Besonderheiten>
+        <Sanktionen></Sanktionen>
+    </Zusatzanforderungen>
+</Landesprofil>

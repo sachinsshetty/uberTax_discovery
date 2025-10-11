@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Landesprofil>
+    <AllgemeineDaten>
+        <Land>Polen</Land>
+        <RechtsstatusMandat>Mandat erwartet (B2B ab 2026)</RechtsstatusMandat>
+        <ArchivierungsfristInJahren></ArchivierungsfristInJahren>
+    </AllgemeineDaten>
+    <Anwendungsbereich>
+        <AusloeserDerPflicht>
+            <GiltFuerAnsaessige>Ja</GiltFuerAnsaessige>
+            <GiltFuerNichtAnsaessigeMitUStID>Ja</GiltFuerNichtAnsaessigeMitUStID>
+            <Logik>ODER</Logik>
+        </AusloeserDerPflicht>
+        <B2B>
+            <Status>Obligatorisch (gestaffelt ab 2026)</Status>
+            <Starttermin>01.02.2026</Starttermin>
+            <B2BAnPOSRelevant></B2BAnPOSRelevant>
+            <GestaffelteEinfuehrung>
+                <Gilt>Ja</Gilt>
+                <Schwellenwert typ="Umsatz">&gt; 200 Mio. PLN</Schwellenwert>
+            </GestaffelteEinfuehrung>
+        </B2B>
+        <B2G>
+            <Status>Empfangspflicht</Status>
+            <Starttermin>18.04.2019</Starttermin>
+            <GestaffelteEinfuehrung>
+                <Gilt>Nein</Gilt>
+                <Schwellenwert typ="Umsatz"></Schwellenwert>
+            </GestaffelteEinfuehrung>
+        </B2G>
+        <B2C>
+            <Reportingpflicht>Nein</Reportingpflicht>
+            <Starttermin></Starttermin>
+        </B2C>
+        <BuyersChoice>
+            <Gilt></Gilt>
+            <Bedingung></Bedingung>
+        </BuyersChoice>
+    </Anwendungsbereich>
+    <Architektur>
+        <Modell>
+            <Typ>Zentralisiertes Clearance (CTC)</Typ>
+            <CornerModell>4-Corner</CornerModell>
+            <Beschreibung>Krajowy System e-Faktur (KSeF) als zentrale Plattform, Integration mit PEF</Beschreibung>
+        </Modell>
+        <Formate>
+            <EuropaeischeNormEN16931>
+                <Status>Akzeptiert</Status>
+                <Version></Version>
+            </EuropaeischeNormEN16931>
+            <NationaleCIUS>
+                <Gilt>Ja</Gilt>
+                <SchemaBezeichnung>PEPPOL BIS Billing 3.0 (mit polnischen Erweiterungen)</SchemaBezeichnung>
+            </NationaleCIUS>
+            <ErlaubteSyntaxen>
+                <Syntax>UBL</Syntax>
+            </ErlaubteSyntaxen>
+            <PDFAlsRechnungKonform>Nein</PDFAlsRechnungKonform>
+        </Formate>
+        <Uebertragungswege>
+            <PEPPOL>
+                <Status>Standard</Status>
+            </PEPPOL>
+        </Uebertragungswege>
+    </Architektur>
+    <Meldepflichten>
+        <StaatlichePlattform>
+            <Gilt>Ja</Gilt>
+            <Name>Krajowy System e-Faktur (KSeF)</Name>
+            <Nutzungspflicht>Obligatorisch (ab 2026)</Nutzungspflicht>
+        </StaatlichePlattform>
+        <ClearanceAnforderungen>
+            <EchtzeitClearanceCTC>Ja</EchtzeitClearanceCTC>
+            <GueltigkeitNachFreigabe></GueltigkeitNachFreigabe>
+        </ClearanceAnforderungen>
+        <ReportingAnforderungen>
+            <DigitalReportingRequirementDRR>Ja (ab 2026)</DigitalReportingRequirementDRR>
+            <Echtzeitmeldung>Ja</Echtzeitmeldung>
+            <Frequenz>Echtzeit</Frequenz>
+        </ReportingAnforderungen>
+    </Meldepflichten>
+    <Zusatzanforderungen>
+        <SystemZertifizierung></SystemZertifizierung>
+        <SAFT>
+            <Pflicht></Pflicht>
+            <Abgabe></Abgabe>
+        </SAFT>
+        <LokaleIdentifikatoren>
+            <Pflicht></Pflicht>
+            <Typ></Typ>
+        </LokaleIdentifikatoren>
+        <MeldungTransaktionsstatus></MeldungTransaktionsstatus>
+        <Besonderheiten>Erweiterungen für Sektoren wie Versorgungsunternehmen; Digitale Zeitstempel erforderlich.</Besonderheiten>
+        <Sanktionen></Sanktionen>
+    </Zusatzanforderungen>
+</Landesprofil>
