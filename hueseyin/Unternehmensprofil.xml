@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Unternehmensprofil>
+    
+    <JuristischeFiskalischePraesenz>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>DE</Land>
+            <UStIdNr>DE123456789</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <SitzDesUnternehmens>
+            <Strasse>Musterstraße 1</Strasse>
+            <Postleitzahl>10115</Postleitzahl>
+            <Stadt>Berlin</Stadt>
+            <Land>Deutschland</Land>
+        </SitzDesUnternehmens>
+        <Finanzdaten>
+            <Umsatz>
+                <Betrag>50000000</Betrag>
+                <Waehrung>EUR</Waehrung>
+            </Umsatz>
+            <Unternehmensgroesse>KMU</Unternehmensgroesse>
+        </Finanzdaten>
+        <InterneRichtlinieArchivierung>
+            <DauerInJahren>10</DauerInJahren>
+            <Format>Digital und Physisch</Format>
+        </InterneRichtlinieArchivierung>
+        <BetriebsstaettenImAusland>
+            <Betriebsstaette>
+                <Land>AT</Land>
+                <Stadt>Wien</Stadt>
+            </Betriebsstaette>
+            <Betriebsstaette>
+                <Land>CH</Land>
+                <Stadt>Zürich</Stadt>
+            </Betriebsstaette>
+        </BetriebsstaettenImAusland>
+    </JuristischeFiskalischePraesenz>
+    
+    <TransaktionsRollenprofil>
+        <Transaktionstyp B2B="true" B2C="false" B2G="true" Grenzuberschreitend="true"/>
+        <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
+        <FreiwilligeMarktdynamik>
+            <BuyersChoiceTeilnahme>Ja</BuyersChoiceTeilnahme>
+        </FreiwilligeMarktdynamik>
+    </TransaktionsRollenprofil>
+    
+    <SystemArchitektur>
+        <KernITSystem>SAP S/4HANA</KernITSystem>
+        <PeppolFaehigkeit>Ja, über externen Provider</PeppolFaehigkeit>
+        <ApiIntegrationsfaehigkeit>
+            <Faehig>Ja</Faehig>
+            <Typ>RESTful API</Typ>
+        </ApiIntegrationsfaehigkeit>
+    </SystemArchitektur>
+    
+    <StammdatenDatenqualitaet>
+        <Stammdatenpflege>
+            <LaenderspezifischeIDsGespeichert>Ja</LaenderspezifischeIDsGespeichert>
+        </Stammdatenpflege>
+        <StatusUpdatesFaehigkeit>
+            <KannSenden>Ja</KannSenden>
+            <UnterstuetzteStatus>
+                <Status>Rechnung akzeptiert</Status>
+                <Status>Rechnung abgelehnt</Status>
+                <Status>In Bearbeitung</Status>
+            </UnterstuetzteStatus>
+        </StatusUpdatesFaehigkeit>
+    </StammdatenDatenqualitaet>
+    
+</Unternehmensprofil>

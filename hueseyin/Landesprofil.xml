@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Landesprofil>
+
+    <AllgemeineDaten>
+        <Land>[Name des Landes]</Land>
+        <RechtsstatusMandat>[Gesetz verabschiedet / Konsultation / Mandat erwartet]</RechtsstatusMandat>
+        <ArchivierungsfristInJahren>10</ArchivierungsfristInJahren>
+    </AllgemeineDaten>
+
+    <Anwendungsbereich>
+        <B2B>
+            <Status>Obligatorisch / Freiwillig / "Buyer's Choice"</Status>
+            <Starttermin>[Datum]</Starttermin>
+            <B2BAnPOSRelevant>Ja / Nein</B2BAnPOSRelevant>
+            <GestaffelteEinfuehrung>
+                <Gilt>Ja</Gilt>
+                <Schwellenwert typ="Umsatz">[800000 EUR]</Schwellenwert>
+            </GestaffelteEinfuehrung>
+        </B2B>
+        <B2G>
+            <Status>Obligatorisch / Empfangspflicht</Status>
+            <Starttermin>[Datum]</Starttermin>
+        </B2G>
+        <B2C>
+            <Reportingpflicht>Ja / Nein</Reportingpflicht>
+            <Starttermin>[Datum]</Starttermin>
+        </B2C>
+        <BuyersChoice>
+            <Gilt>Ja</Gilt>
+            <Bedingung>Umsatz > 10.000 EUR</Bedingung>
+        </BuyersChoice>
+    </Anwendungsbereich>
+
+    <Architektur>
+        <Modell>
+            <Typ>Zentralisiertes Clearance (CTC) / Dezentral / Hybrid</Typ>
+            <CornerModell>4-Corner / 5-Corner</CornerModell>
+            <Beschreibung>[z.B. "Y-Modell" in Frankreich]</Beschreibung>
+        </Modell>
+        <Formate>
+            <EuropaeischeNormEN16931>
+                <Status>Erforderlich / Akzeptiert</Status>
+                <Version>[Spezifische Version]</Version>
+            </EuropaeischeNormEN16931>
+            <NationaleCIUS>
+                <Gilt>Ja</Gilt>
+                <SchemaBezeichnung>[z.B. FatturaPA, Facturae]</SchemaBezeichnung>
+            </NationaleCIUS>
+            <ErlaubteSyntaxen>
+                <Syntax>UBL</Syntax>
+                <Syntax>CII</Syntax>
+                <Syntax>Factur-X</Syntax>
+            </ErlaubteSyntaxen>
+            <PDFAlsRechnungKonform>Nein</PDFAlsRechnungKonform>
+        </Formate>
+        <Uebertragungswege>
+            <PEPPOL>
+                <Status>Obligatorisch / Standard / Erlaubt</Status>
+            </PEPPOL>
+        </Uebertragungswege>
+    </Architektur>
+    
+    <Meldepflichten>
+        <StaatlichePlattform>
+            <Gilt>Ja</Gilt>
+            <Name>[z.B. KSeF, SdI, myDATA]</Name>
+            <Nutzungspflicht>Obligatorisch</Nutzungspflicht>
+        </StaatlichePlattform>
+        <ClearanceAnforderungen>
+            <EchtzeitClearanceCTC>Ja</EchtzeitClearanceCTC>
+            <GueltigkeitNachFreigabe>Ja</GueltigkeitNachFreigabe>
+        </ClearanceAnforderungen>
+        <ReportingAnforderungen>
+            <DigitalReportingRequirementDRR>Ja</DigitalReportingRequirementDRR>
+            <Echtzeitmeldung>Ja / Nein</Echtzeitmeldung>
+            <Frequenz>Monatlich / Vierteljährlich / Echtzeit</Frequenz>
+        </ReportingAnforderungen>
+    </Meldepflichten>
+
+    <Zusatzanforderungen>
+        <SystemZertifizierung>Ja / Nein</SystemZertifizierung>
+        <SAFT>
+            <Pflicht>Ja / Nein / Geplant</Pflicht>
+            <Abgabe>Auf Anfrage / Monatlich</Abgabe>
+        </SAFT>
+        <LokaleIdentifikatoren>
+            <Pflicht>Ja</Pflicht>
+            <Typ>[z.B. ATCUD, QR-Code, KSeF-ID]</Typ>
+        </LokaleIdentifikatoren>
+        <MeldungTransaktionsstatus>Ja / Nein</MeldungTransaktionsstatus>
+        <Besonderheiten>[Offline-Modus, QES-Pflicht, etc.]</Besonderheiten>
+        <Sanktionen>[Spezifische Strafen bei Nichteinhaltung]</Sanktionen>
+    </Zusatzanforderungen>
+
+</Landesprofil>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Unternehmensprofil>
+    
+    <JuristischeFiskalischePraesenz>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>BE</Land>
+            <UStIdNr>BE0987654321</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>DE</Land>
+            <UStIdNr>DE123456789</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <SitzDesUnternehmens>
+            <Strasse>Avenue des Arts 50</Strasse>
+            <Postleitzahl>1000</Postleitzahl>
+            <Stadt>Brüssel</Stadt>
+            <Land>Belgien</Land>
+        </SitzDesUnternehmens>
+        <Finanzdaten>
+            <Umsatz>
+                <Betrag>38000000</Betrag>
+                <Waehrung>EUR</Waehrung>
+            </Umsatz>
+            <Unternehmensgroesse>KMU</Unternehmensgroesse>
+        </Finanzdaten>
+        <InterneRichtlinieArchivierung>
+            <DauerInJahren>7</DauerInJahren>
+            <Format>Digital</Format>
+        </InterneRichtlinieArchivierung>
+        <BetriebsstaettenImAusland>
+            <Betriebsstaette>
+                <Land>DE</Land>
+                <Stadt>Berlin</Stadt>
+            </Betriebsstaette>
+            <Betriebsstaette>
+                <Land>FR</Land>
+                <Stadt>Paris</Stadt>
+            </Betriebsstaette>
+        </BetriebsstaettenImAusland>
+    </JuristischeFiskalischePraesenz>
+    
+    <TransaktionsRollenprofil>
+        <Transaktionstyp B2B="true" B2C="false" B2G="true" Grenzuberschreitend="true"/>
+        <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
+        <FreiwilligeMarktdynamik>
+            <BuyersChoiceTeilnahme>Ja</BuyersChoiceTeilnahme>
+        </FreiwilligeMarktdynamik>
+    </TransaktionsRollenprofil>
+    
+    <SystemArchitektur>
+        <KernITSystem>SAP Business One</KernITSystem>
+        <PeppolFaehigkeit>Ja, über externen Provider</PeppolFaehigkeit>
+        <ApiIntegrationsfaehigkeit>
+            <Faehig>Ja</Faehig>
+            <Typ>RESTful API</Typ>
+        </ApiIntegrationsfaehigkeit>
+    </SystemArchitektur>
+    
+    <StammdatenDatenqualitaet>
+        <Stammdatenpflege>
+            <LaenderspezifischeIDsGespeichert>Ja</LaenderspezifischeIDsGespeichert>
+        </Stammdatenpflege>
+        <StatusUpdatesFaehigkeit>
+            <KannSenden>Ja</KannSenden>
+            <UnterstuetzteStatus>
+                <Status>Rechnung erhalten</Status>
+                <Status>Rechnung in Prüfung</Status>
+                <Status>Rechnung genehmigt</Status>
+                <Status>Rechnung abgelehnt</Status>
+                <Status>Zahlung avisiert</Status>
+            </UnterstuetzteStatus>
+        </StatusUpdatesFaehigkeit>
+    </StammdatenDatenqualitaet>
+    
+</Unternehmensprofil>
