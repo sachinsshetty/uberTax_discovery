@@ -1,4 +1,9 @@
 
+
+Which of these companies are obliged to implement B2B e-invoicing by 2026 ?
+
+
+
 Split Hospitality Group j.d.o.o. .xml
 	
 	
