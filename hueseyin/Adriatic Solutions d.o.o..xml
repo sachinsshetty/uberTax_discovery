@@ -32,6 +32,7 @@
     </JuristischeFiskalischePraesenz>
     <TransaktionsRollenprofil>
         <Transaktionstyp B2B="true" B2C="false" B2G="true" Grenzuberschreitend="true"/>
+		<Inlandstransaktion>Ja</Inlandstransaktion>
         <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
         <FreiwilligeMarktdynamik>
             <BuyersChoiceTeilnahme>Ja</BuyersChoiceTeilnahme>
