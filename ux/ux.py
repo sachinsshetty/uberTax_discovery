@@ -153,7 +153,7 @@ css = """
 def create_gradio_app() -> gr.Blocks:
     """Create and configure the Gradio application."""
     with gr.Blocks(title="dwani.ai - Discovery", css=css, fill_width=True) as demo:
-        gr.Markdown("# 📄 Document Chat - Query Your PDFs")
+        gr.Markdown("# 📄 UberTax - Agentic Tax Analytics")
 
         # Generate a unique session ID
         session_id = gr.State(value=f"session_{int(time())}")
@@ -213,7 +213,7 @@ def create_gradio_app() -> gr.Blocks:
 
 def main():
     """Main function to run the application."""
-    parser = argparse.ArgumentParser(description="Document Chat Application")
+    parser = argparse.ArgumentParser(description="UberTax - Agentic Tax Analytics")
     parser.add_argument("--host", default="0.0.0.0", help="Server host")
     parser.add_argument("--port", type=int, default=8000, help="Server port")
     args = parser.parse_args()
