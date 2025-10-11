@@ -2,6 +2,8 @@
 <Unternehmensprofil>
     
     <JuristischeFiskalischePraesenz>
+        <Firmierung>Firma</Firmierung>
+        <Rechtsform>Rechtsform</Rechtsform>   
         <UmsatzsteuerlicheRegistrierung>
             <Land>DE</Land>
             <UStIdNr>DE123456789</UStIdNr>
@@ -66,4 +68,5 @@
         </StatusUpdatesFaehigkeit>
     </StammdatenDatenqualitaet>
     
+
 </Unternehmensprofil>
