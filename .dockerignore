@@ -2,6 +2,7 @@ samples
 *.wav
 *.log
 venv
+*.db
 *.nemo
 *.json
 .github

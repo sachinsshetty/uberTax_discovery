@@ -6,6 +6,7 @@ src/ollama
 models/
 pyautogenvenv/
 venv/
+*.db
 venv_2
 # Byte-compiled / optimized / DLL files
 __pycache__/
