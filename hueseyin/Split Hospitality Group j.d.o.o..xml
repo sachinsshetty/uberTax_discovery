@@ -1,0 +1,52 @@
+<Unternehmensprofil>
+    <JuristischeFiskalischePraesenz>
+		<Firmierung>Split Hospitality Group j.d.o.o.</Firmierung>
+        <Rechtsform>j.d.o.o.</Rechtsform>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>HR</Land>
+            <UStIdNr>HR32132132132</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <SitzDesUnternehmens>
+            <Strasse>Obala Hrvatskog narodnog preporoda 6</Strasse>
+            <Postleitzahl>21000</Postleitzahl>
+            <Stadt>Split</Stadt>
+            <Land>Kroatien</Land>
+        </SitzDesUnternehmens>
+        <Finanzdaten>
+            <Umsatz>
+                <Betrag>2000000</Betrag>
+                <Waehrung>EUR</Waehrung>
+            </Umsatz>
+            <Unternehmensgroesse>KMU</Unternehmensgroesse>
+        </Finanzdaten>
+        <InterneRichtlinieArchivierung>
+            <DauerInJahren>11</DauerInJahren>
+            <Format>Digital und Physisch</Format>
+        </InterneRichtlinieArchivierung>
+        <BetriebsstaettenImAusland/>
+    </JuristischeFiskalischePraesenz>
+    <TransaktionsRollenprofil>
+        <Transaktionstyp B2B="false" B2C="true" B2G="false" Grenzuberschreitend="false"/>
+        <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
+        <FreiwilligeMarktdynamik>
+            <BuyersChoiceTeilnahme>Nein</BuyersChoiceTeilnahme>
+        </FreiwilligeMarktdynamik>
+    </TransaktionsRollenprofil>
+    <SystemArchitektur>
+        <KernITSystem>Fiskalna Kasa App</KernITSystem>
+        <PeppolFaehigkeit>Nein</PeppolFaehigkeit>
+        <ApiIntegrationsfaehigkeit>
+            <Faehig>Nein</Faehig>
+            <Typ></Typ>
+        </ApiIntegrationsfaehigkeit>
+    </SystemArchitektur>
+    <StammdatenDatenqualitaet>
+        <Stammdatenpflege>
+            <LaenderspezifischeIDsGespeichert>Nein</LaenderspezifischeIDsGespeichert>
+        </Stammdatenpflege>
+        <StatusUpdatesFaehigkeit>
+            <KannSenden>Nein</KannSenden>
+            <UnterstuetzteStatus/>
+        </StatusUpdatesFaehigkeit>
+    </StammdatenDatenqualitaet>
+</Unternehmensprofil>

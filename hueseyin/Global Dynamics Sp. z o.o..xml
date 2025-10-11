@@ -1,0 +1,60 @@
+<Unternehmensprofil>
+    <JuristischeFiskalischePraesenz>
+	<Firmierung>Global Dynamics Sp. z o.o.</Firmierung>
+        <Rechtsform>Sp. z o.o.</Rechtsform>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>PL</Land>
+            <UStIdNr>PL1234567890</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <SitzDesUnternehmens>
+            <Strasse>Aleje Jerozolimskie 96</Strasse>
+            <Postleitzahl>00-807</Postleitzahl>
+            <Stadt>Warschau</Stadt>
+            <Land>Polen</Land>
+        </SitzDesUnternehmens>
+        <Finanzdaten>
+            <Umsatz>
+                <Betrag>250000000</Betrag>
+                <Waehrung>PLN</Waehrung>
+            </Umsatz>
+            <Unternehmensgroesse>Großunternehmen</Unternehmensgroesse>
+        </Finanzdaten>
+        <InterneRichtlinieArchivierung>
+            <DauerInJahren>10</DauerInJahren>
+            <Format>Digital</Format>
+        </InterneRichtlinieArchivierung>
+        <BetriebsstaettenImAusland>
+            <Betriebsstaette>
+                <Land>DE</Land>
+                <Stadt>Berlin</Stadt>
+            </Betriebsstaette>
+        </BetriebsstaettenImAusland>
+    </JuristischeFiskalischePraesenz>
+    <TransaktionsRollenprofil>
+        <Transaktionstyp B2B="true" B2C="false" B2G="true" Grenzuberschreitend="true"/>
+        <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
+        <FreiwilligeMarktdynamik>
+            <BuyersChoiceTeilnahme>Nein</BuyersChoiceTeilnahme>
+        </FreiwilligeMarktdynamik>
+    </TransaktionsRollenprofil>
+    <SystemArchitektur>
+        <KernITSystem>Oracle NetSuite</KernITSystem>
+        <PeppolFaehigkeit>Ja, über externen Provider</PeppolFaehigkeit>
+        <ApiIntegrationsfaehigkeit>
+            <Faehig>Ja</Faehig>
+            <Typ>SOAP API</Typ>
+        </ApiIntegrationsfaehigkeit>
+    </SystemArchitektur>
+    <StammdatenDatenqualitaet>
+        <Stammdatenpflege>
+            <LaenderspezifischeIDsGespeichert>Ja</LaenderspezifischeIDsGespeichert>
+        </Stammdatenpflege>
+        <StatusUpdatesFaehigkeit>
+            <KannSenden>Ja</KannSenden>
+            <UnterstuetzteStatus>
+                <Status>Rechnung akzeptiert</Status>
+                <Status>Rechnung bezahlt</Status>
+            </UnterstuetzteStatus>
+        </StatusUpdatesFaehigkeit>
+    </StammdatenDatenqualitaet>
+</Unternehmensprofil>

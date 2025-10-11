@@ -1,0 +1,52 @@
+<Unternehmensprofil>
+    <JuristischeFiskalischePraesenz>
+	<Firmierung>Aarhus Retail IVS</Firmierung>
+        <Rechtsform>IVS</Rechtsform>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>DK</Land>
+            <UStIdNr>DK44332211</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <SitzDesUnternehmens>
+            <Strasse>Søndergade 10</Strasse>
+            <Postleitzahl>8000</Postleitzahl>
+            <Stadt>Aarhus</Stadt>
+            <Land>Dänemark</Land>
+        </SitzDesUnternehmens>
+        <Finanzdaten>
+            <Umsatz>
+                <Betrag>250000</Betrag>
+                <Waehrung>DKK</Waehrung>
+            </Umsatz>
+            <Unternehmensgroesse>Kleinstunternehmen</Unternehmensgroesse>
+        </Finanzdaten>
+        <InterneRichtlinieArchivierung>
+            <DauerInJahren>5</DauerInJahren>
+            <Format>Digital und Physisch</Format>
+        </InterneRichtlinieArchivierung>
+        <BetriebsstaettenImAusland/>
+    </JuristischeFiskalischePraesenz>
+    <TransaktionsRollenprofil>
+        <Transaktionstyp B2B="false" B2C="true" B2G="false" Grenzuberschreitend="false"/>
+        <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
+        <FreiwilligeMarktdynamik>
+            <BuyersChoiceTeilnahme>Nein</BuyersChoiceTeilnahme>
+        </FreiwilligeMarktdynamik>
+    </TransaktionsRollenprofil>
+    <SystemArchitektur>
+        <KernITSystem>Shopify POS</KernITSystem>
+        <PeppolFaehigkeit>Nein</PeppolFaehigkeit>
+        <ApiIntegrationsfaehigkeit>
+            <Faehig>Nein</Faehig>
+            <Typ></Typ>
+        </ApiIntegrationsfaehigkeit>
+    </SystemArchitektur>
+    <StammdatenDatenqualitaet>
+        <Stammdatenpflege>
+            <LaenderspezifischeIDsGespeichert>Nein</LaenderspezifischeIDsGespeichert>
+        </Stammdatenpflege>
+        <StatusUpdatesFaehigkeit>
+            <KannSenden>Nein</KannSenden>
+            <UnterstuetzteStatus/>
+        </StatusUpdatesFaehigkeit>
+    </StammdatenDatenqualitaet>
+</Unternehmensprofil>

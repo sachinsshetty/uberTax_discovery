@@ -1,0 +1,54 @@
+<Unternehmensprofil>
+    <JuristischeFiskalischePraesenz>
+	<Firmierung>Copenhagen Consulting ApS</Firmierung>
+        <Rechtsform>ApS</Rechtsform>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>DK</Land>
+            <UStIdNr>DK11223344</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <SitzDesUnternehmens>
+            <Strasse>Vestergade 29</Strasse>
+            <Postleitzahl>1456</Postleitzahl>
+            <Stadt>Kopenhagen</Stadt>
+            <Land>Dänemark</Land>
+        </SitzDesUnternehmens>
+        <Finanzdaten>
+            <Umsatz>
+                <Betrag>5000000</Betrag>
+                <Waehrung>DKK</Waehrung>
+            </Umsatz>
+            <Unternehmensgroesse>KMU</Unternehmensgroesse>
+        </Finanzdaten>
+        <InterneRichtlinieArchivierung>
+            <DauerInJahren>5</DauerInJahren>
+            <Format>Digital</Format>
+        </InterneRichtlinieArchivierung>
+        <BetriebsstaettenImAusland/>
+    </JuristischeFiskalischePraesenz>
+    <TransaktionsRollenprofil>
+        <Transaktionstyp B2B="true" B2C="false" B2G="true" Grenzuberschreitend="false"/>
+        <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
+        <FreiwilligeMarktdynamik>
+            <BuyersChoiceTeilnahme>Nein</BuyersChoiceTeilnahme>
+        </FreiwilligeMarktdynamik>
+    </TransaktionsRollenprofil>
+    <SystemArchitektur>
+        <KernITSystem>e-conomic</KernITSystem>
+        <PeppolFaehigkeit>Ja, nativ</PeppolFaehigkeit>
+        <ApiIntegrationsfaehigkeit>
+            <Faehig>Ja</Faehig>
+            <Typ>RESTful API</Typ>
+        </ApiIntegrationsfaehigkeit>
+    </SystemArchitektur>
+    <StammdatenDatenqualitaet>
+        <Stammdatenpflege>
+            <LaenderspezifischeIDsGespeichert>Ja</LaenderspezifischeIDsGespeichert>
+        </Stammdatenpflege>
+        <StatusUpdatesFaehigkeit>
+            <KannSenden>Ja</KannSenden>
+            <UnterstuetzteStatus>
+                <Status>Rechnung erhalten</Status>
+            </UnterstuetzteStatus>
+        </StatusUpdatesFaehigkeit>
+    </StammdatenDatenqualitaet>
+</Unternehmensprofil>

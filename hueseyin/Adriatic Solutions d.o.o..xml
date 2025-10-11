@@ -1,0 +1,60 @@
+<Unternehmensprofil>
+    <JuristischeFiskalischePraesenz>
+		<Firmierung>Adriatic Solutions d.o.o.</Firmierung>
+        <Rechtsform>d.o.o.</Rechtsform>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>HR</Land>
+            <UStIdNr>HR12312312312</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <SitzDesUnternehmens>
+            <Strasse>Ulica grada Vukovara 271</Strasse>
+            <Postleitzahl>10000</Postleitzahl>
+            <Stadt>Zagreb</Stadt>
+            <Land>Kroatien</Land>
+        </SitzDesUnternehmens>
+        <Finanzdaten>
+            <Umsatz>
+                <Betrag>15000000</Betrag>
+                <Waehrung>EUR</Waehrung>
+            </Umsatz>
+            <Unternehmensgroesse>KMU</Unternehmensgroesse>
+        </Finanzdaten>
+        <InterneRichtlinieArchivierung>
+            <DauerInJahren>11</DauerInJahren>
+            <Format>Digital</Format>
+        </InterneRichtlinieArchivierung>
+        <BetriebsstaettenImAusland>
+            <Betriebsstaette>
+                <Land>SI</Land>
+                <Stadt>Ljubljana</Stadt>
+            </Betriebsstaette>
+        </BetriebsstaettenImAusland>
+    </JuristischeFiskalischePraesenz>
+    <TransaktionsRollenprofil>
+        <Transaktionstyp B2B="true" B2C="false" B2G="true" Grenzuberschreitend="true"/>
+        <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
+        <FreiwilligeMarktdynamik>
+            <BuyersChoiceTeilnahme>Ja</BuyersChoiceTeilnahme>
+        </FreiwilligeMarktdynamik>
+    </TransaktionsRollenprofil>
+    <SystemArchitektur>
+        <KernITSystem>Microsoft Dynamics 365</KernITSystem>
+        <PeppolFaehigkeit>Ja, über FINA</PeppolFaehigkeit>
+        <ApiIntegrationsfaehigkeit>
+            <Faehig>Ja</Faehig>
+            <Typ>RESTful API</Typ>
+        </ApiIntegrationsfaehigkeit>
+    </SystemArchitektur>
+    <StammdatenDatenqualitaet>
+        <Stammdatenpflege>
+            <LaenderspezifischeIDsGespeichert>Ja</LaenderspezifischeIDsGespeichert>
+        </Stammdatenpflege>
+        <StatusUpdatesFaehigkeit>
+            <KannSenden>Ja</KannSenden>
+            <UnterstuetzteStatus>
+                <Status>Rechnung akzeptiert</Status>
+                <Status>Rechnung abgelehnt</Status>
+            </UnterstuetzteStatus>
+        </StatusUpdatesFaehigkeit>
+    </StammdatenDatenqualitaet>
+</Unternehmensprofil>

@@ -1,0 +1,52 @@
+<Unternehmensprofil>
+    <JuristischeFiskalischePraesenz>
+	<Firmierung>KreativWerkstatt S.C.</Firmierung>
+        <Rechtsform>S.C.</Rechtsform>
+        <UmsatzsteuerlicheRegistrierung>
+            <Land>PL</Land>
+            <UStIdNr>PL0987654321</UStIdNr>
+        </UmsatzsteuerlicheRegistrierung>
+        <SitzDesUnternehmens>
+            <Strasse>Floriańska 15</Strasse>
+            <Postleitzahl>31-019</Postleitzahl>
+            <Stadt>Krakau</Stadt>
+            <Land>Polen</Land>
+        </SitzDesUnternehmens>
+        <Finanzdaten>
+            <Umsatz>
+                <Betrag>500000</Betrag>
+                <Waehrung>PLN</Waehrung>
+            </Umsatz>
+            <Unternehmensgroesse>Kleinstunternehmen</Unternehmensgroesse>
+        </Finanzdaten>
+        <InterneRichtlinieArchivierung>
+            <DauerInJahren>7</DauerInJahren>
+            <Format>Physisch</Format>
+        </InterneRichtlinieArchivierung>
+        <BetriebsstaettenImAusland/>
+    </JuristischeFiskalischePraesenz>
+    <TransaktionsRollenprofil>
+        <Transaktionstyp B2B="true" B2C="true" B2G="false" Grenzuberschreitend="false"/>
+        <PrimaereRolle>Rechnungsaussteller</PrimaereRolle>
+        <FreiwilligeMarktdynamik>
+            <BuyersChoiceTeilnahme>Nein</BuyersChoiceTeilnahme>
+        </FreiwilligeMarktdynamik>
+    </TransaktionsRollenprofil>
+    <SystemArchitektur>
+        <KernITSystem>Lexware</KernITSystem>
+        <PeppolFaehigkeit>Nein</PeppolFaehigkeit>
+        <ApiIntegrationsfaehigkeit>
+            <Faehig>Nein</Faehig>
+            <Typ></Typ>
+        </ApiIntegrationsfaehigkeit>
+    </SystemArchitektur>
+    <StammdatenDatenqualitaet>
+        <Stammdatenpflege>
+            <LaenderspezifischeIDsGespeichert>Nein</LaenderspezifischeIDsGespeichert>
+        </Stammdatenpflege>
+        <StatusUpdatesFaehigkeit>
+            <KannSenden>Nein</KannSenden>
+            <UnterstuetzteStatus/>
+        </StatusUpdatesFaehigkeit>
+    </StammdatenDatenqualitaet>
+</Unternehmensprofil>
