@@ -1,57 +1,55 @@
-# Use official Python slim image as base
-FROM python:3.10-slim AS builder
+# Stage 1: Build stage
+FROM python:3.10-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install build dependencies
+RUN apk add --no-cache \
     gcc \
+    musl-dev \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    libjpeg-turbo-dev \
+    zlib-dev \
+    libpng-dev poppler-utils
 
 # Install Python dependencies
 COPY server-requirements.txt .
-RUN pip install --no-cache-dir -r server-requirements.txt
+RUN pip install --no-cache-dir --user -r server-requirements.txt
 
-# Final stage
-FROM python:3.10-slim
+# Stage 2: Final stage
+FROM python:3.10-alpine
 
-# Install Nginx and supervisor
-RUN apt-get update && apt-get install -y \
-    nginx \
-    supervisor \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy Python dependencies from builder
-COPY --from=builder /usr/local /usr/local
-
-# Set working directory
 WORKDIR /app
 
-# Create appuser and set permissions
-RUN useradd -ms /bin/bash appuser \
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install runtime dependencies only
+RUN apk add --no-cache \
+    libjpeg-turbo \
+    zlib \
+    libpng poppler-utils\
+    && rm -rf /var/cache/apk/*
+
+# Copy installed Python dependencies from builder stage
+COPY --from=builder /root/.local /home/appuser/.local
+
+# Copy the application code
+COPY . .
+
+# Create appuser and set permissions for /app and /data
+RUN adduser -D appuser \
     && mkdir -p /data \
-    && chown -R appuser:appuser /app /data /var/log/nginx /var/lib/nginx
+    && chown -R appuser:appuser /app /data
 
-# Copy application code
-COPY server/ /app/src/
-
-# Copy Nginx configuration
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-
-# Expose port 8080 internally (map to 80 on host via -p 80:8080)
-EXPOSE 18889
-
-# Copy supervisor configuration
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Run as non-root user
+RUN pip install uvicorn
 USER appuser
+EXPOSE 80
 
-# Command to run supervisor (manages Nginx and Uvicorn)
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Command to run the Gradio program
+CMD ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "18889"]
