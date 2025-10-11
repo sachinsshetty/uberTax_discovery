@@ -1,3 +1,4 @@
+# ux.py
 import gradio as gr
 import requests
 import logging
@@ -19,11 +20,11 @@ logger = logging.getLogger(__name__)
 
 # Configuration
 DWANI_API_BASE_URL = os.getenv('DWANI_API_BASE_URL', '0.0.0.0')
-API_URL_PDF = f"http://{DWANI_API_BASE_URL}:18889/process_pdf"
+API_URL_FILE = f"http://{DWANI_API_BASE_URL}:18889/process_file"
 API_URL_MESSAGE = f"http://{DWANI_API_BASE_URL}:18889/process_message"
 API_URL_HEALTH = f"http://{DWANI_API_BASE_URL}:18889/health"
-MAX_FILE_SIZE_MB = 10  # Max PDF size in MB
-MAX_CONCURRENT_PDFS = 5  # Max PDFs to process concurrently
+MAX_FILE_SIZE_MB = 10  # Max file size in MB
+MAX_CONCURRENT_FILES = 5  # Max files to process concurrently
 
 def validate_config() -> None:
     """Validate environment configuration at startup."""
@@ -36,9 +37,11 @@ def validate_config() -> None:
         logger.error(f"Failed to connect to API server at {DWANI_API_BASE_URL}: {str(e)}")
         raise
 
-def validate_pdf(file_path: str) -> bool:
-    """Validate PDF file for type and size."""
-    if not file_path.lower().endswith('.pdf'):
+def validate_file(file_path: str) -> bool:
+    """Validate file for type and size."""
+    allowed_extensions = {'.pdf', '.xml', '.csv', '.json'}
+    ext = os.path.splitext(file_path.lower())[1]
+    if ext not in allowed_extensions:
         logger.warning(f"Invalid file type: {file_path}")
         return False
     try:
@@ -51,19 +54,19 @@ def validate_pdf(file_path: str) -> bool:
         logger.error(f"Error accessing file {file_path}: {str(e)}")
         return False
 
-def extract_single_pdf(pdf_path: str, session_id: str) -> Dict:
-    """Extract text from a single PDF using the server endpoint."""
-    if not validate_pdf(pdf_path):
+def extract_single_file(file_path: str, session_id: str) -> Dict:
+    """Extract text from a single file using the server endpoint."""
+    if not validate_file(file_path):
         return {'extracted_text': {}, 'skipped_pages': [], 'sessionId': session_id}
     try:
-        with open(pdf_path, "rb") as f:
-            files = {"file": (os.path.basename(pdf_path), f, "application/pdf")}
+        with open(file_path, "rb") as f:
+            files = {"file": (os.path.basename(file_path), f, "application/octet-stream")}
             data = {
-                "prompt": "Extract all text from this PDF.",
+                "prompt": "Extract all text from this document.",
                 "sessionId": session_id,
                 "is_extraction": True
             }
-            response = requests.post(API_URL_PDF, files=files, data=data, timeout=90)
+            response = requests.post(API_URL_FILE, files=files, data=data, timeout=90)
             response.raise_for_status()
             result = response.json()
             return {
@@ -72,29 +75,29 @@ def extract_single_pdf(pdf_path: str, session_id: str) -> Dict:
                 'sessionId': result.get('sessionId', session_id)
             }
     except requests.RequestException as e:
-        logger.error(f"Failed to extract text from {pdf_path}: {str(e)}")
+        logger.error(f"Failed to extract text from {file_path}: {str(e)}")
         return {'extracted_text': {}, 'skipped_pages': [], 'sessionId': session_id}
     except Exception as e:
-        logger.error(f"Unexpected error extracting text from {pdf_path}: {str(e)}")
+        logger.error(f"Unexpected error extracting text from {file_path}: {str(e)}")
         return {'extracted_text': {}, 'skipped_pages': [], 'sessionId': session_id}
 
-def extract_texts(pdf_paths: List[str], session_id: str) -> Tuple[str, str]:
-    """Extract text from multiple PDFs in parallel and return combined JSON-serialized text and session ID."""
-    valid_paths = [p for p in pdf_paths if validate_pdf(p)]
+def extract_texts(file_paths: List[str], session_id: str) -> Tuple[str, str]:
+    """Extract text from multiple files in parallel and return combined JSON-serialized text and session ID."""
+    valid_paths = [p for p in file_paths if validate_file(p)]
     if not valid_paths:
         return "{}", session_id
 
     # Extract texts in parallel
-    with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(valid_paths), MAX_CONCURRENT_PDFS)) as executor:
-        results = list(executor.map(lambda p: extract_single_pdf(p, session_id), valid_paths))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(valid_paths), MAX_CONCURRENT_FILES)) as executor:
+        results = list(executor.map(lambda p: extract_single_file(p, session_id), valid_paths))
 
-    # Combine texts into a nested dict {filename: {page: text, ...}} and update session ID
+    # Combine texts into a nested dict {filename: extracted_dict} and update session ID
     combined_extracted = {}
     final_session_id = session_id
     for path, result in zip(valid_paths, results):
         extracted_dict = result['extracted_text']
-        if isinstance(extracted_dict, dict) and extracted_dict:
-            basename = os.path.splitext(os.path.basename(path))[0]  # Remove .pdf extension
+        if extracted_dict:
+            basename = os.path.splitext(os.path.basename(path))[0]  # Remove extension
             combined_extracted[basename] = extracted_dict
         if result['skipped_pages']:
             logger.warning(f"Skipped pages in {path}: {result['skipped_pages']}")
@@ -102,23 +105,23 @@ def extract_texts(pdf_paths: List[str], session_id: str) -> Tuple[str, str]:
 
     return json.dumps(combined_extracted), final_session_id
 
-def process_message(history: List[Dict], message: str, pdf_files: Optional[List[str]], session_id: str, language: str, extracted_text_state: str) -> Tuple[List[Dict], str, str, str, str]:
+def process_message(history: List[Dict], message: str, file_input: Optional[List[str]], session_id: str, language: str, extracted_text_state: str) -> Tuple[List[Dict], str, str, str, str]:
     """Handle chat messages, using server session management. Extracts text only on first query if not already stored."""
-    pdf_files = pdf_files or []
-    current_paths = sorted([f for f in pdf_files if f])  # List of file paths
+    file_paths = file_input or []
+    current_paths = sorted([f for f in file_paths if f])  # List of file paths
 
     # Validate input
     if not message.strip():
         return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ Please enter a valid question!"}], "", session_id, language, extracted_text_state
 
     if not current_paths and not extracted_text_state:
-        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ Please upload at least one PDF first!"}], "", session_id, language, extracted_text_state
+        return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ Please upload at least one document first!"}], "", session_id, language, extracted_text_state
 
     # Extract if not already done
     if not extracted_text_state and current_paths:
         extracted_json, new_session_id = extract_texts(current_paths, session_id)
         if not extracted_json or extracted_json == "{}":
-            return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ No text could be extracted from the provided PDFs!"}], "", new_session_id, language, ""
+            return history + [{"role": "user", "content": message}, {"role": "assistant", "content": "⚠️ No text could be extracted from the provided documents!"}], "", new_session_id, language, ""
         text_for_api = extracted_json
         update_extracted_state = extracted_json
     elif extracted_text_state:
@@ -155,7 +158,7 @@ def clear_chat(session_id: str) -> List:
     return []
 
 def new_chat(session_id: str, language: str) -> Tuple[List, None, str, str, str]:
-    """Clear chat history and reset PDF state for a session."""
+    """Clear chat history and reset file state for a session."""
     return [], None, f"session_{int(time())}", "English", ""
 
 # Custom styling
@@ -168,14 +171,14 @@ css = """
 def create_gradio_app() -> gr.Blocks:
     """Create and configure the Gradio application."""
     instructions_text = f"""
-    1. Upload one or more PDF documents (max {MAX_FILE_SIZE_MB}MB each).  
+    1. Upload one or more documents (PDF, XML, CSV, JSON; max {MAX_FILE_SIZE_MB}MB each).  
     2. Ask questions about the documents in the chat box.  
     3. The assistant will respond based on the documents' content.  
     4. Use 'Clear Chat' to reset the conversation history.  
-    5. Use 'New Chat' to start a new session (clears chat and PDFs).  
+    5. Use 'New Chat' to start a new session (clears chat and documents).  
     """
 
-    with gr.Blocks(title="dwani.ai - Discovery", css=css, fill_width=True) as demo:
+    with gr.Blocks(title="UberTax - Agentic Tax Analytics", css=css, fill_width=True) as demo:
         gr.Markdown("# 📄 UberTax - Agentic Tax Analytics")
 
         # Generate a unique session ID
@@ -194,15 +197,15 @@ def create_gradio_app() -> gr.Blocks:
                 label="Your Question",
                 elem_id="message"
             )
-            pdf_input = gr.File(
-                label=f"Attach PDFs (max {MAX_FILE_SIZE_MB}MB each, upload once per session)",
-                file_types=[".pdf"],
+            file_input = gr.File(
+                label=f"Attach Documents (PDF, XML, CSV, JSON; max {MAX_FILE_SIZE_MB}MB each, upload once per session)",
+                file_types=[".pdf", ".xml", ".csv", ".json"],
                 file_count="multiple"
             )
             language = gr.Dropdown(
                 choices=["English", "Spanish", "French", "German"],
                 value="English",
-                label="Response Language"
+                label="Language"
             )
             with gr.Row():
                 clear = gr.Button("Clear Chat")
@@ -214,7 +217,7 @@ def create_gradio_app() -> gr.Blocks:
         # Event bindings
         msg.submit(
             process_message,
-            inputs=[chatbot, msg, pdf_input, session_id, language, extracted_text],
+            inputs=[chatbot, msg, file_input, session_id, language, extracted_text],
             outputs=[chatbot, msg, session_id, language, extracted_text]
         )
         clear.click(
@@ -225,7 +228,7 @@ def create_gradio_app() -> gr.Blocks:
         new_chat_button.click(
             new_chat,
             inputs=[session_id, language],
-            outputs=[chatbot, pdf_input, session_id, language, extracted_text]
+            outputs=[chatbot, file_input, session_id, language, extracted_text]
         )
 
     return demo

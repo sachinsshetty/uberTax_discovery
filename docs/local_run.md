@@ -6,3 +6,7 @@ uvicorn server.main:app --host 0.0.0.0 --port 18889
 Client - 
 export DWANI_API_BASE_URL="0.0.0.0"
 python ux/ux.py
+
+
+-- Use -qwen-vl 
+    - Qwen/Qwen3-VL-30B-A3B-Thinking-FP8
