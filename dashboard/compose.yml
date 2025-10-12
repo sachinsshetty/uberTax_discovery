@@ -4,7 +4,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/data:/app/data  # Persist SQLite DB
+      #- ./backend/data:/app/data  # Persist SQLite DB
     environment:
       - SQLITE_DB_PATH=/app/data/app.db
 
