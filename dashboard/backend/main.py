@@ -31,7 +31,7 @@ app = FastAPI(title="Juris-Diction API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_origins=["*"],  # Temp for dev; restrict to ["http://localhost:3000"] in prod
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,46 +50,14 @@ async def startup_event():
     # Seed mock data if table is empty
     if db.query(ClientProfile).count() == 0:
         mock_data = [
-            {
-                "client_id": "CI0007",
-                "company_name": "Innoute AG",
-                "country": "Germany",
-                "new_regulation": "German VAT Reform",  # Fixed from "UNDER REVIEW"
-                "deadline": "2024-12-31",  # String will be parsed below
-                "status": "UNDER REVIEW"
-            },
-            {
-                "client_id": "CI0008",  # Fixed duplicate
-                "company_name": "GlobalTech Inc.",
-                "country": "USA",
-                "new_regulation": "BEAT Regs (2023)",
-                "deadline": "2025-03-15",
-                "status": "AMENDED"
-            },
-            {
-                "client_id": "CI6823",
-                "company_name": "EuroLink SA",
-                "country": "France",
-                "new_regulation": "DACT Amend.",
-                "deadline": "2025-01-01",
-                "status": "MONITORED"
-            },
-            {
-                "client_id": "CI8855",
-                "company_name": "AsiaBridge Ltd.",
-                "country": "Japan",
-                "new_regulation": "Japanese e-Invoicing Update",  # Fixed from "MONITORED"
-                "deadline": "2024-09-30",
-                "status": "LIVE"
-            },
             # New entries based on e-invoicing analysis
             {
                 "client_id": "CI2001",
                 "company_name": "Split Hospitality Group j.d.o.o.",
                 "country": "Croatia",
-                "new_regulation": "Croatian B2B e-Invoicing Mandate",
-                "deadline": "2026-01-01",
-                "status": "UNDER REVIEW"
+                "new_regulation": "N/A",
+                "deadline": None,
+                "status": "LIVE"
             },
             {
                 "client_id": "CI2002",

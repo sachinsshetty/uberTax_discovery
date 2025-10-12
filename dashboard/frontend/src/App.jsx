@@ -4,23 +4,46 @@ import ClientTable from './components/ClientTable.jsx';
 
 function App() {
   const [clients, setClients] = useState([]);
-  const [error, setError] = useState(null);  // Added for error handling
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);  // Added loading state
+
+  const fetchClients = async (retries = 3) => {
+    try {
+      // Docker: Use service name; fallback to localhost for local dev
+      const apiUrl = process.env.NODE_ENV === 'development' 
+        ? 'http://localhost:8000/api/clients' 
+        : 'http://backend:8000/api/clients';
+      
+      console.log('Fetching from:', apiUrl);  // Debug log
+      
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      const data = await res.json();
+      setClients(data);
+      console.log('Fetched clients:', data);  // Debug log
+    } catch (err) {
+      console.error('Error fetching clients:', err);
+      if (retries > 0) {
+        console.log(`Retrying in 1s... (${retries} left)`);
+        setTimeout(() => fetchClients(retries - 1), 1000);
+      } else {
+        setError('Failed to load clients. Check backend & Docker network.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/clients')
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch');
-        return res.json();
-      })
-      .then(data => setClients(data))
-      .catch(err => {
-        console.error('Error fetching clients:', err);
-        setError('Failed to load clients. Check backend.');
-      });
+    fetchClients();
   }, []);
 
   if (error) {
-    return <div className="p-8 text-red-400">Error: {error}</div>;  // Simple error UI
+    return <div className="p-8 text-red-400">Error: {error}</div>;
+  }
+
+  if (loading) {
+    return <div className="p-8 text-gray-400">Loading clients...</div>;
   }
 
   // Compute dynamic stats
@@ -29,8 +52,8 @@ function App() {
   const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
   const dashOffsetImpacted = 283 * (1 - percentageImpacted);
 
-  const uniqueNewRegs = [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length;  // Exclude MONITORED too
-  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;  // Made dynamic
+  const uniqueNewRegs = [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length;
+  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
   const dashOffsetNewRegs = 283 * (1 - percentageNewRegs);
 
   // Urgency calculation

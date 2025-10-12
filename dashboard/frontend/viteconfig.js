@@ -8,7 +8,7 @@ export default defineConfig({
     allowedHosts: true,  // Allows any host header (dev-only; insecure for prod)
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_PROXY_TARGET || 'http://localhost:8000',
         changeOrigin: true,
       },
     },
