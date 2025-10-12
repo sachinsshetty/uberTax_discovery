@@ -54,12 +54,12 @@ async def startup_event():
                 "client_id": "CI0007",
                 "company_name": "Innoute AG",
                 "country": "Germany",
-                "new_regulation": "UNDER REVIEW",
+                "new_regulation": "German VAT Reform",  # Fixed from "UNDER REVIEW"
                 "deadline": "2024-12-31",  # String will be parsed below
                 "status": "UNDER REVIEW"
             },
             {
-                "client_id": "CI0007",
+                "client_id": "CI0008",  # Fixed duplicate
                 "company_name": "GlobalTech Inc.",
                 "country": "USA",
                 "new_regulation": "BEAT Regs (2023)",
@@ -78,7 +78,7 @@ async def startup_event():
                 "client_id": "CI8855",
                 "company_name": "AsiaBridge Ltd.",
                 "country": "Japan",
-                "new_regulation": "MONITORED",
+                "new_regulation": "Japanese e-Invoicing Update",  # Fixed from "MONITORED"
                 "deadline": "2024-09-30",
                 "status": "LIVE"
             },

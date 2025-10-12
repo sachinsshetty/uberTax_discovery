@@ -4,13 +4,24 @@ import ClientTable from './components/ClientTable.jsx';
 
 function App() {
   const [clients, setClients] = useState([]);
+  const [error, setError] = useState(null);  // Added for error handling
 
   useEffect(() => {
     fetch('/api/clients')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch');
+        return res.json();
+      })
       .then(data => setClients(data))
-      .catch(err => console.error('Error fetching clients:', err));
+      .catch(err => {
+        console.error('Error fetching clients:', err);
+        setError('Failed to load clients. Check backend.');
+      });
   }, []);
+
+  if (error) {
+    return <div className="p-8 text-red-400">Error: {error}</div>;  // Simple error UI
+  }
 
   // Compute dynamic stats
   const totalClients = clients.length;
@@ -18,8 +29,8 @@ function App() {
   const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
   const dashOffsetImpacted = 283 * (1 - percentageImpacted);
 
-  const uniqueNewRegs = [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW").map(c => c.newRegulation))].length;
-  const percentageNewRegs = 0.25; // Fixed for visual consistency, adjust as needed
+  const uniqueNewRegs = [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length;  // Exclude MONITORED too
+  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;  // Made dynamic
   const dashOffsetNewRegs = 283 * (1 - percentageNewRegs);
 
   // Urgency calculation
@@ -40,7 +51,8 @@ function App() {
       }
     }
   }
-  const dashOffsetUrgency = 56; // Fixed for urgency visual
+  // Dynamic offset for urgency circle (HIGH: ~80% empty/20% filled, MED: 50%, LOW: 100% empty)
+  const dashOffsetUrgency = urgencyLevel === 'HIGH' ? 283 * 0.8 : urgencyLevel === 'MEDIUM' ? 283 * 0.5 : 283;
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
@@ -107,14 +119,14 @@ function App() {
             {/* Affected Client Profiles */}
             <ClientTable clients={clients} />
 
-            {/* Regulatory Feed */}
+            {/* Regulatory Feed - Updated */}
             <div className="card bg-[#112240] border border-[#1e2d4a] rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-4 text-gray-300">Regulatory Feed</h2>
               <ul className="space-y-3 text-gray-400 text-sm">
-                <li><span className="font-semibold text-cyan-400">[Oct 9, 2025] USA:</span> IRS releases tax inflation adjustments for tax year 2026, including amendments from the One Big Beautiful Bill.</li>
-                <li><span className="font-semibold text-cyan-400">[Oct 9, 2025] USA:</span> IRS makes changes affecting taxes for 2025, raising standard deduction to $15,750 for singles.</li>
-                <li><span className="font-semibold text-cyan-400">[Oct 2025] USA:</span> Treasury and IRS issue proposed regulations for “No Tax on Tips” provision, allowing deduction up to $25,000.</li>
-                <li><span className="font-semibold text-cyan-400">[Oct 2025] USA:</span> One Big Beautiful Bill introduces new $6,000 deduction for individuals age 65 and older, effective 2025-2028.</li>
+                <li><span className="font-semibold text-cyan-400">[Oct 9, 2025] USA:</span> IRS releases tax inflation adjustments for tax year 2026, including amendments from the One Big Beautiful Bill; standard deduction raised to $15,750 for singles and $31,500 for married filing jointly.</li>
+                <li><span className="font-semibold text-cyan-400">[Oct 9, 2025] USA:</span> IRS 2025-2026 Priority Guidance Plan outlines key focus areas amid government shutdown impacts.</li>
+                <li><span className="font-semibold text-cyan-400">[Oct 10, 2025] USA:</span> Treasury and IRS issue proposed regulations for “No Tax on Tips” provision under OBBBA, allowing deduction up to $25,000 for qualified tips.</li>
+                <li><span className="font-semibold text-cyan-400">[Oct 4, 2025] USA:</span> One Big Beautiful Bill Act (passed July 2025) introduces $6,000 deduction for individuals age 65+, effective 2025-2028, plus other Trump Tax Plan changes for 2025 filings.</li>
               </ul>
             </div>
           </div>
