@@ -19,7 +19,7 @@ function ClientTable({ clients }) {
             <td className="px-4 py-3">{client.companyName}</td>
             <td className="px-4 py-3">{client.country}</td>
             <td className="px-4 py-3">{client.newRegulation}</td>
-            <td className="px-4 py-3">{new Date(client.deadline).toLocaleDateString('de-DE')}</td>
+            <td className="px-4 py-3">{client.deadline ? new Date(client.deadline).toLocaleDateString('de-DE') : 'N/A'}</td>
             <td className="px-4 py-3 text-center">
               <span className={`status-pill inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase ${statusClass(client.status)}`}>
                 {client.status}

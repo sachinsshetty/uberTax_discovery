@@ -54,12 +54,12 @@ async def startup_event():
                 "client_id": "CI0007",
                 "company_name": "Innoute AG",
                 "country": "Germany",
-                "new_regulation": "UNDER REVIEW",
+                "new_regulation": "German VAT Reform",  # Fixed from "UNDER REVIEW"
                 "deadline": "2024-12-31",  # String will be parsed below
                 "status": "UNDER REVIEW"
             },
             {
-                "client_id": "CI0007",
+                "client_id": "CI0008",  # Fixed duplicate
                 "company_name": "GlobalTech Inc.",
                 "country": "USA",
                 "new_regulation": "BEAT Regs (2023)",
@@ -78,15 +78,65 @@ async def startup_event():
                 "client_id": "CI8855",
                 "company_name": "AsiaBridge Ltd.",
                 "country": "Japan",
-                "new_regulation": "MONITORED",
+                "new_regulation": "Japanese e-Invoicing Update",  # Fixed from "MONITORED"
                 "deadline": "2024-09-30",
+                "status": "LIVE"
+            },
+            # New entries based on e-invoicing analysis
+            {
+                "client_id": "CI2001",
+                "company_name": "Split Hospitality Group j.d.o.o.",
+                "country": "Croatia",
+                "new_regulation": "Croatian B2B e-Invoicing Mandate",
+                "deadline": "2026-01-01",
+                "status": "UNDER REVIEW"
+            },
+            {
+                "client_id": "CI2002",
+                "company_name": "KreativWerkstatt S.C.",
+                "country": "Poland",
+                "new_regulation": "N/A",
+                "deadline": None,
+                "status": "LIVE"
+            },
+            {
+                "client_id": "CI2003",
+                "company_name": "Global Dynamics Sp. z o.o.",
+                "country": "Poland",
+                "new_regulation": "N/A",
+                "deadline": None,
+                "status": "LIVE"
+            },
+            {
+                "client_id": "CI2004",
+                "company_name": "Copenhagen Consulting ApS",
+                "country": "Denmark",
+                "new_regulation": "N/A",
+                "deadline": None,
+                "status": "LIVE"
+            },
+            {
+                "client_id": "CI2005",
+                "company_name": "Adriatic Solutions d.o.o.",
+                "country": "Croatia",
+                "new_regulation": "Croatian B2B e-Invoicing Mandate",
+                "deadline": "2026-01-01",
+                "status": "MONITORED"
+            },
+            {
+                "client_id": "CI2006",
+                "company_name": "Aarhus Retail IVS",
+                "country": "Denmark",
+                "new_regulation": "N/A",
+                "deadline": None,
                 "status": "LIVE"
             }
         ]
         for data in mock_data:
-            # Parse deadline string to date object
+            # Parse deadline string to date object if present
             parsed_data = data.copy()
-            parsed_data["deadline"] = date.fromisoformat(data["deadline"])
+            if data["deadline"] is not None and isinstance(data["deadline"], str):
+                parsed_data["deadline"] = date.fromisoformat(data["deadline"])
             client = ClientProfile(**parsed_data)
             db.add(client)
         db.commit()
@@ -98,5 +148,5 @@ async def get_clients():
     clients = db.query(ClientProfile).all()
     db.close()
     return [{"clientId": c.client_id, "companyName": c.company_name, "country": c.country,
-             "newRegulation": c.new_regulation, "deadline": c.deadline.isoformat(),
+             "newRegulation": c.new_regulation, "deadline": c.deadline.isoformat() if c.deadline else None,
              "status": c.status} for c in clients]
