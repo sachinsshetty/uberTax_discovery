@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    allowedHosts: 'all',  // Allows any host header (dev-only; insecure for prod)
+    allowedHosts: true,  // Allows any host header (dev-only; insecure for prod)
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
