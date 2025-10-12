@@ -31,7 +31,7 @@ app = FastAPI(title="Juris-Diction API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_origins=["*"],  # Temp for dev; restrict to ["http://localhost:3000"] in prod
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,12 +54,12 @@ async def startup_event():
                 "client_id": "CI0007",
                 "company_name": "Innoute AG",
                 "country": "Germany",
-                "new_regulation": "German VAT Reform",  # Fixed from "UNDER REVIEW"
-                "deadline": "2024-12-31",  # String will be parsed below
+                "new_regulation": "German VAT Reform",
+                "deadline": "2024-12-31",
                 "status": "UNDER REVIEW"
             },
             {
-                "client_id": "CI0008",  # Fixed duplicate
+                "client_id": "CI0008",
                 "company_name": "GlobalTech Inc.",
                 "country": "USA",
                 "new_regulation": "BEAT Regs (2023)",
@@ -78,7 +78,7 @@ async def startup_event():
                 "client_id": "CI8855",
                 "company_name": "AsiaBridge Ltd.",
                 "country": "Japan",
-                "new_regulation": "Japanese e-Invoicing Update",  # Fixed from "MONITORED"
+                "new_regulation": "Japanese e-Invoicing Update",
                 "deadline": "2024-09-30",
                 "status": "LIVE"
             },

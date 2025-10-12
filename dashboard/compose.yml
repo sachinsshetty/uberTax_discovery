@@ -3,7 +3,7 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
-    # Removed volume mount to ensure fresh SQLite DB on each start
+    # No volume for fresh DB on each start
     environment:
       - SQLITE_DB_PATH=/app/data/app.db
 
