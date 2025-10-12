@@ -12,6 +12,36 @@ function App() {
       .catch(err => console.error('Error fetching clients:', err));
   }, []);
 
+  // Compute dynamic stats
+  const totalClients = clients.length;
+  const impactedClients = clients.filter(c => c.newRegulation !== "N/A" && c.deadline !== null).length;
+  const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
+  const dashOffsetImpacted = 283 * (1 - percentageImpacted);
+
+  const uniqueNewRegs = [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW").map(c => c.newRegulation))].length;
+  const percentageNewRegs = 0.25; // Fixed for visual consistency, adjust as needed
+  const dashOffsetNewRegs = 283 * (1 - percentageNewRegs);
+
+  // Urgency calculation
+  const currentDate = new Date('2025-10-12');
+  let urgencyLevel = 'LOW';
+  let urgencyColor = 'text-green-400';
+  for (const c of clients) {
+    if (c.deadline) {
+      const deadline = new Date(c.deadline);
+      const daysUntilDeadline = (deadline - currentDate) / (1000 * 60 * 60 * 24);
+      if (daysUntilDeadline <= 90) {
+        urgencyLevel = 'HIGH';
+        urgencyColor = 'text-red-500';
+        break;
+      } else if (daysUntilDeadline <= 180) {
+        urgencyLevel = 'MEDIUM';
+        urgencyColor = 'text-yellow-500';
+      }
+    }
+  }
+  const dashOffsetUrgency = 56; // Fixed for urgency visual
+
   return (
     <div className="p-4 sm:p-6 md:p-8">
       <div className="main-container max-w-7xl mx-auto bg-[#0a192f] border border-[#1e2d4a] rounded-xl p-8">
@@ -39,10 +69,10 @@ function App() {
                   <div className="circle-progress-container relative w-30 h-30">
                     <svg className="w-full h-full" viewBox="0 0 100 100">
                       <circle className="circle-progress-bg" cx="50" cy="50" r="45" fill="none" stroke="#1e2d4a" strokeWidth="10"></circle>
-                      <circle className="circle-progress-bar" cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="10" strokeLinecap="round" style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)', transition: 'stroke-dashoffset 1s ease-in-out', strokeDasharray: 283, strokeDashoffset: 85 }}></circle>
+                      <circle className="circle-progress-bar" cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="10" strokeLinecap="round" style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)', transition: 'stroke-dashoffset 1s ease-in-out', strokeDasharray: 283, strokeDashoffset: dashOffsetImpacted }}></circle>
                     </svg>
                     <div className="circle-progress-text absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                      <span className="text-3xl font-bold text-blue-400">124</span>
+                      <span className="text-3xl font-bold text-blue-400">{impactedClients}</span>
                     </div>
                   </div>
                   <p className="mt-3 text-sm text-gray-400 font-medium">TOTAL CLIENTS IMPACTED</p>
@@ -51,10 +81,10 @@ function App() {
                   <div className="circle-progress-container relative w-30 h-30">
                     <svg className="w-full h-full" viewBox="0 0 100 100">
                       <circle className="circle-progress-bg" cx="50" cy="50" r="45" fill="none" stroke="#1e2d4a" strokeWidth="10"></circle>
-                      <circle className="circle-progress-bar" cx="50" cy="50" r="45" fill="none" stroke="#10b981" strokeWidth="10" strokeLinecap="round" style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)', transition: 'stroke-dashoffset 1s ease-in-out', strokeDasharray: 283, strokeDashoffset: 212 }}></circle>
+                      <circle className="circle-progress-bar" cx="50" cy="50" r="45" fill="none" stroke="#10b981" strokeWidth="10" strokeLinecap="round" style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)', transition: 'stroke-dashoffset 1s ease-in-out', strokeDasharray: 283, strokeDashoffset: dashOffsetNewRegs }}></circle>
                     </svg>
                     <div className="circle-progress-text absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                      <span className="text-3xl font-bold text-green-400">17</span>
+                      <span className="text-3xl font-bold text-green-400">{uniqueNewRegs}</span>
                     </div>
                   </div>
                   <p className="mt-3 text-sm text-gray-400 font-medium">NEW REGULATIONS</p>
@@ -63,10 +93,10 @@ function App() {
                   <div className="circle-progress-container relative w-30 h-30">
                     <svg className="w-full h-full" viewBox="0 0 100 100">
                       <circle className="circle-progress-bg" cx="50" cy="50" r="45" fill="none" stroke="#1e2d4a" strokeWidth="10"></circle>
-                      <circle className="circle-progress-bar" cx="50" cy="50" r="45" fill="none" stroke="#ef4444" strokeWidth="10" strokeLinecap="round" style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)', transition: 'stroke-dashoffset 1s ease-in-out', strokeDasharray: 283, strokeDashoffset: 56 }}></circle>
+                      <circle className="circle-progress-bar" cx="50" cy="50" r="45" fill="none" stroke="#ef4444" strokeWidth="10" strokeLinecap="round" style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)', transition: 'stroke-dashoffset 1s ease-in-out', strokeDasharray: 283, strokeDashoffset: dashOffsetUrgency }}></circle>
                     </svg>
                     <div className="circle-progress-text absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                      <span className="text-2xl font-bold text-red-500">HIGH</span>
+                      <span className={`text-2xl font-bold ${urgencyColor}`}>{urgencyLevel}</span>
                     </div>
                   </div>
                   <p className="mt-3 text-sm text-gray-400 font-medium">URGENCY LEVEL</p>
@@ -81,9 +111,10 @@ function App() {
             <div className="card bg-[#112240] border border-[#1e2d4a] rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-4 text-gray-300">Regulatory Feed</h2>
               <ul className="space-y-3 text-gray-400 text-sm">
-                <li><span className="font-semibold text-cyan-400">[10:30 AM] Germany:</span> Parliament approves Digital Tax Act 2025.</li>
-                <li><span className="font-semibold text-cyan-400">[10:00 AM] USA:</span> Treasury releases new BEAT regulations draft.</li>
-                <li><span className="font-semibold text-cyan-400">[9:45 AM] EU:</span> New environmental tax directives proposed.</li>
+                <li><span className="font-semibold text-cyan-400">[Oct 9, 2025] USA:</span> IRS releases tax inflation adjustments for tax year 2026, including amendments from the One Big Beautiful Bill.</li>
+                <li><span className="font-semibold text-cyan-400">[Oct 9, 2025] USA:</span> IRS makes changes affecting taxes for 2025, raising standard deduction to $15,750 for singles.</li>
+                <li><span className="font-semibold text-cyan-400">[Oct 2025] USA:</span> Treasury and IRS issue proposed regulations for “No Tax on Tips” provision, allowing deduction up to $25,000.</li>
+                <li><span className="font-semibold text-cyan-400">[Oct 2025] USA:</span> One Big Beautiful Bill introduces new $6,000 deduction for individuals age 65 and older, effective 2025-2028.</li>
               </ul>
             </div>
           </div>
