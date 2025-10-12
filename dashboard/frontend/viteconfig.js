@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,  // Listen on all interfaces (0.0.0.0) for Docker/Cloudflare access
-    allowedHosts: ['new-tax.dwani.ai', '.dwani.ai', 'tax.dwani.ai'],  // Allow the specific domain and subdomains
+    host: true,
+    allowedHosts: 'all',  // Allows any host header (dev-only; insecure for prod)
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
