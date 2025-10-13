@@ -1,10 +1,14 @@
-## UberTax  
+## juris-diction-AI-ry - powered by dwani.ai 
 
 #### Agentic Tax Analytics
 
 --- 
 
+- Top 3 - Selected for Pitch at Tax Tech Conference, Frankfurt - November , 2025
+
 - Website - [https://tax.dwani.ai](https://tax.dwani.ai)
+
+- Demo - [Video](https://youtu.be/FV0LxTmBZ5I)
 
 - Tax Technology Hackathon  - 2025
     - October 10-12, 2025 
@@ -15,7 +19,7 @@ Pitch Deck - [link](https://docs.google.com/presentation/d/1B0Yzv0tG1B0KZf5wnjUI
 
 - Team
     - Hueseyin
-    - Sachin
+    - Sachin - [linkedIn](https://linkedin.com/in/sachinlabs)
     - Tobias
 <!--
 --
