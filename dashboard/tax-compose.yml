@@ -1,0 +1,5 @@
+services:
+  tax_ui:
+    build: ./tax_ui
+    ports:
+      - "3000:3000"
