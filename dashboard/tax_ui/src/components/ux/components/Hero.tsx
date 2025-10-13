@@ -127,7 +127,7 @@ const features = [
 export default function Hero() {
   return (
     <>
-      <title>dwani.ai | Multimodal AI Platform</title>
+      <title>uberTax | Agentic Tax Analytics</title>
       <meta
         name="description"
         content="Discover dwani.ai, a GenAI platform for secure multimodal inference. Download the app on Google Play to explore voice translation, text-to-speech, and document summarization."

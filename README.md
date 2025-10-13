@@ -1,4 +1,6 @@
-## juris-diction-AI-ry - Agentic Tax Analytics  
+## uberTax - Agentic Tax Analytics  
+
+- juris-diction-AI-ry
 
 #### powered by dwani.ai
 

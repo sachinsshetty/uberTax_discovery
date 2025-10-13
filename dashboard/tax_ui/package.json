@@ -1,9 +1,9 @@
 {
-  "name": "dwani",
+  "name": "uberTax",
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "homepage": "https://dwani-ai.github.io/dwani",
+  "homepage": "https://tax.dwani.ai",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
