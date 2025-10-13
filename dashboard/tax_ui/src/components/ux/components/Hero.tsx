@@ -130,15 +130,15 @@ export default function Hero() {
       <title>uberTax | Agentic Tax Analytics</title>
       <meta
         name="description"
-        content="Discover dwani.ai, a GenAI platform for secure multimodal inference. Download the app on Google Play to explore voice translation, text-to-speech, and document summarization."
+        content="Discover uberTax, a GenAI platform for secure multimodal inference. Download the app on Google Play to explore voice translation, text-to-speech, and document summarization."
       />
       <meta
         name="keywords"
-        content="dwani.ai, GenAI, multimodal AI, voice assistant, Indian languages, voice translation, document summarization, secure analytics"
+        content="uberTax, GenAI, multimodal AI, voice assistant, Indian languages, voice translation, document summarization, secure analytics"
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="robots" content="index, follow" />
-      <link rel="canonical" href="https://dwani.ai" />
+      <link rel="canonical" href="https://uberTax" />
 
       <Box
         id="hero"
@@ -180,7 +180,7 @@ export default function Hero() {
                 textAlign: 'center',
               }}
             >
-              dwani.ai
+              uberTax
             </Typography>
             <Typography
               variant="h6"
