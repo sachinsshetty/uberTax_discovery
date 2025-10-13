@@ -1,21 +1,22 @@
-## juris-diction-AI-ry - powered by dwani.ai 
+## juris-diction-AI-ry - Agentic Tax Analytics  
 
-#### Agentic Tax Analytics
+#### powered by dwani.ai
 
 --- 
 
-- Top 3 - Selected for Pitch at Tax Tech Conference, Frankfurt - November , 2025
+- Top 3 Team 
+    - Selected for Pitch at Tax Tech Conference, Frankfurt - November , 2025
 
-- Website - [https://tax.dwani.ai](https://tax.dwani.ai)
+- Live Demo - [https://tax.dwani.ai](https://tax.dwani.ai)
 
 - Demo - [Video](https://youtu.be/FV0LxTmBZ5I)
 
-- Tax Technology Hackathon  - 2025
-    - October 10-12, 2025 
-    - Frankfurt 
+- Pitch [deck](https://docs.google.com/presentation/d/e/2PACX-1vT0c8swMbrsw4MrN-b3AFY6Z3NtSea9AeTBPL-VuaDHjCA4r2obmFGWvcw-aSJ0DA/pub?start=false&loop=false&delayms=3000)
 
-Pitch Deck - [link](https://docs.google.com/presentation/d/1B0Yzv0tG1B0KZf5wnjUIklYcSSudUYmucbJDQocVtdM/edit?usp=sharing)
-
+- Event
+    - Tax Technology Hackathon  - 2025
+        - October 10-12, 2025 
+        - Frankfurt, Germany
 
 - Team
     - Hueseyin
