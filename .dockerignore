@@ -10,6 +10,7 @@ venv
 docs 
 misc
 samples
+node_modules
 # Ignore all Python files except those explicitly copied
 *.pyc
 *.pyo
