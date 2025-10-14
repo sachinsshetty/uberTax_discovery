@@ -1,4 +1,6 @@
+// src/redux/store.ts
 import {configureStore} from '@reduxjs/toolkit';
+import {useDispatch} from 'react-redux'; 
 import {combineReducers} from 'redux';
 import ClientProfilesReducer from './reducer/user/ClientProfilesReducer';
 

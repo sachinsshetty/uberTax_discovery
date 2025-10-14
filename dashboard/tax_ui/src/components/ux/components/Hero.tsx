@@ -8,7 +8,6 @@ import Grid from '@mui/material/Grid2';
 import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
-import { SiGoogleplay } from 'react-icons/si';
 import {
 
   GavelOutlined,
