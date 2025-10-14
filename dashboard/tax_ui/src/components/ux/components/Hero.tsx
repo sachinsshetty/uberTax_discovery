@@ -10,12 +10,9 @@ import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import { SiGoogleplay } from 'react-icons/si';
 import {
-  SecurityOutlined,
-  LockOutlined,
+
   GavelOutlined,
   DocumentScannerOutlined,
-  LanguageOutlined,
-  VideoCameraFrontOutlined,
   TimelineOutlined,
   BusinessOutlined,
   AssessmentOutlined,
