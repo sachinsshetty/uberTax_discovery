@@ -16,6 +16,9 @@ import {
   DocumentScannerOutlined,
   LanguageOutlined,
   VideoCameraFrontOutlined,
+  TimelineOutlined,
+  BusinessOutlined,
+  AssessmentOutlined,
 } from '@mui/icons-material';
 
 // Styled FeatureCard (unchanged from your original code)
@@ -55,86 +58,91 @@ const ProblemSolutionCard = styled(Box)(({ theme }) => ({
   textAlign: 'center',
 }));
 
-// Data for Problem and Solution sections
+// Data for Problem and Solution sections based on PDF
 const problems = [
   {
-    text: 'Data sent to external AI providers for analysis',
-    icon: <SecurityOutlined color="error" fontSize="large" />,
-    chipLabel: 'Data Privacy',
+    text: 'High time effort for manual research required',
+    icon: <TimelineOutlined color="error" fontSize="large" />,
+    chipLabel: 'Time',
   },
   {
-    text: 'Not secure or private by design',
-    icon: <LockOutlined color="error" fontSize="large" />,
-    chipLabel: 'Security Risk',
-  },
-  {
-    text: 'Limited control over AI model behavior',
+    text: 'Company becomes vulnerable if it is not up to date legally',
     icon: <GavelOutlined color="error" fontSize="large" />,
-    chipLabel: 'Lack of Control',
+    chipLabel: 'Legal',
+  },
+  {
+    text: 'Implementation hurdles make an early project start necessary',
+    icon: <BusinessOutlined color="error" fontSize="large" />,
+    chipLabel: 'Execute',
+  },
+  {
+    text: 'Politics may turn legal monitoring into a crisis',
+    icon: <AssessmentOutlined color="error" fontSize="large" />,
+    chipLabel: 'Politics',
   },
 ];
 
 const solutions = [
   {
-    text: 'Analytics for large-scale documents and priority task identification',
+    text: 'From Obligation to Strategy: Proactive Selling of Services',
+    icon: <GavelOutlined color="primary" fontSize="large" />,
+    chipLabel: 'For Tax Advisors',
+  },
+  {
+    text: 'Unbeatable Client Retention and No More Surprises',
+    icon: <BusinessOutlined color="primary" fontSize="large" />,
+    chipLabel: 'Client Retention',
+  },
+  {
+    text: 'Efficient Resource Planning and Comprehensive Compliance Assurance',
     icon: <DocumentScannerOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Document Analytics',
+    chipLabel: 'For Corporations',
   },
   {
-    text: 'Self-hosted, multimodal inference with open-weight models',
-    icon: <LanguageOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Self-Hosted AI',
-  },
-  {
-    text: 'Private, secure, auditable, and open-source',
-    icon: <LockOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Secure & Open',
-  },
-  {
-    text: 'Interact with documents, images, text, voice, and video',
-    icon: <VideoCameraFrontOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Multimodal',
+    text: 'Paradigm shift from reactive legal function to proactive business partner',
+    icon: <TimelineOutlined color="primary" fontSize="large" />,
+    chipLabel: 'Proactive Shift',
   },
 ];
 
 const features = [
   {
-    title: 'PDF Query',
-    description: 'Seamlessly query content from PDF documents.',
-    components: 'Analytics',
+    title: 'E-Invoicing Obligation',
+    description: 'AI Workflow: Detect, Understand, Apply to generate client alerts in 24 hours.',
+    components: 'Legal Monitoring',
     hardware: 'GPU',
   },
   {
-    title: 'Image Query',
-    description: 'Extract and query content from images.',
-    components: 'Vision',
-    hardware: 'GPU',
-  },
-  {
-    title: 'Voice AI',
-    description: 'Answer voice queries in Indian languages.',
-    components: 'LLM',
+    title: 'Transfer Pricing',
+    description: 'Upcoming module for proactive compliance in international tax strategies.',
+    components: 'Tax Agent',
     hardware: 'CPU/GPU',
   },
   {
-    title: 'Text to Speech',
-    description: 'Generate natural-sounding speech from text.',
-    components: 'TTS',
+    title: 'Pillar 2 & ESG Reporting',
+    description: 'Scalable alerts for global tax standards and sustainability reporting.',
+    components: 'Dashboard',
     hardware: 'GPU',
+  },
+  {
+    title: 'Labor Law, GDPR, Contract Law',
+    description: 'Expandable to other legal domains with document parsing and communication profiles.',
+    components: 'Multimodal',
+    hardware: 'CPU/GPU',
   },
 ];
 
 export default function Hero() {
   return (
     <>
-      <title>uberTax | Agentic Tax Analytics</title>
+      <title>Juris-Diction(AI)ry | AI-Powered Legal Monitoring</title>
       <meta
         name="description"
-        content="Discover uberTax, a GenAI platform for secure multimodal inference. Download the app on Google Play to explore voice translation, text-to-speech, and document summarization."
+        content="Discover Juris-Diction(AI)ry, powered by dwani.ai – a GenAI platform for proactive legal monitoring in tax and beyond. From E-Invoicing to ESG, ensure compliance with secure, multimodal analytics."
       />
       <meta
         name="keywords"
-        content="uberTax, GenAI, multimodal AI, voice assistant, Indian languages, voice translation, document summarization, secure analytics"
+        content="Juris-Diction(AI)ry, dwani.ai, legal monitoring, tax compliance, E-Invoicing, Transfer Pricing, Pillar 2, ESG Reporting, AI legal alerts"
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="robots" content="index, follow" />
@@ -180,7 +188,7 @@ export default function Hero() {
                 textAlign: 'center',
               }}
             >
-              uberTax
+              Juris-Diction(AI)ry
             </Typography>
             <Typography
               variant="h6"
@@ -191,7 +199,7 @@ export default function Hero() {
                 fontWeight: 'medium',
               }}
             >
-              Knowledge from Curiosity
+              Powered by dwani.ai
             </Typography>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -200,7 +208,7 @@ export default function Hero() {
               variant="body1"
               sx={{ textAlign: 'center', color: 'text.secondary' }}
             >
-              Secure Document Analytics for Proprietary Data
+              Proactive Legal Monitoring: From Crisis to Strategic Advantage
             </Typography>
 
             <Button
@@ -210,9 +218,9 @@ export default function Hero() {
               target="_blank"
               size="large"
               sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
-              aria-label="Try Discovery on dwani.ai"
+              aria-label="Try Juris-Diction on dwani.ai"
             >
-              Try Discovery
+              Try Legal Monitoring
             </Button>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -221,7 +229,7 @@ export default function Hero() {
               variant="body1"
               sx={{ textAlign: 'center', color: 'text.secondary' }}
             >
-              Explore Multimodal Inference. Read the{' '}
+              From Concept to Live Alerts in 24 Hours. Explore the{' '}
               <Link
                 href="https://docs.dwani.ai/"
                 target="_blank"
@@ -239,9 +247,9 @@ export default function Hero() {
               target="_blank"
               size="large"
               sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
-              aria-label="Try Multimodal Inference"
+              aria-label="Try Multimodal Inference for Legal Docs"
             >
-              Try - Multimodal Inference
+              Try - AI Workflow
             </Button>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -258,11 +266,11 @@ export default function Hero() {
                 component="h3"
                 sx={{ textAlign: 'center', fontWeight: 'bold' }}
               >
-                The Problem - Security with AI
+                Legal Monitoring is a Critical Pain Point
               </Typography>
               <Grid container spacing={3}>
                 {problems.map((problem, index) => (
-                  <Grid size={{ xs: 12, sm: 4 }} key={index}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                     <ProblemSolutionCard tabIndex={0}>
                       <Box sx={{ mb: 2 }}>{problem.icon}</Box>
                       <Typography
@@ -294,7 +302,7 @@ export default function Hero() {
                 component="h3"
                 sx={{ textAlign: 'center', fontWeight: 'bold' }}
               >
-                The Solution - dwani.ai’s Discovery
+                The Dual-Benefit Solution
               </Typography>
               <Grid container spacing={3}>
                 {solutions.map((solution, index) => (
@@ -331,7 +339,7 @@ export default function Hero() {
               component="h2"
               sx={{ textAlign: 'center', fontWeight: 'bold' }}
             >
-              Key Features
+              Scalable Modules & Workflow
             </Typography>
             <Grid container spacing={3}>
               {features.map((feature, index) => (
