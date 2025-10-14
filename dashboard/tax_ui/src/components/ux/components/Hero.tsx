@@ -17,6 +17,7 @@ import {
   BusinessOutlined,
   AssessmentOutlined,
 } from '@mui/icons-material';
+import UserApp from '../../User/UserApp';
 
 // Styled FeatureCard (unchanged from your original code)
 const FeatureCard = styled(Box)(({ theme }) => ({
@@ -251,7 +252,6 @@ export default function Hero() {
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
 
-
             {/* Problem Section */}
             <Stack
               spacing={4}
@@ -375,19 +375,8 @@ export default function Hero() {
             </Grid>
           </Stack>
 
-          <Button
-            variant="contained"
-            color="primary"
-            href="https://play.google.com/store/apps/details?id=com.slabstech.dhwani.voiceai&pcampaignid=web_share"
-            target="_blank"
-            size="large"
-            sx={{ mt: 4, px: 4, py: 1.5, borderRadius: 2 }}
-            aria-label="Download dwani.ai on Google Play"
-            startIcon={<SiGoogleplay size={24} />}
-          >
-            Google Play
-          </Button>
 
+<UserApp/>
           {/* Contact Section */}
           <Stack
             spacing={2}

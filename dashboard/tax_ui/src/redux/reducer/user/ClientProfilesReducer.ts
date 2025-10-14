@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-const API_URL = import.meta.env.VITE_SANJEEVINI_BACKEND_APP_API_URL;
+const API_URL = 'http://localhost:8000/';
 
 export const fetchClientProfiles = createAsyncThunk<
   Array<{

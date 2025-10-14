@@ -1,7 +1,11 @@
 import React, {useState, useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import Box from '@mui/material/Box';
 import {Button, Typography} from '@mui/material';
-import {DataGrid, GridColDef, GridToolbarContainer, useGridApiContext} from '@mui/x-data-grid';
+import {DataGrid, GridColDef, GridToolbarContainer, useGridApiContext}
+  from '@mui/x-data-grid';
+import {fetchClientProfiles} from '../../redux/reducer/user/ClientProfilesReducer';
+import {RootState, AppDispatch} from '../../redux/store';
 
 interface ClientProfile {
   clientId: string;
@@ -37,7 +41,7 @@ const columns: GridColDef<ClientProfile>[] = [
     headerName: 'Deadline',
     width: 120,
     editable: false,
-    valueFormatter: (params) => params.value || 'N/A',
+    valueFormatter: (params) => params ? (params.value || 'N/A') : 'N/A',
   },
   {
     field: 'status',
@@ -47,6 +51,9 @@ const columns: GridColDef<ClientProfile>[] = [
   },
 ];
 
+/** render
+ * @return {return}
+ */
 function CustomExportButton() {
   const apiRef = useGridApiContext();
 
@@ -63,6 +70,9 @@ function CustomExportButton() {
   );
 }
 
+/** render
+ * @return {return}
+ */
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
@@ -72,28 +82,12 @@ function CustomToolbar() {
 }
 
 const ClientProfiles: React.FC = () => {
-  const [rows, setRows] = useState<ClientProfile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const { clientData, loading, error } = useSelector((state: RootState) => state.clientProfiles);
 
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/api/clients');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: ClientProfile[] = await response.json();
-        setRows(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch clients');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClients();
-  }, []);
+    dispatch(fetchClientProfiles());
+  }, [dispatch]);
 
   if (error) {
     return (
@@ -109,8 +103,9 @@ const ClientProfiles: React.FC = () => {
         Client Profiles
       </Typography>
       <DataGrid
-        rows={rows}
+        rows={clientData}
         columns={columns}
+        getRowId={(row) => row.clientId}
         slots={{
           toolbar: CustomToolbar,
         }}
