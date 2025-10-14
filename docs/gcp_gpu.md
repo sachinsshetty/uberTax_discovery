@@ -17,3 +17,15 @@ https://cloud.google.com/compute/docs/gpus/install-drivers-gpu
 
 --
 Choose - Deep Learning - VM Images - with cuda 12.4 
+
+
+--
+
+add - daemon.json to /etc/docker
+
+https://github.com/dwani-ai/docs/blob/main/files/daemon.json
+
+
+
+sudo systemctl restart docker
+
