@@ -1,6 +1,8 @@
 services:
   tax_ui-prod:
-    image: dwani/uber-tax-ui:latest
+    build:
+      context: ./tax_ui  # Assuming tax_ui is your app directory
+      dockerfile: prod.Dockerfile  # Points to the new production Dockerfile
     ports:
       - "80:80"  # Map to Nginx's port 80
     restart: unless-stopped
