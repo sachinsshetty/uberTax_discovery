@@ -1,0 +1,46 @@
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    ports:
+      - "9000:9000"
+    command: [
+      "--model", "RedHatAI/gemma-3-4b-it-FP8-dynamic",
+      "--served-model-name", "gemma3",
+      "--host", "0.0.0.0",
+      "--port", "9000",
+      "--gpu-memory-utilization", "0.9",
+      "--tensor-parallel-size", "1",
+      "--max-model-len", "16656",
+      "--disable-log-requests",
+      "--dtype", "bfloat16",
+      "--enable-chunked-prefill",
+      "--enable-prefix-caching",
+      "--max-num-batched-tokens", "8192",
+      "--chat-template-content-format", "openai"
+    ]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SQLITE_DB_PATH=/app/data/app.db
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  tax_ui:
+    build: ./tax_ui
+    ports:
+      - "80:3000"
+    depends_on:
+      - backend
+    environment:
+      - VITE_SANJEEVINI_BACKEND_APP_API_URL=http://backend:8000/
