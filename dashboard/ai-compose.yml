@@ -26,13 +26,14 @@ services:
               count: 1
               capabilities: [gpu]
     restart: unless-stopped
-
-
-  backend:
+  server:
     build: ./backend
     ports:
       - "8000:8000"
+    depends_on:
+      - vllm
     environment:
+      - DWANI_API_BASE_URL=vllm
       - SQLITE_DB_PATH=/app/data/app.db
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
@@ -41,6 +42,6 @@ services:
     ports:
       - "80:3000"
     depends_on:
-      - backend
+      - server
     environment:
-      - VITE_SANJEEVINI_BACKEND_APP_API_URL=http://backend:8000/
+      - VITE_UBERTAX_BACKEND_APP_API_URL=http://server:8000/
