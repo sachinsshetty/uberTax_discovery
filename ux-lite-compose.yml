@@ -32,7 +32,7 @@ services:
       context: .
       dockerfile: server.Dockerfile  
     ports:
-      - "18889:18889"
+      - "8000:8000"
     environment:
       - DWANI_API_BASE_URL=vllm  
     depends_on:
@@ -44,7 +44,7 @@ services:
   tax_ui:
     build: ./dashboard/tax_ui
     ports:
-      - "8080:3000"
+      - "80:3000"
     depends_on:
       - server
     environment:
@@ -54,7 +54,7 @@ services:
       context: .
       dockerfile: client.Dockerfile  
     ports:
-      - "80:8000" 
+      - "8080:8000" 
     environment:
       - DWANI_API_BASE_URL=server  
     depends_on:
