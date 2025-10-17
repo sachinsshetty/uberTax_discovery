@@ -219,7 +219,7 @@ oder
 // API Configuration (adjust as needed, e.g., use process.env)
 
 // Replace the hardcoded value
-const DWANI_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '0.0.0.0';
+const DWANI_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'localhost';
 const API_PORT = 8000; // Match your server port
 const API_URL_FILE = `http://${DWANI_API_BASE_URL}:${API_PORT}/process_file`;
 const API_URL_MESSAGE = `http://${DWANI_API_BASE_URL}:${API_PORT}/process_message`;
