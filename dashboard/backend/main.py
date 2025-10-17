@@ -8,6 +8,7 @@ import os
 
 # Database setup
 SQLITE_DB_PATH = os.getenv("SQLITE_DB_PATH", "app.db")
+os.makedirs(os.path.dirname(SQLITE_DB_PATH), exist_ok=True)  # Create the /app/data directory if it doesn't exist
 engine = create_engine(f"sqlite:///{SQLITE_DB_PATH}", echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
