@@ -217,10 +217,13 @@ oder
 "Basierend auf der Analyse ist das Unternehmen betroffen von der neuen Anforderung, da alle relevanten Kriterien erfüllt sind. Die resultierende Pflicht ist [kurze Beschreibung der Pflicht], welche bis zum [Datum] zu erfüllen ist." `;
 
 // API Configuration (adjust as needed, e.g., use process.env)
-const DWANI_API_BASE_URL = '0.0.0.0'; // From env in production
-const API_URL_FILE = `http://${DWANI_API_BASE_URL}:8000/process_file`;
-const API_URL_MESSAGE = `http://${DWANI_API_BASE_URL}:8000/process_message`;
-const API_URL_HEALTH = `http://${DWANI_API_BASE_URL}:8000/health`;
+
+// Replace the hardcoded value
+const DWANI_API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'localhost'; // Or '0.0.0.0' if testing locally
+const API_PORT = 8000; // Match your server port
+const API_URL_FILE = `http://${DWANI_API_BASE_URL}:${API_PORT}/process_file`;
+const API_URL_MESSAGE = `http://${DWANI_API_BASE_URL}:${API_PORT}/process_message`;
+const API_URL_HEALTH = `http://${DWANI_API_BASE_URL}:${API_PORT}/health`;
 const MAX_FILE_SIZE_MB = 10;
 
 // Chat Component (converted from Gradio)
