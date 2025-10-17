@@ -58,7 +58,7 @@ app = FastAPI(title="Juris-Diction API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Restricted from "*"
+    allow_origins=["*"],  # Restricted from "*"
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
