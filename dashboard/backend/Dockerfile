@@ -39,14 +39,17 @@ RUN apk add --no-cache \
     su-exec \
     && rm -rf /var/cache/apk/*
 
+# Create appuser early
+RUN adduser -D appuser
+
 # Copy installed Python dependencies from builder stage
 COPY --from=builder /root/.local /home/appuser/.local
 
+# Set ownership on user deps at build time (as root)
+RUN chown -R appuser:appuser /home/appuser
+
 # Copy the application code (including entrypoint.sh)
 COPY . .
-
-# Create appuser
-RUN adduser -D appuser
 
 # Make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
@@ -54,13 +57,12 @@ RUN chmod +x /app/entrypoint.sh
 # Install uvicorn system-wide (as root)
 RUN pip install uvicorn
 
-# Set PATH for appuser (baked into image)
+# Set PATH for appuser
 ENV PATH="/home/appuser/.local/bin:$PATH"
 
-# Entrypoint runs as root (default), then switches user
+# Entrypoint runs as root, then switches user
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-# Default user for fallback (not used due to su-exec)
 USER appuser
 
 EXPOSE 80
