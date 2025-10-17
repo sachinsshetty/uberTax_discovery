@@ -44,4 +44,4 @@ services:
     depends_on:
       - server
     environment:
-      - VITE_UBERTAX_BACKEND_APP_API_URL=http://server:8000/
+      - VITE_UBERTAX_BACKEND_APP_API_URL=http://localhost:8000/
