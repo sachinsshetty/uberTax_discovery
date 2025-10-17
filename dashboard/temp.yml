@@ -1,14 +1,11 @@
-version: '3.8'
 services:
   server:
-    build: ./backend
+    image: dwani/ubertax-server:latest
     ports:
       - "8000:18889"
     environment:
-      - DWANI_API_BASE_URL=http://vllm:9000
       - SQLITE_DB_PATH=/app/data/app.db
     restart: unless-stopped
-
   tax_ui:
     build: ./tax_ui
     ports:
