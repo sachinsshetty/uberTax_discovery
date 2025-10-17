@@ -218,9 +218,9 @@ oder
 
 // API Configuration (adjust as needed, e.g., use process.env)
 const DWANI_API_BASE_URL = '0.0.0.0'; // From env in production
-const API_URL_FILE = `http://${DWANI_API_BASE_URL}:18889/process_file`;
-const API_URL_MESSAGE = `http://${DWANI_API_BASE_URL}:18889/process_message`;
-const API_URL_HEALTH = `http://${DWANI_API_BASE_URL}:18889/health`;
+const API_URL_FILE = `http://${DWANI_API_BASE_URL}:8000/process_file`;
+const API_URL_MESSAGE = `http://${DWANI_API_BASE_URL}:8000/process_message`;
+const API_URL_HEALTH = `http://${DWANI_API_BASE_URL}:8000/health`;
 const MAX_FILE_SIZE_MB = 10;
 
 // Chat Component (converted from Gradio)
