@@ -48,7 +48,7 @@ services:
     depends_on:
       - server
     environment:
-      - VITE_SANJEEVINI_BACKEND_APP_API_URL=http://server:8000/
+      - VITE_SANJEEVINI_BACKEND_APP_API_URL=http://0.0.0.0:8000/
   client:
     build:
       context: .
