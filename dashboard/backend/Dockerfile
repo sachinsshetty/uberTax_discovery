@@ -14,7 +14,8 @@ RUN apk add --no-cache \
     curl \
     libjpeg-turbo-dev \
     zlib-dev \
-    libpng-dev poppler-utils
+    libpng-dev \
+    poppler-utils
 
 # Install Python dependencies
 COPY requirements.txt .
@@ -29,32 +30,36 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install runtime dependencies only
+# Install runtime dependencies (including su-exec for entrypoint)
 RUN apk add --no-cache \
     libjpeg-turbo \
     zlib \
-    libpng poppler-utils \
+    libpng \
+    poppler-utils \
+    su-exec \
     && rm -rf /var/cache/apk/*
 
 # Copy installed Python dependencies from builder stage
 COPY --from=builder /root/.local /home/appuser/.local
 
-# Copy the application code
+# Copy the application code (including entrypoint.sh)
 COPY . .
 
-# Create appuser and set permissions for /app and /app/data
-RUN adduser -D appuser \
-    && mkdir -p /app/data \
-    && chown -R appuser:appuser /app
+# Create appuser
+RUN adduser -D appuser
 
-# Install uvicorn as root (system-wide)
+# Make entrypoint executable
+RUN chmod +x /app/entrypoint.sh
+
+# Install uvicorn system-wide (as root)
 RUN pip install uvicorn
 
-# Switch to appuser and update PATH for user-installed deps
+# Switch to appuser and update PATH
 USER appuser
 ENV PATH="/home/appuser/.local/bin:$PATH"
 
 EXPOSE 80
 
-# Command to run the app (standardize to match docker-compose)
+# Set entrypoint and default command
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

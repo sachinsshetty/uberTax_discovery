@@ -36,10 +36,10 @@ services:
     depends_on:
       - vllm
     environment:
-      - DWANI_API_BASE_URL=http://vllm:9000  # Explicit port for clarity (service resolution handles host)
+      - DWANI_API_BASE_URL=http://vllm:9000
       - SQLITE_DB_PATH=/app/data/app.db
     volumes:
-      - ./data:/app/data  # Persist DB and sessions
+      - app_data:/app/data  # Named volume for persistence (no host dir needed)
     restart: unless-stopped
 
   tax_ui:
@@ -51,5 +51,8 @@ services:
     environment:
       - VITE_UBERTAX_BACKEND_APP_API_URL=http://server:8000/
     volumes:
-      - ./data:/app/data  # Optional: if UI needs shared data
+      - app_data:/app/data  # Share the named volume if UI needs it
     restart: unless-stopped
+
+volumes:
+  app_data:  # Declare the named volume (Docker manages it)
