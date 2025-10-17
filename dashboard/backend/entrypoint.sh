@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
 
-# Create data dir and set ownership (runs as root)
+# Run as root: Create data dir and set ownership only on writable paths
 mkdir -p /app/data
-chown -R appuser:appuser /app
+chown -R appuser:appuser /app/data /home/appuser
 
-# Switch to appuser and run the main command
+# Switch to appuser and exec the command (inherits ENV PATH)
 exec su-exec appuser "$@"

@@ -54,12 +54,15 @@ RUN chmod +x /app/entrypoint.sh
 # Install uvicorn system-wide (as root)
 RUN pip install uvicorn
 
-# Switch to appuser and update PATH
-USER appuser
+# Set PATH for appuser (baked into image)
 ENV PATH="/home/appuser/.local/bin:$PATH"
+
+# Entrypoint runs as root (default), then switches user
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Default user for fallback (not used due to su-exec)
+USER appuser
 
 EXPOSE 80
 
-# Set entrypoint and default command
-ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
