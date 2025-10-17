@@ -4,18 +4,18 @@ services:
     ports:
       - "9000:9000"
     command: [
-      "--model", "RedHatAI/gemma-3-4b-it-FP8-dynamic",
+      "--model", "HuggingFaceTB/SmolVLM-256M-Instruct",
       "--served-model-name", "gemma3",
       "--host", "0.0.0.0",
       "--port", "9000",
-      "--gpu-memory-utilization", "0.9",
+      "--gpu-memory-utilization", "0.7",
       "--tensor-parallel-size", "1",
-      "--max-model-len", "8192",
+      "--max-model-len", "4096",
       "--disable-log-requests",
       "--dtype", "bfloat16",
       "--enable-chunked-prefill",
       "--enable-prefix-caching",
-      "--max-num-batched-tokens", "8192",
+      "--max-num-batched-tokens", "4096",
       "--chat-template-content-format", "openai"
     ]
     deploy:
@@ -26,22 +26,43 @@ services:
               count: 1
               capabilities: [gpu]
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   server:
     build: ./backend
     ports:
       - "8000:8000"
     depends_on:
-      - vllm
+      vllm:
+        condition: service_healthy
     environment:
       - DWANI_API_BASE_URL=vllm
       - SQLITE_DB_PATH=/app/data/app.db
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]  # Removed --reload for prod
+    volumes:
+      - ./data:/app/data  # Persist DB and sessions
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   tax_ui:
     build: ./tax_ui
     ports:
       - "80:3000"
     depends_on:
-      - server
+      server:
+        condition: service_healthy
     environment:
+      # Fixed: Use service name for inter-container networking
       - VITE_UBERTAX_BACKEND_APP_API_URL=http://server:8000/
+    # server calls vllm on port 9000 via DWANI_API_BASE_URL=vllm (service resolution)
+    volumes:
+      - ./data:/app/data  # If UI needs shared data (optional)
+    restart: unless-stopped
