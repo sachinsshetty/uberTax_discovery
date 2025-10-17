@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   vllm:
     image: vllm/vllm-openai:latest
@@ -25,6 +27,8 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    restart: unless-stopped
+
   server:
     build: ./backend
     ports:
@@ -32,11 +36,12 @@ services:
     depends_on:
       - vllm
     environment:
-      - DWANI_API_BASE_URL=vllm
+      - DWANI_API_BASE_URL=http://vllm:9000  # Explicit port for clarity (service resolution handles host)
       - SQLITE_DB_PATH=/app/data/app.db
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]  # Removed --reload for prod
     volumes:
       - ./data:/app/data  # Persist DB and sessions
+    restart: unless-stopped
+
   tax_ui:
     build: ./tax_ui
     ports:
@@ -44,9 +49,7 @@ services:
     depends_on:
       - server
     environment:
-      # Fixed: Use service name for inter-container networking
       - VITE_UBERTAX_BACKEND_APP_API_URL=http://server:8000/
-    # server calls vllm on port 9000 via DWANI_API_BASE_URL=vllm (service resolution)
     volumes:
-      - ./data:/app/data  # If UI needs shared data (optional)
+      - ./data:/app/data  # Optional: if UI needs shared data
     restart: unless-stopped

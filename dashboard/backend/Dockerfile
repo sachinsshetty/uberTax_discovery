@@ -33,7 +33,7 @@ ENV PYTHONUNBUFFERED=1
 RUN apk add --no-cache \
     libjpeg-turbo \
     zlib \
-    libpng poppler-utils\
+    libpng poppler-utils \
     && rm -rf /var/cache/apk/*
 
 # Copy installed Python dependencies from builder stage
@@ -42,14 +42,19 @@ COPY --from=builder /root/.local /home/appuser/.local
 # Copy the application code
 COPY . .
 
-# Create appuser and set permissions for /app and /data
+# Create appuser and set permissions for /app and /app/data
 RUN adduser -D appuser \
-    && mkdir -p /data \
-    && chown -R appuser:appuser /app /data
+    && mkdir -p /app/data \
+    && chown -R appuser:appuser /app
 
+# Install uvicorn as root (system-wide)
 RUN pip install uvicorn
+
+# Switch to appuser and update PATH for user-installed deps
 USER appuser
+ENV PATH="/home/appuser/.local/bin:$PATH"
+
 EXPOSE 80
 
-# Command to run the Gradio program
-CMD ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Command to run the app (standardize to match docker-compose)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
