@@ -25,24 +25,40 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 60s
+      timeout: 60s
+      retries: 3
+
   server:
     build: ./backend
     ports:
       - "8000:8000"
     depends_on:
-      - vllm
+      vllm:
+        condition: service_healthy
     environment:
       - DWANI_API_BASE_URL=vllm
       - SQLITE_DB_PATH=/app/data/app.db
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]  # Removed --reload for prod
     volumes:
       - ./data:/app/data  # Persist DB and sessions
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   tax_ui:
     build: ./tax_ui
     ports:
       - "80:3000"
     depends_on:
-      - server
+      server:
+        condition: service_healthy
     environment:
       # Fixed: Use service name for inter-container networking
       - VITE_UBERTAX_BACKEND_APP_API_URL=http://server:8000/
