@@ -3,3 +3,5 @@ services:
     image: dwani/ubertax-dev
     ports:
       - "80:8000"
+    environment:
+      - DWANI_API_BASE_URL={DWANI_API_BASE_URL}

@@ -19,12 +19,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Configuration
-DWANI_API_BASE_URL = os.getenv('DWANI_API_BASE_URL', '0.0.0.0')
-API_URL_FILE = f"http://{DWANI_API_BASE_URL}:18889/process_file"
-API_URL_MESSAGE = f"http://{DWANI_API_BASE_URL}:18889/process_message"
-API_URL_HEALTH = f"http://{DWANI_API_BASE_URL}:18889/health"
+DWANI_API_BASE_URL = os.getenv('DWANI_API_BASE_URL', 'http://localhost')
+API_URL_FILE = f"{DWANI_API_BASE_URL}/process_file"
+API_URL_MESSAGE = f"{DWANI_API_BASE_URL}/process_message"
+API_URL_HEALTH = f"{DWANI_API_BASE_URL}/health"
 MAX_FILE_SIZE_MB = 10  # Max file size in MB
 MAX_CONCURRENT_FILES = 5  # Max files to process concurrently
+
+
+MAX_FILE_SIZE_MB = 10
+
+
 
 def validate_config() -> None:
     """Validate environment configuration at startup."""
