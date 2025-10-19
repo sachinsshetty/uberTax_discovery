@@ -44,6 +44,10 @@ deployment
 <!--
 --
 
+docker build -t dwani/ubertax-dev -f client.Dockerfile .
+
+
+
 PaddlePaddle/PaddleOCR-VL
 
 HuggingFaceTB/SmolVLM-256M-Instruct
