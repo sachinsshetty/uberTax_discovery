@@ -9,11 +9,16 @@ const UserApp = () => {
 
   const fetchClients = async (retries = 3) => {
     try {
+
+      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'localhost';
+
       // Docker: Use service name; fallback to localhost for local dev
-      const apiUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:8000/api/clients' 
-        : 'http://backend:8000/api/clients';
-      
+      //const apiUrl = process.env.NODE_ENV === 'development' 
+      //  ? 'http://localhost:8000/api/clients' 
+      //  : 'http://backend:8000/api/clients';
+      const apiUrl = `${DWANI_API_BASE_URL}/api/clients`;
+
+
       console.log('Fetching from:', apiUrl);  // Debug log
       
       const res = await fetch(apiUrl);
