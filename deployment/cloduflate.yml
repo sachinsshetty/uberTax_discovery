@@ -1,0 +1,75 @@
+services:
+  tax_ui:
+    image: dwani/ubertax-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_UBERTAX_BACKEND_APP_API_URL=http://dev-tax_ui:8000/
+    restart: unless-stopped
+    networks:
+      - app-network
+  dev-tax_ui:
+    image: dwani/ubertax-dev
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+  server:
+    image: dwani/ubertax-server:latest
+    ports:
+      - "18889:18889"
+    environment:
+      - SQLITE_DB_PATH=/app/data/app.db
+    restart: unless-stopped
+    networks:
+      - app-network
+  vllm:
+    image: vllm/vllm-openai:latest
+    command: [
+      "--model", "RedHatAI/gemma-3-12b-it-FP8-dynamic",
+      "--served-model-name", "gemma3",
+      "--host", "0.0.0.0",
+      "--port", "9000",
+      "--gpu-memory-utilization", "0.9",
+      "--tensor-parallel-size", "1",
+      "--max-model-len", "8192",
+      "--disable-log-requests",
+      "--dtype", "bfloat16",
+      "--enable-chunked-prefill",
+      "--enable-prefix-caching",
+      "--max-num-batched-tokens", "8192",
+      "--chat-template-content-format", "openai"
+    ]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - app-network
+    restart: unless-stopped
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - vllm
+    networks:
+      - app-network
+    restart: unless-stopped
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
