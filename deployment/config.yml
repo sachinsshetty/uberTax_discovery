@@ -1,0 +1,15 @@
+tunnel: YOUR_TUNNEL_ID
+credentials-file: /etc/cloudflared/YOUR_TUNNEL_ID.json
+
+ingress:
+  - hostname: ui.yourdomain.com
+    service: http://tax_ui:3000
+  - hostname: dev.yourdomain.com
+    service: http://dev-tax_ui:8000
+  - hostname: api.yourdomain.com
+    service: http://server:18889
+  - hostname: llm.yourdomain.com
+    service: http://vllm:9000
+  - hostname: www.yourdomain.com
+    service: http://nginx:80
+  - service: http_status:404

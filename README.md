@@ -24,8 +24,29 @@
     - Hueseyin
     - Sachin - [linkedIn](https://linkedin.com/in/sachinlabs)
     - Tobias
+
+-- 
+
+deployment
+
+- server
+
+    - docker compose -f deployment/server.yml up -d
+
+- dashboard client
+    - docker compose -f deployment/client.yml up -d
+- dev client
+    - docker compose -f deployment/dev-client.yml up -d 
+
+- vllm
+    - docker compose -f deployment/vllm.yml up -d 
+
 <!--
 --
+
+docker build -t dwani/ubertax-dev -f client.Dockerfile .
+
+
 
 PaddlePaddle/PaddleOCR-VL
 

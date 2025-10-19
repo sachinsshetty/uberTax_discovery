@@ -1,0 +1,8 @@
+services:
+  tax_ui:
+    image: dwani/ubertax-ui
+    ports:
+      - "80:3000"
+    environment:
+      - VITE_DWANI_API_BASE_URL={DWANI_API_BASE_URL}
+    restart: unless-stopped

@@ -1,0 +1,8 @@
+services:
+  server:
+    image: dwani/ubertax-server:latest
+    ports:
+      - "80:18889"
+    environment:
+      - SQLITE_DB_PATH=/app/data/app.db
+    restart: unless-stopped

@@ -219,12 +219,12 @@ oder
 // API Configuration (adjust as needed, e.g., use process.env)
 
 // Replace the hardcoded value
-const DWANI_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'localhost';
-const API_PORT = 8000; // Match your server port
-const API_URL_FILE = `http://${DWANI_API_BASE_URL}:${API_PORT}/process_file`;
-const API_URL_MESSAGE = `http://${DWANI_API_BASE_URL}:${API_PORT}/process_message`;
-const API_URL_HEALTH = `http://${DWANI_API_BASE_URL}:${API_PORT}/health`;
+const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'localhost';
+const API_URL_FILE = `${DWANI_API_BASE_URL}/process_file`;
+const API_URL_MESSAGE = `${DWANI_API_BASE_URL}/process_message`;
+const API_URL_HEALTH = `${DWANI_API_BASE_URL}/health`;
 const MAX_FILE_SIZE_MB = 10;
+
 
 // Chat Component (converted from Gradio)
 function TaxAnalysisChat() {

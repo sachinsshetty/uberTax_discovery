@@ -1,0 +1,17 @@
+services:
+  server:
+    image: dwani/ubertax-server:latest
+    ports:
+      - "8000:18889"
+    environment:
+      - SQLITE_DB_PATH=/app/data/app.db
+    restart: unless-stopped
+  tax_ui:
+    image: dwani/ubertax-ui
+    ports:
+      - "80:3000"
+    depends_on:
+      - server
+    environment:
+      - VITE_UBERTAX_BACKEND_APP_API_URL=http://localhost:8000/
+    restart: unless-stopped

@@ -1,8 +1,24 @@
 services:
+  tax_ui:
+    image: dwani/ubertax-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_UBERTAX_BACKEND_APP_API_URL=http://localhost:8000/
+    restart: unless-stopped
+  dev-tax_ui:
+    image: dwani/ubertax-dev
+    ports:
+      - "8000:8000"
+  server:
+    image: dwani/ubertax-server:latest
+    ports:
+      - "18889:18889"
+    environment:
+      - SQLITE_DB_PATH=/app/data/app.db
+    restart: unless-stopped
   vllm:
     image: vllm/vllm-openai:latest
-    ports:
-      - "9000:9000"
     command: [
       "--model", "RedHatAI/gemma-3-12b-it-FP8-dynamic",
       "--served-model-name", "gemma3",
@@ -25,30 +41,21 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    networks:
+      - app-network
     restart: unless-stopped
-
-  server:
-    build:
-      context: .
-      dockerfile: server.Dockerfile  
+  nginx:
+    image: nginx:latest
     ports:
-      - "18889:18889"
-    environment:
-      - DWANI_API_BASE_URL=vllm  
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - vllm
-    volumes:
-      - ./data:/data  
+    networks:
+      - app-network
     restart: unless-stopped
 
-  client:
-    build:
-      context: .
-      dockerfile: client.Dockerfile  
-    ports:
-      - "80:8000" 
-    environment:
-      - DWANI_API_BASE_URL=server  
-    depends_on:
-      - server
-    restart: unless-stopped
+networks:
+  app-network:
+    driver: bridge
