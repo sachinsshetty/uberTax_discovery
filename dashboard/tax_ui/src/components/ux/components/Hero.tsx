@@ -523,18 +523,6 @@ export default function Hero() {
               Proactive Legal Monitoring: From Crisis to Strategic Advantage
             </Typography>
 
-            <Button
-              variant="contained"
-              color="primary"
-              href="https://app.dwani.ai"
-              target="_blank"
-              size="large"
-              sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
-              aria-label="Try Juris-Diction on dwani.ai"
-            >
-              Try Legal Monitoring
-            </Button>
-
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
 
             <Typography
@@ -543,19 +531,19 @@ export default function Hero() {
             >
               From Concept to Live Alerts in 24 Hours. Explore the{' '}
               <Link
-                href="https://docs.dwani.ai/"
+                href="https://tax.dwani.ai/demo"
                 target="_blank"
                 color="primary"
-                aria-label="dwani.ai documentation"
+                aria-label="dwani.ai uberTax Dashboard"
               >
-                Documentation
+                Dashboard
               </Link>.
             </Typography>
 
             <Button
               variant="contained"
               color="primary"
-              href="https://workshop.dwani.ai"
+              href="https://dev-tax.dwani.ai"
               target="_blank"
               size="large"
               sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
