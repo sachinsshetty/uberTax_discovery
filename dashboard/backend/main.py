@@ -86,6 +86,46 @@ async def startup_event():
                     "deadline": None,
                     "status": "LIVE"
                 },
+            {
+                "client_id": "CI2002",
+                "company_name": "KreativWerkstatt S.C.",
+                "country": "Poland",
+                "new_regulation": "N/A",
+                "deadline": None,
+                "status": "LIVE"
+            },
+            {
+                "client_id": "CI2003",
+                "company_name": "Global Dynamics Sp. z o.o.",
+                "country": "Poland",
+                "new_regulation": "N/A",
+                "deadline": None,
+                "status": "LIVE"
+            },
+            {
+                "client_id": "CI2004",
+                "company_name": "Copenhagen Consulting ApS",
+                "country": "Denmark",
+                "new_regulation": "N/A",
+                "deadline": None,
+                "status": "LIVE"
+            },
+            {
+                "client_id": "CI2005",
+                "company_name": "Adriatic Solutions d.o.o.",
+                "country": "Croatia",
+                "new_regulation": "Croatian B2B e-Invoicing Mandate",
+                "deadline": "2026-01-01",
+                "status": "MONITORED"
+            },
+            {
+                "client_id": "CI2006",
+                "company_name": "Aarhus Retail IVS",
+                "country": "Denmark",
+                "new_regulation": "N/A",
+                "deadline": None,
+                "status": "LIVE"
+            }
                 # ... (rest of mock_data)
             ]
             for data in mock_data:
