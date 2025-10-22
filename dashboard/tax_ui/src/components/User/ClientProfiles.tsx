@@ -1,11 +1,15 @@
-import React, {useState, useEffect} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import {Button, Typography} from '@mui/material';
-import {DataGrid, GridColDef, GridToolbarContainer, useGridApiContext}
-  from '@mui/x-data-grid';
-import {fetchClientProfiles} from '../../redux/reducer/user/ClientProfilesReducer';
-import {RootState, AppDispatch} from '../../redux/store';
+import { Button, Typography } from '@mui/material';
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarContainer,
+  useGridApiContext,
+} from '@mui/x-data-grid';
+import { fetchClientProfiles } from '../../redux/reducer/user/ClientProfilesReducer';
+import { RootState, AppDispatch } from '../../redux/store';
 
 interface ClientProfile {
   clientId: string;
@@ -16,8 +20,12 @@ interface ClientProfile {
   status: string;
 }
 
+interface ClientProfilesProps {
+  clients: ClientProfile[];
+}
+
 const columns: GridColDef<ClientProfile>[] = [
-  {field: 'clientId', headerName: 'Client ID', width: 150},
+  { field: 'clientId', headerName: 'Client ID', width: 150 },
   {
     field: 'companyName',
     headerName: 'Company Name',
@@ -41,7 +49,7 @@ const columns: GridColDef<ClientProfile>[] = [
     headerName: 'Deadline',
     width: 120,
     editable: false,
-    valueFormatter: (params) => params ? (params.value || 'N/A') : 'N/A',
+    valueFormatter: (params) => params?.value ?? 'N/A',
   },
   {
     field: 'status',
@@ -81,35 +89,53 @@ function CustomToolbar() {
   );
 }
 
-const ClientProfiles: React.FC = () => {
+const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
+  // Optional: Keep Redux for other features, but use props for data to avoid duplicate fetches
   const dispatch = useDispatch<AppDispatch>();
-  const { clientData, loading, error } = useSelector((state: RootState) => state.clientProfiles);
+  const { loading: reduxLoading, error: reduxError } = useSelector(
+    (state: RootState) => state.clientProfiles
+  );
 
-  useEffect(() => {
-    dispatch(fetchClientProfiles());
-  }, [dispatch]);
+  // Use prop data primarily; fallback to Redux if needed
+  const displayData = clients || [];
+  const effectiveLoading = reduxLoading || displayData.length === 0;
+  const effectiveError = reduxError;
 
-  if (error) {
+  React.useEffect(() => {
+    // Optional: Dispatch if no prop data, but prefer prop to match UserApp
+    if (displayData.length === 0) {
+      dispatch(fetchClientProfiles());
+    }
+  }, [dispatch, displayData.length]);
+
+  if (effectiveError) {
     return (
-      <Box sx={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <Typography color="error">{error}</Typography>
+      <Box
+        sx={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography color="error">{effectiveError}</Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{height: '100%', width: '100%'}}>
-      <Typography variant="h6" gutterBottom sx={{mb: 2}}>
+    <Box sx={{ height: '100%', width: '100%' }}>
+      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Client Profiles
       </Typography>
       <DataGrid
-        rows={clientData}
+        rows={displayData}
         columns={columns}
         getRowId={(row) => row.clientId}
         slots={{
           toolbar: CustomToolbar,
         }}
-        loading={loading}
+        loading={effectiveLoading}
         initialState={{
           pagination: {
             paginationModel: {
@@ -124,6 +150,17 @@ const ClientProfiles: React.FC = () => {
         sx={{
           '& .MuiDataGrid-cell': {
             fontSize: '0.875rem',
+          },
+          // Theme adjustments for dark mode consistency
+          backgroundColor: '#112240',
+          border: '1px solid #1e2d4a',
+          color: 'grey.200',
+          '& .MuiDataGrid-row:hover': {
+            backgroundColor: '#1e2d4a',
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#1e2d4a',
+            color: 'grey.400',
           },
         }}
       />

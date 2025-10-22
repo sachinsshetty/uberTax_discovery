@@ -9,22 +9,22 @@ const UserApp = () => {
 
   const fetchClients = async (retries = 3) => {
     try {
-
-      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'localhost';
-
-      // Docker: Use service name; fallback to localhost for local dev
-      //const apiUrl = process.env.NODE_ENV === 'development' 
-      //  ? 'http://localhost:8000/api/clients' 
-      //  : 'http://backend:8000/api/clients';
+      // Fix: Default to full URL with port for dev; use env var for prod/Docker
+      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
       const apiUrl = `${DWANI_API_BASE_URL}/api/clients`;
-
 
       console.log('Fetching from:', apiUrl);  // Debug log
       
       const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      if (!res.ok) {
+        // Enhanced error logging for better debugging
+        const errorText = await res.text(); // Log response body for clues
+        console.error(`HTTP ${res.status}: ${res.statusText} - Body: ${errorText}`);
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
       const data = await res.json();
       setClients(data);
+      setError(null); // Explicitly clear any prior error
       console.log('Fetched clients:', data);  // Debug log
     } catch (err) {
       console.error('Error fetching clients:', err);
@@ -32,7 +32,7 @@ const UserApp = () => {
         console.log(`Retrying in 1s... (${retries} left)`);
         setTimeout(() => fetchClients(retries - 1), 1000);
       } else {
-        setError('Failed to load clients. Check backend & Docker network.');
+        setError(`Failed to load clients: ${err.message}. Check backend (port 8000) & Docker network.`);
       }
     } finally {
       setLoading(false);
@@ -46,7 +46,11 @@ const UserApp = () => {
   if (error) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2 }} action={
+          <Button color="inherit" size="small" onClick={() => { setLoading(true); setError(null); fetchClients(); }}>
+            Retry
+          </Button>
+        }>
           {error}
         </Alert>
       </Container>
@@ -70,7 +74,7 @@ const UserApp = () => {
   const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
 
   // Urgency calculation
-  const currentDate = new Date('2025-10-12');
+  const currentDate = new Date('2025-10-22'); // Updated to provided current date
   let urgencyLevel = 'LOW';
   let urgencyColor = 'green';
   for (const c of clients) {
@@ -134,8 +138,8 @@ const UserApp = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <CircularProgress variant="determinate" value={urgencyLevel === 'HIGH' ? 20 : urgencyLevel === 'MEDIUM' ? 50 : 0} size={120} thickness={4} sx={{ color: urgencyColor }} />
-                    <Typography variant="h5" fontWeight="bold" sx={{ mt: 1, color: urgencyColor === 'red' ? 'red' : urgencyColor === 'orange' ? 'orange' : 'green' }}>
+                    <CircularProgress variant="determinate" value={urgencyLevel === 'HIGH' ? 100 : urgencyLevel === 'MEDIUM' ? 50 : 0} size={120} thickness={4} sx={{ color: urgencyColor }} />
+                    <Typography variant="h5" fontWeight="bold" sx={{ mt: 1, color: urgencyColor === 'red' ? 'red.500' : urgencyColor === 'orange' ? 'orange.500' : 'success.main' }}>
                       {urgencyLevel}
                     </Typography>
                     <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>URGENCY LEVEL</Typography>
