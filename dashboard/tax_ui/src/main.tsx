@@ -23,6 +23,7 @@ import AppTheme from './components/ux/shared-theme/AppTheme';
 //import IndicDocumentFeatures from './components/ux/components/IndicDocumentFeatures';
 import Research from './components/ux/components/Research';
 import UserApp from './components/User/UserApp';
+import TaxAnalysisChat from './components/ux/components/TaxAnalysis';
 //import API from './components/ux/components/API';
 
 const rootElement = document.getElementById('root');
@@ -36,9 +37,9 @@ if (rootElement) {
               <CssBaseline enableColorScheme />
               <AppAppBar />
               <Routes>
-                <Route path="/demo" element={<UserApp />} />
+                <Route path="/dashboard" element={<UserApp />} />
+                <Route path="/tax" element={<TaxAnalysisChat />} />
                 
-                <Route path="/research" element={<Research />} />
                 <Route
                   path="/"
                   element={

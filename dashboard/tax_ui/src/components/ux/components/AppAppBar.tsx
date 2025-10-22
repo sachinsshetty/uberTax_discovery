@@ -43,14 +43,14 @@ export default function AppAppBar() {
     toggleDrawer(false)();
   };
 
-  const handleTutorialsClick = () => {
-    navigate('/tutorials');
+  const handleDashboardClick = () => {
+    navigate('/dashboard');
     toggleDrawer(false)();
   };
 
 
   const handleResearchClick = () => {
-    navigate('/research');
+    navigate('/tax');
     toggleDrawer(false)();
   };
 
@@ -105,6 +105,9 @@ export default function AppAppBar() {
               </Button>
               <Button variant="text" color="info" size="small" onClick={handleResearchClick}>
                 Research
+              </Button>
+                <Button variant="text" color="info" size="small" onClick={handleDashboardClick}>
+                Dashboard
               </Button>
               <div style={{ display: 'none' }}>
               <Button variant="text" color="info" size="small" onClick={handleAPIClick}>
@@ -189,15 +192,15 @@ export default function AppAppBar() {
                     Research
                   </Button>
                 </MenuItem>
+                  <MenuItem>
+                  <Button color="primary" variant="contained" fullWidth onClick={handleDashboardClick}>
+                    Dashboard
+                  </Button>
+                </MenuItem>
               <div style={{ display: 'none' }}>
                   <MenuItem>
                   <Button color="primary" variant="contained" fullWidth onClick={handleDocsClick}>
                     Demo
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth onClick={handleTutorialsClick}>
-                    Tutorials
                   </Button>
                 </MenuItem>
                 <MenuItem>
