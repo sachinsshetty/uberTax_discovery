@@ -57,72 +57,72 @@ const ProblemSolutionCard = styled(Box)(({ theme }) => ({
 // Data for Problem and Solution sections based on PDF
 const problems = [
   {
-    text: 'High time effort for manual research required',
+    text: 'Hoher Zeitaufwand für manuelle Recherche erforderlich',
     icon: <TimelineOutlined color="error" fontSize="large" />,
-    chipLabel: 'Time',
+    chipLabel: 'Zeit',
   },
   {
-    text: 'Company becomes vulnerable if it is not up to date legally',
+    text: 'Unternehmen wird verwundbar, wenn es rechtlich nicht auf dem neuesten Stand ist',
     icon: <GavelOutlined color="error" fontSize="large" />,
-    chipLabel: 'Legal',
+    chipLabel: 'Rechtlich',
   },
   {
-    text: 'Implementation hurdles make an early project start necessary',
+    text: 'Umsetzungshürden erfordern einen frühen Projektstart',
     icon: <BusinessOutlined color="error" fontSize="large" />,
-    chipLabel: 'Execute',
+    chipLabel: 'Ausführen',
   },
   {
-    text: 'Politics may turn legal monitoring into a crisis',
+    text: 'Politik kann rechtliche Überwachung zu einer Krise machen',
     icon: <AssessmentOutlined color="error" fontSize="large" />,
-    chipLabel: 'Politics',
+    chipLabel: 'Politik',
   },
 ];
 
 const solutions = [
   {
-    text: 'From Obligation to Strategy: Proactive Selling of Services',
+    text: 'Von Verpflichtung zur Strategie: Proaktiver Verkauf von Dienstleistungen',
     icon: <GavelOutlined color="primary" fontSize="large" />,
-    chipLabel: 'For Tax Advisors',
+    chipLabel: 'Für Steuerberater',
   },
   {
-    text: 'Unbeatable Client Retention and No More Surprises',
+    text: 'Unübertroffene Kundenbindung und keine Überraschungen mehr',
     icon: <BusinessOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Client Retention',
+    chipLabel: 'Kundenbindung',
   },
   {
-    text: 'Efficient Resource Planning and Comprehensive Compliance Assurance',
+    text: 'Effiziente Ressourcenplanung und umfassende Compliance-Sicherstellung',
     icon: <DocumentScannerOutlined color="primary" fontSize="large" />,
-    chipLabel: 'For Corporations',
+    chipLabel: 'Für Unternehmen',
   },
   {
-    text: 'Paradigm shift from reactive legal function to proactive business partner',
+    text: 'Paradigmenwechsel von reaktiver Rechtsabteilung zu proaktivem Geschäftspartner',
     icon: <TimelineOutlined color="primary" fontSize="large" />,
-    chipLabel: 'Proactive Shift',
+    chipLabel: 'Proaktiver Wandel',
   },
 ];
 
 const features = [
   {
-    title: 'E-Invoicing Obligation',
-    description: 'AI Workflow: Detect, Understand, Apply to generate client alerts in 24 hours.',
-    components: 'Legal Monitoring',
+    title: 'E-Rechnungsverpflichtung',
+    description: 'KI-Workflow: Erkennen, Verstehen, Anwenden zur Generierung von Kundenwarnungen in 24 Stunden.',
+    components: 'Rechtliche Überwachung',
     hardware: 'GPU',
   },
   {
     title: 'Transfer Pricing',
-    description: 'Upcoming module for proactive compliance in international tax strategies.',
-    components: 'Tax Agent',
+    description: 'Kommende Modul für proaktive Compliance in internationalen Steuerstrategien.',
+    components: 'Steueragent',
     hardware: 'CPU/GPU',
   },
   {
     title: 'Pillar 2 & ESG Reporting',
-    description: 'Scalable alerts for global tax standards and sustainability reporting.',
+    description: 'Skalierbare Warnungen für globale Steuerstandards und Nachhaltigkeitsberichterstattung.',
     components: 'Dashboard',
     hardware: 'GPU',
   },
   {
-    title: 'Labor Law, GDPR, Contract Law',
-    description: 'Expandable to other legal domains with document parsing and communication profiles.',
+    title: 'Arbeitsrecht, DSGVO, Vertragsrecht',
+    description: 'Erweiterbar auf andere Rechtsbereiche mit Dokumentenparsing und Kommunikationsprofilen.',
     components: 'Multimodal',
     hardware: 'CPU/GPU',
   },
@@ -132,14 +132,14 @@ const features = [
 export default function Hero() {
   return (
     <>
-      <title>Juris-Diction(AI)ry | AI-Powered Legal Monitoring</title>
+      <title>Juris-Diction(AI)ry | KI-gestützte Rechtsüberwachung</title>
       <meta
         name="description"
-        content="Discover Juris-Diction(AI)ry, powered by dwani.ai – a GenAI platform for proactive legal monitoring in tax and beyond. From E-Invoicing to ESG, ensure compliance with secure, multimodal analytics."
+        content="Entdecken Sie Juris-Diction(AI)ry, angetrieben von dwani.ai – eine GenAI-Plattform für proaktive Rechtsüberwachung im Steuerrecht und darüber hinaus. Von E-Rechnungen bis ESG sorgen Sie mit sicheren, multimodalen Analysen für Compliance."
       />
       <meta
         name="keywords"
-        content="Juris-Diction(AI)ry, dwani.ai, legal monitoring, tax compliance, E-Invoicing, Transfer Pricing, Pillar 2, ESG Reporting, AI legal alerts"
+        content="Juris-Diction(AI)ry, dwani.ai, Rechtsüberwachung, Steuer-Compliance, E-Rechnungen, Transfer Pricing, Pillar 2, ESG Reporting, KI-Rechtswarnungen"
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="robots" content="index, follow" />
@@ -196,7 +196,7 @@ export default function Hero() {
                 fontWeight: 'medium',
               }}
             >
-              Powered by dwani.ai
+              Angetrieben von dwani.ai
             </Typography>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -205,7 +205,7 @@ export default function Hero() {
               variant="body1"
               sx={{ textAlign: 'center', color: 'text.secondary' }}
             >
-              Proactive Legal Monitoring: From Crisis to Strategic Advantage
+              Proaktive Rechtsüberwachung: Von der Krise zum strategischen Vorteil
             </Typography>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -214,9 +214,9 @@ export default function Hero() {
               variant="body1"
               sx={{ textAlign: 'center', color: 'text.secondary' }}
             >
-              From Concept to Live Alerts in 24 Hours. Explore the{' '}
+              Vom Konzept zu Live-Warnungen in 24 Stunden. Erkunden Sie das{' '}
               <Link
-                href="https://tax.dwani.ai/demo"
+                href="https://tax.dwani.ai/dashboard"
                 target="_blank"
                 color="primary"
                 aria-label="dwani.ai uberTax Dashboard"
@@ -234,7 +234,7 @@ export default function Hero() {
               sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
               aria-label="Try Multimodal Inference for Legal Docs"
             >
-              Try - AI Workflow
+              Ausprobieren - KI-Workflow
             </Button>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />
@@ -250,7 +250,7 @@ export default function Hero() {
                 component="h3"
                 sx={{ textAlign: 'center', fontWeight: 'bold' }}
               >
-                Legal Monitoring is a Critical Pain Point
+                Rechtsüberwachung ist ein kritischer Schmerzpunkt
               </Typography>
               <Grid container spacing={3}>
                 {problems.map((problem, index) => (
@@ -286,7 +286,7 @@ export default function Hero() {
                 component="h3"
                 sx={{ textAlign: 'center', fontWeight: 'bold' }}
               >
-                The Dual-Benefit Solution
+                Die doppelte Vorteilslösung
               </Typography>
               <Grid container spacing={3}>
                 {solutions.map((solution, index) => (
@@ -323,7 +323,7 @@ export default function Hero() {
               component="h2"
               sx={{ textAlign: 'center', fontWeight: 'bold' }}
             >
-              Scalable Modules & Workflow
+              Skalierbare Module & Workflow
             </Typography>
             <Grid container spacing={3}>
               {features.map((feature, index) => (
@@ -374,31 +374,31 @@ export default function Hero() {
               component="h2"
               sx={{ textAlign: 'center', fontWeight: 'bold' }}
             >
-              Get in Touch
+              Kontaktieren Sie uns
             </Typography>
             <Typography
               variant="body1"
               sx={{ textAlign: 'center', color: 'text.secondary' }}
             >
-              Join our{' '}
+              Werden Sie Mitglied in unserer{' '}
               <Link
                 href="https://discord.gg/9Fq8J9Gnz3"
                 target="_blank"
                 color="primary"
                 aria-label="Join dwani.ai Discord community"
               >
-                Discord community
+                Discord-Community
               </Link>{' '}
-              for collaborations.
+              für Kooperationen.
               <br />
-              Have questions?{' '}
+              Haben Sie Fragen?{' '}
               <Link
                 href="https://calendar.app.google/j1L2Sh6sExfWpUTZ7"
                 target="_blank"
                 color="primary"
                 aria-label="Schedule a demo with dwani.ai"
               >
-                Schedule a Demo
+                Termin vereinbaren
               </Link>.
             </Typography>
           </Stack>
