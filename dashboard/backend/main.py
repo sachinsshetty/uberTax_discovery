@@ -1,4 +1,3 @@
-# main.py
 import logging
 import json
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
@@ -21,11 +20,13 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from uuid import uuid4
 from pathlib import Path  # Added for safe paths
 import tempfile  # Added for temp files
+import csv  # Added for CSV parsing
 
 # Constants
 SYSTEM_PROMPT = """1. CORE IDENTITY & PERSONA\n\nYou are \"Juris-Diction(AI)ry\", a highly specialized AI assistant designed for tax professionals. [...]"""  # Full prompt here (truncated for brevity)
 MASTER_PROMPT = ""  # Fixed spacing; populate if needed
 SESSION_FILE = Path("/app/data/sessions.json")  # Absolute path for Docker persistence
+MOCK_DATA_CSV = Path("mock_data.csv")  # Path to CSV file containing mock data
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -76,25 +77,45 @@ async def startup_event():
     db = SessionLocal()
     try:
         if db.query(ClientProfile).count() == 0:
-            mock_data = [
-                # Your mock data here (unchanged)
-                {
-                    "client_id": "CI2001",
-                    "company_name": "Split Hospitality Group j.d.o.o.",
-                    "country": "Croatia",
-                    "new_regulation": "N/A",
-                    "deadline": None,
-                    "status": "LIVE"
-                },
-                # ... (rest of mock_data)
-            ]
+            # Load mock data from CSV file
+            if not MOCK_DATA_CSV.exists():
+                logger.warning(f"Mock data CSV file not found at {MOCK_DATA_CSV}. Skipping mock data insertion.")
+                return
+            
+            try:
+                mock_data = []
+                with open(MOCK_DATA_CSV, 'r', newline='', encoding='utf-8') as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    for row in reader:
+                        data = {
+                            "client_id": row.get('client_id'),
+                            "company_name": row.get('company_name'),
+                            "country": row.get('country'),
+                            "new_regulation": row.get('new_regulation'),
+                            "deadline": row.get('deadline'),
+                            "status": row.get('status'),
+                        }
+                        mock_data.append(data)
+                
+                logger.info(f"Loaded {len(mock_data)} client profiles from CSV.")
+            except Exception as e:
+                logger.error(f"Failed to load mock data CSV: {str(e)}. Skipping mock data insertion.")
+                return
+
             for data in mock_data:
                 parsed_data = data.copy()
-                if data["deadline"] and isinstance(data["deadline"], str):
-                    parsed_data["deadline"] = date.fromisoformat(data["deadline"])
+                if data["deadline"] and isinstance(data["deadline"], str) and data["deadline"].strip():
+                    try:
+                        parsed_data["deadline"] = date.fromisoformat(data["deadline"].strip())
+                    except ValueError:
+                        logger.warning(f"Invalid deadline format '{data['deadline']}' for client {data['client_id']}. Setting to None.")
+                        parsed_data["deadline"] = None
+                else:
+                    parsed_data["deadline"] = None
                 client = ClientProfile(**parsed_data)
                 db.add(client)
             db.commit()
+            logger.info("Mock data inserted successfully.")
     finally:
         db.close()
 

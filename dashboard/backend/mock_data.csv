@@ -1,0 +1,32 @@
+client_id,company_name,country,new_regulation,deadline,status
+CI2001,Split Hospitality Group j.d.o.o.,Croatia,N/A,,LIVE
+CI2002,KreativWerkstatt S.C.,Poland,N/A,,LIVE
+CI2003,Global Dynamics Sp. z o.o.,Poland,N/A,,LIVE
+CI2004,Copenhagen Consulting ApS,Denmark,N/A,,LIVE
+CI2005,Adriatic Solutions d.o.o.,Croatia,"Croatian B2B e-Invoicing Mandate",2026-01-01,MONITORED
+CI2006,Aarhus Retail IVS,Denmark,N/A,,LIVE
+CI2007,Baltic Trade Partners OÜ,Estonia,N/A,,LIVE
+CI2008,Scandinavian Tech Hub AB,Sweden,"Swedish Digital Tax Reporting Mandate",2025-07-01,MONITORED
+CI2009,Prague Innovation Labs s.r.o.,Czech Republic,N/A,,LIVE
+CI2010,Vienna Financial Services GmbH,Austria,N/A,,LIVE
+CI2011,Lisbon Creative Studios Lda,Portugal,"Portuguese VAT Digitalization",2026-03-15,MONITORED
+CI2012,Madrid Logistics Group SA,Spain,N/A,,LIVE
+CI2013,Berlin Startup Collective UG,Germany,"German e-Invoicing for SMEs",2025-11-01,MONITORED
+CI2014,Amsterdam Design Works BV,Netherlands,N/A,,LIVE
+CI2015,Zurich Asset Management AG,Switzerland,N/A,,LIVE
+CI2016,Brussels Policy Advisors SCRL,Belgium,"Belgian Corporate Tax Reform",2026-09-30,MONITORED
+CI2017,Helsinki Green Energy Oy,Finland,N/A,,LIVE
+CI2018,Oslo Maritime Solutions AS,Norway,N/A,,LIVE
+CI2019,Reykjavik Eco Ventures ehf,Iceland,"Icelandic Sustainability Reporting",2025-12-01,MONITORED
+CI2020,Dublin Fintech Partners Ltd,Ireland,N/A,,LIVE
+CI2021,Edinburgh Heritage Trust Ltd,United Kingdom,"UK Digital Services Tax Update",2026-01-15,MONITORED
+CI2022,Paris Cultural Exchange SARL,France,N/A,,LIVE
+CI2023,Rome Artisan Guild Srl,Italy,"Italian e-Invoicing Extension",2025-06-01,MONITORED
+CI2024,Athens Tourism Network AE,Greece,N/A,,LIVE
+CI2025,Sofia Tech Accelerators EOOD,Bulgaria,N/A,,LIVE
+CI2026,Bucharest Media House SRL,Romania,"Romanian Digital Tax Compliance",2026-04-01,MONITORED
+CI2027,Belgrade Innovation Center d.o.o.,Serbia,N/A,,LIVE
+CI2028,Zagreb Eco Solutions d.o.o.,Croatia,N/A,,LIVE
+CI2029,Warsaw Cultural Foundation Sp. z o.o.,Poland,"Polish VAT e-Invoicing",2025-08-01,MONITORED
+CI2030,Copenhagen Green Initiatives ApS,Denmark,N/A,,LIVE
+CI2031,Tallinn Digital Nomads OÜ,Estonia,"Estonian e-Residency Tax Changes",2026-02-01,MONITORED

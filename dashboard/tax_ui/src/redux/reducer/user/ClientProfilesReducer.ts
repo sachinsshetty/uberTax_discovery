@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-const API_URL = 'http://localhost:8000/';
+const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000/';
 
 export const fetchClientProfiles = createAsyncThunk<
   Array<{
@@ -18,13 +18,18 @@ export const fetchClientProfiles = createAsyncThunk<
   async (_, thunkAPI) => {
     try {
       const url = `${API_URL}api/clients`;
+      console.log('Redux fetching from:', url); // Debug log
       const response = await fetch(url);
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Redux HTTP ${response.status}: ${response.statusText} - Body: ${errorText}`);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      console.log('Redux fetched clients:', data); // Debug log
       return data;
     } catch (error) {
+      console.error('Redux error fetching clients:', error);
       return thunkAPI.rejectWithValue('Failed to fetch clients.');
     }
   }
