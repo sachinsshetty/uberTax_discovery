@@ -19,7 +19,7 @@ def get_openai_client(model: str) -> AsyncOpenAI:
         "gemma3": "9000",
         "gpt-oss": "9500",
     }
-    base_url = f"http://{DWANI_API_BASE_URL}:{model_ports[model]}/v1"
+    base_url = f"{DWANI_API_BASE_URL}/v1"
     return AsyncOpenAI(api_key="http", base_url=base_url)
 
 def clean_response(raw_response: str) -> Optional[str]:
