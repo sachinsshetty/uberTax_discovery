@@ -1,5 +1,5 @@
 sqlalchemy==2.0.23
-alembic==1.12.1  # Optional for migrations, but not used here
+alembic==1.12.1 
 fastapi 
 uvicorn 
 openai 
@@ -7,3 +7,16 @@ pdf2image
 requests
 pytesseract
 python-multipart
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+openai
+pdf2image
+pillow
+asyncio
+uuid
+pathlib
+tempfile
+csv
+starlette
