@@ -1,6 +1,6 @@
 import logging
 import json
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Date
@@ -21,6 +21,7 @@ from uuid import uuid4
 from pathlib import Path  # Added for safe paths
 import tempfile  # Added for temp files
 import csv  # Added for CSV parsing
+from pydantic import BaseModel  # Added for Pydantic models
 
 # Constants
 SYSTEM_PROMPT = """1. CORE IDENTITY & PERSONA\n\nYou are \"Juris-Diction(AI)ry\", a highly specialized AI assistant designed for tax professionals. [...]"""  # Full prompt here (truncated for brevity)
@@ -53,6 +54,33 @@ class ClientProfile(Base):
     status = Column(String)
 
 Base.metadata.create_all(bind=engine)
+
+# Pydantic models for clients API
+class ClientProfileCreate(BaseModel):
+    client_id: str
+    company_name: str
+    country: str
+    new_regulation: str
+    deadline: Optional[str] = None  # ISO format string
+    status: str = "pending"
+
+class ClientProfileUpdate(BaseModel):
+    company_name: Optional[str] = None
+    country: Optional[str] = None
+    new_regulation: Optional[str] = None
+    deadline: Optional[str] = None  # ISO format string
+    status: Optional[str] = None
+
+class ClientProfileResponse(BaseModel):
+    clientId: str
+    companyName: str
+    country: str
+    newRegulation: str
+    deadline: Optional[str] = None  # ISO format string
+    status: str
+
+    class Config:
+        from_attributes = True  # Allows mapping from SQLAlchemy models
 
 # App
 app = FastAPI(title="Juris-Diction API")
@@ -119,16 +147,84 @@ async def startup_event():
     finally:
         db.close()
 
-@app.get("/api/clients")
-async def get_clients():
-    db = SessionLocal()
-    try:
-        clients = db.query(ClientProfile).all()
-        return [{"clientId": c.client_id, "companyName": c.company_name, "country": c.country,
-                 "newRegulation": c.new_regulation, "deadline": c.deadline.isoformat() if c.deadline else None,
-                 "status": c.status} for c in clients]
-    finally:
-        db.close()
+@app.get("/api/clients", response_model=List[ClientProfileResponse])
+async def get_clients(db: SessionLocal = Depends(get_db)):
+    """Fetch all client profiles with Pydantic validation."""
+    clients = db.query(ClientProfile).all()
+    return clients  # Pydantic will handle serialization and validation
+
+@app.post("/api/clients", response_model=ClientProfileResponse, status_code=201)
+async def create_client(
+    client: ClientProfileCreate,
+    db: SessionLocal = Depends(get_db)
+):
+    """Create a new client profile with Pydantic validation."""
+    # Check if client_id already exists
+    existing = db.query(ClientProfile).filter(ClientProfile.client_id == client.client_id).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Client ID already exists")
+    
+    # Parse deadline
+    deadline_date = None
+    if client.deadline:
+        try:
+            deadline_date = date.fromisoformat(client.deadline)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid deadline format. Use ISO format (YYYY-MM-DD).")
+    
+    db_client = ClientProfile(
+        client_id=client.client_id,
+        company_name=client.company_name,
+        country=client.country,
+        new_regulation=client.new_regulation,
+        deadline=deadline_date,
+        status=client.status
+    )
+    db.add(db_client)
+    db.commit()
+    db.refresh(db_client)
+    return db_client
+
+@app.put("/api/clients/{client_id}", response_model=ClientProfileResponse)
+async def update_client(
+    client_id: str,
+    update_data: ClientProfileUpdate,
+    db: SessionLocal = Depends(get_db)
+):
+    """Update an existing client profile with Pydantic validation."""
+    db_client = db.query(ClientProfile).filter(ClientProfile.client_id == client_id).first()
+    if not db_client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    update_dict = update_data.dict(exclude_unset=True)
+    if "deadline" in update_dict and update_dict["deadline"]:
+        try:
+            update_dict["deadline"] = date.fromisoformat(update_dict["deadline"])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid deadline format. Use ISO format (YYYY-MM-DD).")
+    else:
+        update_dict["deadline"] = None
+    
+    for field, value in update_dict.items():
+        setattr(db_client, field, value)
+    
+    db.commit()
+    db.refresh(db_client)
+    return db_client
+
+@app.delete("/api/clients/{client_id}", status_code=204)
+async def delete_client(
+    client_id: str,
+    db: SessionLocal = Depends(get_db)
+):
+    """Delete a client profile."""
+    db_client = db.query(ClientProfile).filter(ClientProfile.client_id == client_id).first()
+    if not db_client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    db.delete(db_client)
+    db.commit()
+    return None
 
 # Simple file-based session store (improved with Path and locking)
 class Store:
