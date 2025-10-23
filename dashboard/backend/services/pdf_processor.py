@@ -7,7 +7,7 @@ import tempfile
 import os
 from fastapi import UploadFile, HTTPException
 from pdf2image import convert_from_path
-from ..services.ai_client import get_openai_client, clean_response
+from services.ai_client import get_openai_client, clean_response
 import json
 import logging
 

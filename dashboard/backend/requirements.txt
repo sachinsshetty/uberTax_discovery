@@ -7,16 +7,3 @@ pdf2image
 requests
 pytesseract
 python-multipart
-fastapi
-uvicorn
-sqlalchemy
-pydantic
-openai
-pdf2image
-pillow
-asyncio
-uuid
-pathlib
-tempfile
-csv
-starlette

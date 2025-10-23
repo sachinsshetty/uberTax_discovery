@@ -2,13 +2,11 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .middleware import TimingMiddleware
-from .routers import clients, process
-from .database import startup_event
+from middleware import TimingMiddleware
+from routers import clients, process
+from database import startup_event
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from logging_config import logger  # Import logger from the config module
 
 app = FastAPI(title="Juris-Diction API")
 

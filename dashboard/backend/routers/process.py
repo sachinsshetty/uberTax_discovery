@@ -5,10 +5,10 @@ import time
 from uuid import uuid4
 import json
 from typing import Dict, List
-from ..constants import SYSTEM_PROMPT
-from ..services.ai_client import get_openai_client
-from ..services.pdf_processor import extract_text_from_pdf
-from ..services.session_store import session_store
+from constants import SYSTEM_PROMPT
+from services.ai_client import get_openai_client
+from services.pdf_processor import extract_text_from_pdf
+from services.session_store import session_store
 import logging
 
 logger = logging.getLogger(__name__)

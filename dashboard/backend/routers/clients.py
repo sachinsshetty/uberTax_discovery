@@ -1,9 +1,10 @@
 # File: routers/clients.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..database import get_db, ClientProfile
-from ..schemas import ClientProfileCreate, ClientProfileUpdate, ClientProfileResponse
+from database import get_db, ClientProfile
+from schemas import ClientProfileCreate, ClientProfileUpdate, ClientProfileResponse
 from datetime import date
+from typing import List
 
 router = APIRouter(prefix="/api/clients", tags=["clients"])
 

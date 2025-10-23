@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 import logging
-from ..constants import SESSION_FILE
+from constants import SESSION_FILE
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ import re
 import json
 import logging
 from typing import Optional
-from ..constants import DWANI_API_BASE_URL
+from constants import DWANI_API_BASE_URL
 
 logger = logging.getLogger(__name__)
 

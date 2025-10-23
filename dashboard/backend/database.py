@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 import logging
 import csv
 from datetime import date
-from .constants import MOCK_DATA_CSV
+from constants import MOCK_DATA_CSV
 
 logger = logging.getLogger(__name__)
 
