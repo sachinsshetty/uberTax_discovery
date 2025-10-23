@@ -1,5 +1,5 @@
-# File: schemas.py
-from pydantic import BaseModel
+# File: schemas.py (updated)
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import date
 
@@ -19,12 +19,12 @@ class ClientProfileUpdate(BaseModel):
     status: Optional[str] = None
 
 class ClientProfileResponse(BaseModel):
-    clientId: str
-    companyName: str
-    country: str
-    newRegulation: str
-    deadline: Optional[str] = None  # ISO format string
-    status: str
+    clientId: str = Field(..., alias="client_id")
+    companyName: str = Field(..., alias="company_name")
+    country: str = Field(..., alias="country")
+    newRegulation: str = Field(..., alias="new_regulation")
+    deadline: Optional[date] = Field(None, alias="deadline")  # Changed to date; auto-serializes to ISO str in JSON
+    status: str = Field(..., alias="status")
 
     class Config:
         from_attributes = True  # Allows mapping from SQLAlchemy models

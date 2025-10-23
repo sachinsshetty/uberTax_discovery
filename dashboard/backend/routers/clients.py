@@ -1,10 +1,11 @@
-# File: routers/clients.py
+# File: routers/clients.py (minor tweaks for robustness)
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db, ClientProfile
-from schemas import ClientProfileCreate, ClientProfileUpdate, ClientProfileResponse
+from schemas import ClientProfileCreate, ClientProfileUpdate, ClientProfileResponse  # Updated schemas
 from datetime import date
 from typing import List
+from pydantic import Field  # If using explicit Fields in schemas
 
 router = APIRouter(prefix="/api/clients", tags=["clients"])
 
@@ -12,7 +13,7 @@ router = APIRouter(prefix="/api/clients", tags=["clients"])
 async def get_clients(db: Session = Depends(get_db)):
     """Fetch all client profiles with Pydantic validation."""
     clients = db.query(ClientProfile).all()
-    return clients  # Pydantic will handle serialization and validation
+    return clients  # Now serializes correctly with aliases
 
 @router.post("/", response_model=ClientProfileResponse, status_code=201)
 async def create_client(
@@ -44,7 +45,7 @@ async def create_client(
     db.add(db_client)
     db.commit()
     db.refresh(db_client)
-    return db_client
+    return db_client  # Serializes to camelCase JSON
 
 @router.put("/{client_id}", response_model=ClientProfileResponse)
 async def update_client(
