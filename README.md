@@ -44,6 +44,12 @@ deployment
 <!--
 --
 
+curl -X POST "http://localhost:80/api/clients/natural-query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_query": "Show me all pending clients from USA"
+  }'
+
 docker build -t dwani/ubertax-dev -f client.Dockerfile .
 
 

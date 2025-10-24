@@ -14,11 +14,12 @@ RUN apk add --no-cache \
     curl \
     libjpeg-turbo-dev \
     zlib-dev \
-    libpng-dev poppler-utils
+    libpng-dev \
+    poppler-utils
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Final stage
 FROM python:3.10-alpine
@@ -33,11 +34,13 @@ ENV PYTHONUNBUFFERED=1
 RUN apk add --no-cache \
     libjpeg-turbo \
     zlib \
-    libpng poppler-utils\
+    libpng \
+    poppler-utils \
     && rm -rf /var/cache/apk/*
 
-# Copy installed Python dependencies from builder stage
-COPY --from=builder /root/.local /home/appuser/.local
+# Copy installed Python dependencies from builder stage to a system-wide location
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy the application code
 COPY . .
@@ -47,9 +50,10 @@ RUN adduser -D appuser \
     && mkdir -p /data \
     && chown -R appuser:appuser /app /data
 
-RUN pip install uvicorn
 USER appuser
-EXPOSE 80
 
-# Command to run the Gradio program
+# Expose the port used in CMD
+EXPOSE 18889
+
+# Command to run the FastAPI app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "18889"]
