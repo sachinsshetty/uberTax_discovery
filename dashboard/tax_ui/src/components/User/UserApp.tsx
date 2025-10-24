@@ -2,6 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Container, Grid, Typography, Card, CardContent, List, ListItem, ListItemText, Button, Box, CircularProgress, Alert, Avatar, Divider } from '@mui/material';
 import ClientProfiles from './ClientProfiles';
 
+const camelizeKeys = (obj: any): any => {
+  const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  
+  if (Array.isArray(obj)) {
+    return obj.map(camelizeKeys);
+  } else if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce((result, key) => {
+      result[camelize(key)] = camelizeKeys(obj[key]);
+      return result;
+    }, {});
+  }
+  return obj;
+};
+
 const UserApp = () => {
   const [clients, setClients] = useState([]);
   const [error, setError] = useState(null);
@@ -23,9 +37,10 @@ const UserApp = () => {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
       const data = await res.json();
-      setClients(data);
+      const camelCasedData = camelizeKeys(data);
+      setClients(camelCasedData);
       setError(null); // Explicitly clear any prior error
-      console.log('Fetched clients:', data);  // Debug log
+      console.log('Fetched clients:', camelCasedData);  // Debug log
     } catch (err) {
       console.error('Error fetching clients:', err);
       if (retries > 0) {
@@ -74,7 +89,7 @@ const UserApp = () => {
   const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
 
   // Urgency calculation
-  const currentDate = new Date('2025-10-22'); // Updated to provided current date
+  const currentDate = new Date('2025-10-24'); // Updated to provided current date
   let urgencyLevel = 'LOW';
   let urgencyColor = 'green';
   for (const c of clients) {
