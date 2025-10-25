@@ -1,26 +1,10 @@
+version: '3.8'
+
 services:
-  tax_ui:
-    image: dwani/ubertax-ui
-    ports:
-      - "3000:3000"
-    environment:
-      - VITE_UBERTAX_BACKEND_APP_API_URL=http://localhost:8000/
-    restart: unless-stopped
-  dev-tax_ui:
-    image: dwani/ubertax-dev
-    ports:
-      - "8000:8000"
-  server:
-    image: dwani/ubertax-server:latest
-    ports:
-      - "18889:18889"
-    environment:
-      - SQLITE_DB_PATH=/app/data/app.db
-    restart: unless-stopped
   vllm:
     image: vllm/vllm-openai:latest
     command: [
-      "--model", "RedHatAI/gemma-3-12b-it-FP8-dynamic",
+      "--model", "Qwen/Qwen3-VL-2B-Instruct-FP8",
       "--served-model-name", "gemma3",
       "--host", "0.0.0.0",
       "--port", "9000",
@@ -32,7 +16,9 @@ services:
       "--enable-chunked-prefill",
       "--enable-prefix-caching",
       "--max-num-batched-tokens", "8192",
-      "--chat-template-content-format", "openai"
+      "--chat-template-content-format", "openai",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser", "hermes"
     ]
     deploy:
       resources:
@@ -44,14 +30,39 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+
   nginx:
     image: nginx:latest
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./all-in-one-nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - vllm
+      - tax_ui
+      - server
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  tax_ui:
+    image: dwani/ubertax-ui
+    expose:
+      - "3000"
+    environment:
+      - VITE_DWANI_API_BASE_URL=http://server:18889  # Adjusted for internal Docker networking; change to external URL if needed
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  server:
+    image: dwani/ubertax-server:latest
+    expose:
+      - "18889"
+    environment:
+      - SQLITE_DB_PATH=/app/data/app.db
+    volumes:
+      - ./data:/app/data  # Optional: persist DB data; create ./data dir on host
     networks:
       - app-network
     restart: unless-stopped
