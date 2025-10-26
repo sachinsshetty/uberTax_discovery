@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Typography, Card, CardContent, List, ListItem, ListItemText, Button, Box, CircularProgress, Alert, Avatar, Divider } from '@mui/material';
+import { Container, Grid, Typography, Card, CardContent, List, ListItem, ListItemText, Button, Box, CircularProgress, Alert, Avatar, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import ClientProfiles from './ClientProfiles';
 
 const camelizeKeys = (obj: any): any => {
@@ -18,8 +18,11 @@ const camelizeKeys = (obj: any): any => {
 
 const UserApp = () => {
   const [clients, setClients] = useState([]);
+  const [regulatoryFeed, setRegulatoryFeed] = useState([]);
   const [error, setError] = useState(null);
+  const [errorRegulatory, setErrorRegulatory] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingRegulatory, setLoadingRegulatory] = useState(true);
 
   const fetchClients = async (retries = 3) => {
     try {
@@ -54,8 +57,41 @@ const UserApp = () => {
     }
   };
 
+  const fetchRegulatory = async (retries = 3) => {
+    try {
+      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+      const apiUrl = `${DWANI_API_BASE_URL}/api/regulatory-feed`;
+
+      console.log('Fetching regulatory feed from:', apiUrl);  // Debug log
+      
+      const res = await fetch(apiUrl);
+      if (!res.ok) {
+        // Enhanced error logging for better debugging
+        const errorText = await res.text(); // Log response body for clues
+        console.error(`HTTP ${res.status}: ${res.statusText} - Body: ${errorText}`);
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      const data = await res.json();
+      const camelCasedData = camelizeKeys(data);
+      setRegulatoryFeed(camelCasedData);
+      setErrorRegulatory(null); // Explicitly clear any prior error
+      console.log('Fetched regulatory feed:', camelCasedData);  // Debug log
+    } catch (err) {
+      console.error('Error fetching regulatory feed:', err);
+      if (retries > 0) {
+        console.log(`Retrying in 1s... (${retries} left)`);
+        setTimeout(() => fetchRegulatory(retries - 1), 1000);
+      } else {
+        setErrorRegulatory(`Failed to load regulatory feed: ${err.message}. Check backend (port 8000) & Docker network.`);
+      }
+    } finally {
+      setLoadingRegulatory(false);
+    }
+  };
+
   useEffect(() => {
     fetchClients();
+    fetchRegulatory();
   }, []);
 
   if (error) {
@@ -89,7 +125,7 @@ const UserApp = () => {
   const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
 
   // Urgency calculation
-  const currentDate = new Date('2025-10-24'); // Updated to provided current date
+  const currentDate = new Date('2025-10-26'); // Updated to current date
   let urgencyLevel = 'LOW';
   let urgencyColor = 'green';
   for (const c of clients) {
@@ -171,39 +207,55 @@ const UserApp = () => {
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
             <CardContent>
               <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Regulatory Feed</Typography>
-              <List>
-                <ListItem>
-                  <ListItemText
-                    primary={<Typography variant="body2" color="cyan.400" fontWeight="600">[Oct 9, 2025] USA:</Typography>}
-                    secondary="IRS releases tax inflation adjustments for tax year 2026, including amendments from the One Big Beautiful Bill; standard deduction raised to $15,750 for singles and $31,500 for married filing jointly."
-                    secondaryTypographyProps={{ color: 'grey.500', variant: 'body2' }}
-                  />
-                </ListItem>
-                <Divider />
-                <ListItem>
-                  <ListItemText
-                    primary={<Typography variant="body2" color="cyan.400" fontWeight="600">[Oct 9, 2025] USA:</Typography>}
-                    secondary="IRS 2025-2026 Priority Guidance Plan outlines key focus areas amid government shutdown impacts."
-                    secondaryTypographyProps={{ color: 'grey.500', variant: 'body2' }}
-                  />
-                </ListItem>
-                <Divider />
-                <ListItem>
-                  <ListItemText
-                    primary={<Typography variant="body2" color="cyan.400" fontWeight="600">[Oct 10, 2025] USA:</Typography>}
-                    secondary="Treasury and IRS issue proposed regulations for “No Tax on Tips” provision under OBBBA, allowing deduction up to $25,000 for qualified tips."
-                    secondaryTypographyProps={{ color: 'grey.500', variant: 'body2' }}
-                  />
-                </ListItem>
-                <Divider />
-                <ListItem>
-                  <ListItemText
-                    primary={<Typography variant="body2" color="cyan.400" fontWeight="600">[Oct 4, 2025] USA:</Typography>}
-                    secondary="One Big Beautiful Bill Act (passed July 2025) introduces $6,000 deduction for individuals age 65+, effective 2025-2028, plus other Trump Tax Plan changes for 2025 filings."
-                    secondaryTypographyProps={{ color: 'grey.500', variant: 'body2' }}
-                  />
-                </ListItem>
-              </List>
+              {errorRegulatory && (
+                <Alert severity="error" sx={{ mb: 2 }} action={
+                  <Button color="inherit" size="small" onClick={() => { setLoadingRegulatory(true); setErrorRegulatory(null); fetchRegulatory(); }}>
+                    Retry
+                  </Button>
+                }>
+                  {errorRegulatory}
+                </Alert>
+              )}
+              {loadingRegulatory ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress />
+                  <Typography variant="body1" sx={{ ml: 2 }}>Loading regulatory feed...</Typography>
+                </Box>
+              ) : (
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Date & Location</TableCell>
+                        <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Update</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {regulatoryFeed.map((item, index) => (
+                        <TableRow key={index} hover>
+                          <TableCell>
+                            <Typography variant="body2" color="cyan.400" fontWeight="600">
+                              [{item.date}] {item.country}:
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" color="grey.500">
+                              {item.content}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {regulatoryFeed.length === 0 && !loadingRegulatory && (
+                        <TableRow>
+                          <TableCell colSpan={2} sx={{ textAlign: 'center', py: 4 }}>
+                            <Typography variant="body2" color="grey.500">No regulatory updates available.</Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </CardContent>
           </Card>
         </Grid>
