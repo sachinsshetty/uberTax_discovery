@@ -1,6 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Grid, Typography, Card, CardContent, List, ListItem, ListItemText, Button, Box, CircularProgress, Alert, Avatar, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+// UserApp.tsx
+import React, { useState, useEffect, useMemo } from 'react';
+import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar } from '@mui/material';
 import ClientProfiles from './ClientProfiles';
+import CountryProfiles from './CountryProfiles';
+import CountryProfile from './CountryProfile';  // Added missing import
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { CountryProfileData } from './CountryProfileData';
+import { CountryProfilesData } from './CountryProfileData';
 
 const camelizeKeys = (obj: any): any => {
   const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -23,27 +29,26 @@ const UserApp = () => {
   const [errorRegulatory, setErrorRegulatory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingRegulatory, setLoadingRegulatory] = useState(true);
+  const [selectedCountry, setSelectedCountry] = useState<CountryProfileData | null>(null);
 
   const fetchClients = async (retries = 3) => {
     try {
-      // Fix: Default to full URL with port for dev; use env var for prod/Docker
       const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
       const apiUrl = `${DWANI_API_BASE_URL}/api/clients`;
 
-      console.log('Fetching from:', apiUrl);  // Debug log
+      console.log('Fetching from:', apiUrl);
       
       const res = await fetch(apiUrl);
       if (!res.ok) {
-        // Enhanced error logging for better debugging
-        const errorText = await res.text(); // Log response body for clues
+        const errorText = await res.text();
         console.error(`HTTP ${res.status}: ${res.statusText} - Body: ${errorText}`);
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
       const data = await res.json();
       const camelCasedData = camelizeKeys(data);
       setClients(camelCasedData);
-      setError(null); // Explicitly clear any prior error
-      console.log('Fetched clients:', camelCasedData);  // Debug log
+      setError(null);
+      console.log('Fetched clients:', camelCasedData);
     } catch (err) {
       console.error('Error fetching clients:', err);
       if (retries > 0) {
@@ -62,20 +67,19 @@ const UserApp = () => {
       const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
       const apiUrl = `${DWANI_API_BASE_URL}/api/regulatory-feed`;
 
-      console.log('Fetching regulatory feed from:', apiUrl);  // Debug log
+      console.log('Fetching regulatory feed from:', apiUrl);
       
       const res = await fetch(apiUrl);
       if (!res.ok) {
-        // Enhanced error logging for better debugging
-        const errorText = await res.text(); // Log response body for clues
+        const errorText = await res.text();
         console.error(`HTTP ${res.status}: ${res.statusText} - Body: ${errorText}`);
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
       const data = await res.json();
       const camelCasedData = camelizeKeys(data);
       setRegulatoryFeed(camelCasedData);
-      setErrorRegulatory(null); // Explicitly clear any prior error
-      console.log('Fetched regulatory feed:', camelCasedData);  // Debug log
+      setErrorRegulatory(null);
+      console.log('Fetched regulatory feed:', camelCasedData);
     } catch (err) {
       console.error('Error fetching regulatory feed:', err);
       if (retries > 0) {
@@ -93,6 +97,47 @@ const UserApp = () => {
     fetchClients();
     fetchRegulatory();
   }, []);
+
+  const handleSelectCountry = (country: CountryProfileData) => {
+    console.log('Setting selectedCountry:', country);  // Debug log
+    setSelectedCountry(country);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedCountry(null);
+  };
+
+  // Memoized stats
+  const totalClients = clients.length;
+  const impactedClients = useMemo(
+    () => clients.filter(c => c.newRegulation !== "N/A" && c.deadline !== null).length,
+    [clients]
+  );
+  const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
+  const uniqueNewRegs = useMemo(
+    () => [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length,
+    [clients]
+  );
+  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
+
+  // Urgency calculation
+  const currentDate = new Date();  // Dynamic date
+  let urgencyLevel = 'LOW';
+  let urgencyColor = 'green';
+  for (const c of clients) {
+    if (c.deadline) {
+      const deadline = new Date(c.deadline);
+      const daysUntilDeadline = (deadline.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (daysUntilDeadline <= 90) {
+        urgencyLevel = 'HIGH';
+        urgencyColor = 'red';
+        break;
+      } else if (daysUntilDeadline <= 180) {
+        urgencyLevel = 'MEDIUM';
+        urgencyColor = 'orange';
+      }
+    }
+  }
 
   if (error) {
     return (
@@ -115,32 +160,6 @@ const UserApp = () => {
         <Typography variant="body1" sx={{ mt: 2 }}>Loading clients...</Typography>
       </Container>
     );
-  }
-
-  // Compute dynamic stats
-  const totalClients = clients.length;
-  const impactedClients = clients.filter(c => c.newRegulation !== "N/A" && c.deadline !== null).length;
-  const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
-  const uniqueNewRegs = [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length;
-  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
-
-  // Urgency calculation
-  const currentDate = new Date('2025-10-26'); // Updated to current date
-  let urgencyLevel = 'LOW';
-  let urgencyColor = 'green';
-  for (const c of clients) {
-    if (c.deadline) {
-      const deadline = new Date(c.deadline);
-      const daysUntilDeadline = (deadline - currentDate) / (1000 * 60 * 60 * 24);
-      if (daysUntilDeadline <= 90) {
-        urgencyLevel = 'HIGH';
-        urgencyColor = 'red';
-        break;
-      } else if (daysUntilDeadline <= 180) {
-        urgencyLevel = 'MEDIUM';
-        urgencyColor = 'orange';
-      }
-    }
   }
 
   return (
@@ -203,6 +222,22 @@ const UserApp = () => {
           {/* Affected Client Profiles */}
           <ClientProfiles clients={clients} />
 
+          {/* Country Profiles Table */}
+          <CountryProfiles onSelectCountry={handleSelectCountry} />
+
+          {/* Expanded Country Profile */}
+          {selectedCountry && (
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6">Detailed Profile: {selectedCountry.country}</Typography>
+                <Button variant="outlined" onClick={handleClearSelection} size="small">
+                  Close
+                </Button>
+              </Box>
+              <CountryProfile data={selectedCountry} />
+            </Box>
+          )}
+
           {/* Regulatory Feed */}
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
             <CardContent>
@@ -235,12 +270,12 @@ const UserApp = () => {
                         <TableRow key={index} hover>
                           <TableCell>
                             <Typography variant="body2" color="cyan.400" fontWeight="600">
-                              [{item.date}] {item.country}:
+                              [{item.date || 'N/A'}] {item.country || 'Unknown'}:
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" color="grey.500">
-                              {item.content}
+                              {item.content || 'No content'}
                             </Typography>
                           </TableCell>
                         </TableRow>
