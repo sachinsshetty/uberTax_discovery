@@ -1,5 +1,3 @@
-
-
 // CountryProfile.tsx
 import React from 'react';
 import { Card, CardContent, List, ListItem, ListItemText, Box, Typography, Divider, Alert } from '@mui/material';

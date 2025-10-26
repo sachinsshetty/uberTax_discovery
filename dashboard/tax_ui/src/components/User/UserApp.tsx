@@ -221,14 +221,14 @@ const UserApp = () => {
 
           {/* Affected Client Profiles */}
           <ClientProfiles clients={clients} />
-          <Divider sx={{ my: 3, borderColor: '#1e2d4a' }} />
+          <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
           {/* Country Profiles Table */}
           <CountryProfiles onSelectCountry={handleSelectCountry} />
 
           {/* Expanded Country Profile */}
           {selectedCountry && (
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">Detailed Profile: {selectedCountry.country}</Typography>
                 <Button variant="outlined" onClick={handleClearSelection} size="small">
@@ -238,7 +238,7 @@ const UserApp = () => {
               <CountryProfile data={selectedCountry} />
             </Box>
           )}
-          <Divider sx={{ my: 3, borderColor: '#1e2d4a' }} />
+          <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
           {/* Regulatory Feed */}
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
@@ -296,7 +296,8 @@ const UserApp = () => {
             </CardContent>
           </Card>
         </Grid>
-
+        <div style={{ display: 'none' }}> 
+        
         {/* Right Column */}
         <Grid item xs={12} lg={4}>
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', mb: 3 }}>
@@ -326,7 +327,9 @@ const UserApp = () => {
           </Card>
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', opacity: 0.2, minHeight: 200 }} />
         </Grid>
+        </div>
       </Grid>
+      
     </Container>
   );
 };
