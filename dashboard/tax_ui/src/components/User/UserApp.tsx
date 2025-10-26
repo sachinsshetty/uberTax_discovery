@@ -65,7 +65,7 @@ const UserApp = () => {
   const fetchRegulatory = async (retries = 3) => {
     try {
       const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
-      const apiUrl = `${DWANI_API_BASE_URL}/api/regulatory-feed`;
+      const apiUrl = `${DWANI_API_BASE_URL}/api/countries/regulatory-feed`;
 
       console.log('Fetching regulatory feed from:', apiUrl);
       
