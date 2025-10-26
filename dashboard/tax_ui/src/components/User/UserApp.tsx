@@ -1,6 +1,7 @@
 // UserApp.tsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider } from '@mui/material';
+import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ClientProfiles from './ClientProfiles';
 import CountryProfiles from './CountryProfiles';
 import CountryProfile from './CountryProfile';  // Added missing import
@@ -219,12 +220,26 @@ const UserApp = () => {
             </CardContent>
           </Card>
 
-          {/* Affected Client Profiles */}
-          <ClientProfiles clients={clients} />
+          {/* Affected Client Profiles - Collapsible */}
+          <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={false}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
+              <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Affected Client Profiles</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ p: 0 }}>
+              <ClientProfiles clients={clients} />
+            </AccordionDetails>
+          </Accordion>
           <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
-          {/* Country Profiles Table */}
-          <CountryProfiles onSelectCountry={handleSelectCountry} />
+          {/* Country Profiles Table - Collapsible */}
+          <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={false}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
+              <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Country Profiles</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ p: 0 }}>
+              <CountryProfiles onSelectCountry={handleSelectCountry} />
+            </AccordionDetails>
+          </Accordion>
 
           {/* Expanded Country Profile */}
           {selectedCountry && (
@@ -240,59 +255,65 @@ const UserApp = () => {
           )}
           <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
-          {/* Regulatory Feed */}
+          {/* Regulatory Feed - Collapsible */}
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
             <CardContent>
-              <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Regulatory Feed</Typography>
-              {errorRegulatory && (
-                <Alert severity="error" sx={{ mb: 2 }} action={
-                  <Button color="inherit" size="small" onClick={() => { setLoadingRegulatory(true); setErrorRegulatory(null); fetchRegulatory(); }}>
-                    Retry
-                  </Button>
-                }>
-                  {errorRegulatory}
-                </Alert>
-              )}
-              {loadingRegulatory ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                  <CircularProgress />
-                  <Typography variant="body1" sx={{ ml: 2 }}>Loading regulatory feed...</Typography>
-                </Box>
-              ) : (
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Date & Location</TableCell>
-                        <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Update</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {regulatoryFeed.map((item, index) => (
-                        <TableRow key={index} hover>
-                          <TableCell>
-                            <Typography variant="body2" color="cyan.400" fontWeight="600">
-                              [{item.date || 'N/A'}] {item.country || 'Unknown'}:
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" color="grey.500">
-                              {item.content || 'No content'}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {regulatoryFeed.length === 0 && !loadingRegulatory && (
-                        <TableRow>
-                          <TableCell colSpan={2} sx={{ textAlign: 'center', py: 4 }}>
-                            <Typography variant="body2" color="grey.500">No regulatory updates available.</Typography>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
+              <Accordion defaultExpanded={false} sx={{ boxShadow: 'none' }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
+                  <Typography variant="h5" fontWeight="600" sx={{ color: 'grey.400', flexGrow: 1 }}>Regulatory Feed</Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ p: 0 }}>
+                  {errorRegulatory && (
+                    <Alert severity="error" sx={{ mb: 2 }} action={
+                      <Button color="inherit" size="small" onClick={() => { setLoadingRegulatory(true); setErrorRegulatory(null); fetchRegulatory(); }}>
+                        Retry
+                      </Button>
+                    }>
+                      {errorRegulatory}
+                    </Alert>
+                  )}
+                  {loadingRegulatory ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                      <CircularProgress />
+                      <Typography variant="body1" sx={{ ml: 2 }}>Loading regulatory feed...</Typography>
+                    </Box>
+                  ) : (
+                    <TableContainer>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Date & Location</TableCell>
+                            <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Update</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {regulatoryFeed.map((item, index) => (
+                            <TableRow key={index} hover>
+                              <TableCell>
+                                <Typography variant="body2" color="cyan.400" fontWeight="600">
+                                  [{item.date || 'N/A'}] {item.country || 'Unknown'}:
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2" color="grey.500">
+                                  {item.content || 'No content'}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          {regulatoryFeed.length === 0 && !loadingRegulatory && (
+                            <TableRow>
+                              <TableCell colSpan={2} sx={{ textAlign: 'center', py: 4 }}>
+                                <Typography variant="body2" color="grey.500">No regulatory updates available.</Typography>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                </AccordionDetails>
+              </Accordion>
             </CardContent>
           </Card>
         </Grid>
