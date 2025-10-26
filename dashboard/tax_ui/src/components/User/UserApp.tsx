@@ -1,31 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Grid, Typography, Card, CardContent, List, ListItem, ListItemText, Button, Box, CircularProgress, Alert, Avatar, Divider } from '@mui/material';
+// UserApp.tsx
+import React, { useState, useEffect, useMemo } from 'react';
+import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ClientProfiles from './ClientProfiles';
+import CountryProfiles from './CountryProfiles';
+import CountryProfile from './CountryProfile';  // Added missing import
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { CountryProfileData } from './CountryProfileData';
+import { CountryProfilesData } from './CountryProfileData';
+
+const camelizeKeys = (obj: any): any => {
+  const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  
+  if (Array.isArray(obj)) {
+    return obj.map(camelizeKeys);
+  } else if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce((result, key) => {
+      result[camelize(key)] = camelizeKeys(obj[key]);
+      return result;
+    }, {});
+  }
+  return obj;
+};
 
 const UserApp = () => {
   const [clients, setClients] = useState([]);
+  const [regulatoryFeed, setRegulatoryFeed] = useState([]);
   const [error, setError] = useState(null);
+  const [errorRegulatory, setErrorRegulatory] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingRegulatory, setLoadingRegulatory] = useState(true);
+  const [selectedCountry, setSelectedCountry] = useState<CountryProfileData | null>(null);
 
   const fetchClients = async (retries = 3) => {
     try {
-      // Fix: Default to full URL with port for dev; use env var for prod/Docker
       const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
       const apiUrl = `${DWANI_API_BASE_URL}/api/clients`;
 
-      console.log('Fetching from:', apiUrl);  // Debug log
+      console.log('Fetching from:', apiUrl);
       
       const res = await fetch(apiUrl);
       if (!res.ok) {
-        // Enhanced error logging for better debugging
-        const errorText = await res.text(); // Log response body for clues
+        const errorText = await res.text();
         console.error(`HTTP ${res.status}: ${res.statusText} - Body: ${errorText}`);
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
       const data = await res.json();
-      setClients(data);
-      setError(null); // Explicitly clear any prior error
-      console.log('Fetched clients:', data);  // Debug log
+      const camelCasedData = camelizeKeys(data);
+      setClients(camelCasedData);
+      setError(null);
+      console.log('Fetched clients:', camelCasedData);
     } catch (err) {
       console.error('Error fetching clients:', err);
       if (retries > 0) {
@@ -39,9 +63,82 @@ const UserApp = () => {
     }
   };
 
+  const fetchRegulatory = async (retries = 3) => {
+    try {
+      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+      const apiUrl = `${DWANI_API_BASE_URL}/api/countries/regulatory-feed`;
+
+      console.log('Fetching regulatory feed from:', apiUrl);
+      
+      const res = await fetch(apiUrl);
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error(`HTTP ${res.status}: ${res.statusText} - Body: ${errorText}`);
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      const data = await res.json();
+      const camelCasedData = camelizeKeys(data);
+      setRegulatoryFeed(camelCasedData);
+      setErrorRegulatory(null);
+      console.log('Fetched regulatory feed:', camelCasedData);
+    } catch (err) {
+      console.error('Error fetching regulatory feed:', err);
+      if (retries > 0) {
+        console.log(`Retrying in 1s... (${retries} left)`);
+        setTimeout(() => fetchRegulatory(retries - 1), 1000);
+      } else {
+        setErrorRegulatory(`Failed to load regulatory feed: ${err.message}. Check backend (port 8000) & Docker network.`);
+      }
+    } finally {
+      setLoadingRegulatory(false);
+    }
+  };
+
   useEffect(() => {
     fetchClients();
+    fetchRegulatory();
   }, []);
+
+  const handleSelectCountry = (country: CountryProfileData) => {
+    console.log('Setting selectedCountry:', country);  // Debug log
+    setSelectedCountry(country);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedCountry(null);
+  };
+
+  // Memoized stats
+  const totalClients = clients.length;
+  const impactedClients = useMemo(
+    () => clients.filter(c => c.newRegulation !== "N/A" && c.deadline !== null).length,
+    [clients]
+  );
+  const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
+  const uniqueNewRegs = useMemo(
+    () => [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length,
+    [clients]
+  );
+  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
+
+  // Urgency calculation
+  const currentDate = new Date();  // Dynamic date
+  let urgencyLevel = 'LOW';
+  let urgencyColor = 'green';
+  for (const c of clients) {
+    if (c.deadline) {
+      const deadline = new Date(c.deadline);
+      const daysUntilDeadline = (deadline.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (daysUntilDeadline <= 90) {
+        urgencyLevel = 'HIGH';
+        urgencyColor = 'red';
+        break;
+      } else if (daysUntilDeadline <= 180) {
+        urgencyLevel = 'MEDIUM';
+        urgencyColor = 'orange';
+      }
+    }
+  }
 
   if (error) {
     return (
@@ -64,32 +161,6 @@ const UserApp = () => {
         <Typography variant="body1" sx={{ mt: 2 }}>Loading clients...</Typography>
       </Container>
     );
-  }
-
-  // Compute dynamic stats
-  const totalClients = clients.length;
-  const impactedClients = clients.filter(c => c.newRegulation !== "N/A" && c.deadline !== null).length;
-  const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
-  const uniqueNewRegs = [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length;
-  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
-
-  // Urgency calculation
-  const currentDate = new Date('2025-10-22'); // Updated to provided current date
-  let urgencyLevel = 'LOW';
-  let urgencyColor = 'green';
-  for (const c of clients) {
-    if (c.deadline) {
-      const deadline = new Date(c.deadline);
-      const daysUntilDeadline = (deadline - currentDate) / (1000 * 60 * 60 * 24);
-      if (daysUntilDeadline <= 90) {
-        urgencyLevel = 'HIGH';
-        urgencyColor = 'red';
-        break;
-      } else if (daysUntilDeadline <= 180) {
-        urgencyLevel = 'MEDIUM';
-        urgencyColor = 'orange';
-      }
-    }
   }
 
   return (
@@ -149,50 +220,105 @@ const UserApp = () => {
             </CardContent>
           </Card>
 
-          {/* Affected Client Profiles */}
-          <ClientProfiles clients={clients} />
+          {/* Affected Client Profiles - Collapsible */}
+          <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={false}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
+              <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Affected Client Profiles</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ p: 0 }}>
+              <ClientProfiles clients={clients} />
+            </AccordionDetails>
+          </Accordion>
+          <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
-          {/* Regulatory Feed */}
+          {/* Country Profiles Table - Collapsible */}
+          <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={false}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
+              <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Country Profiles</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ p: 0 }}>
+              <CountryProfiles onSelectCountry={handleSelectCountry} />
+            </AccordionDetails>
+          </Accordion>
+
+          {/* Expanded Country Profile */}
+          {selectedCountry && (
+            <Box sx={{ mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6">Detailed Profile: {selectedCountry.country}</Typography>
+                <Button variant="outlined" onClick={handleClearSelection} size="small">
+                  Close
+                </Button>
+              </Box>
+              <CountryProfile data={selectedCountry} />
+            </Box>
+          )}
+          <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
+
+          {/* Regulatory Feed - Collapsible */}
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
             <CardContent>
-              <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Regulatory Feed</Typography>
-              <List>
-                <ListItem>
-                  <ListItemText
-                    primary={<Typography variant="body2" color="cyan.400" fontWeight="600">[Oct 9, 2025] USA:</Typography>}
-                    secondary="IRS releases tax inflation adjustments for tax year 2026, including amendments from the One Big Beautiful Bill; standard deduction raised to $15,750 for singles and $31,500 for married filing jointly."
-                    secondaryTypographyProps={{ color: 'grey.500', variant: 'body2' }}
-                  />
-                </ListItem>
-                <Divider />
-                <ListItem>
-                  <ListItemText
-                    primary={<Typography variant="body2" color="cyan.400" fontWeight="600">[Oct 9, 2025] USA:</Typography>}
-                    secondary="IRS 2025-2026 Priority Guidance Plan outlines key focus areas amid government shutdown impacts."
-                    secondaryTypographyProps={{ color: 'grey.500', variant: 'body2' }}
-                  />
-                </ListItem>
-                <Divider />
-                <ListItem>
-                  <ListItemText
-                    primary={<Typography variant="body2" color="cyan.400" fontWeight="600">[Oct 10, 2025] USA:</Typography>}
-                    secondary="Treasury and IRS issue proposed regulations for “No Tax on Tips” provision under OBBBA, allowing deduction up to $25,000 for qualified tips."
-                    secondaryTypographyProps={{ color: 'grey.500', variant: 'body2' }}
-                  />
-                </ListItem>
-                <Divider />
-                <ListItem>
-                  <ListItemText
-                    primary={<Typography variant="body2" color="cyan.400" fontWeight="600">[Oct 4, 2025] USA:</Typography>}
-                    secondary="One Big Beautiful Bill Act (passed July 2025) introduces $6,000 deduction for individuals age 65+, effective 2025-2028, plus other Trump Tax Plan changes for 2025 filings."
-                    secondaryTypographyProps={{ color: 'grey.500', variant: 'body2' }}
-                  />
-                </ListItem>
-              </List>
+              <Accordion defaultExpanded={false} sx={{ boxShadow: 'none' }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
+                  <Typography variant="h5" fontWeight="600" sx={{ color: 'grey.400', flexGrow: 1 }}>Regulatory Feed</Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ p: 0 }}>
+                  {errorRegulatory && (
+                    <Alert severity="error" sx={{ mb: 2 }} action={
+                      <Button color="inherit" size="small" onClick={() => { setLoadingRegulatory(true); setErrorRegulatory(null); fetchRegulatory(); }}>
+                        Retry
+                      </Button>
+                    }>
+                      {errorRegulatory}
+                    </Alert>
+                  )}
+                  {loadingRegulatory ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                      <CircularProgress />
+                      <Typography variant="body1" sx={{ ml: 2 }}>Loading regulatory feed...</Typography>
+                    </Box>
+                  ) : (
+                    <TableContainer>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Date & Location</TableCell>
+                            <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Update</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {regulatoryFeed.map((item, index) => (
+                            <TableRow key={index} hover>
+                              <TableCell>
+                                <Typography variant="body2" color="cyan.400" fontWeight="600">
+                                  [{item.date || 'N/A'}] {item.country || 'Unknown'}:
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2" color="grey.500">
+                                  {item.content || 'No content'}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          {regulatoryFeed.length === 0 && !loadingRegulatory && (
+                            <TableRow>
+                              <TableCell colSpan={2} sx={{ textAlign: 'center', py: 4 }}>
+                                <Typography variant="body2" color="grey.500">No regulatory updates available.</Typography>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                </AccordionDetails>
+              </Accordion>
             </CardContent>
           </Card>
         </Grid>
-
+        <div style={{ display: 'none' }}> 
+        
         {/* Right Column */}
         <Grid item xs={12} lg={4}>
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', mb: 3 }}>
@@ -222,7 +348,9 @@ const UserApp = () => {
           </Card>
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', opacity: 0.2, minHeight: 200 }} />
         </Grid>
+        </div>
       </Grid>
+      
     </Container>
   );
 };

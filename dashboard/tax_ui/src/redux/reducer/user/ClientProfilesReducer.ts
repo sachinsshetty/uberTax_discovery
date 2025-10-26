@@ -2,6 +2,20 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000/';
 
+const camelizeKeys = (obj: any): any => {
+  const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  
+  if (Array.isArray(obj)) {
+    return obj.map(camelizeKeys);
+  } else if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce((result, key) => {
+      result[camelize(key)] = camelizeKeys(obj[key]);
+      return result;
+    }, {});
+  }
+  return obj;
+};
+
 export const fetchClientProfiles = createAsyncThunk<
   Array<{
     clientId: string;
@@ -26,8 +40,9 @@ export const fetchClientProfiles = createAsyncThunk<
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log('Redux fetched clients:', data); // Debug log
-      return data;
+      const camelCasedData = camelizeKeys(data);
+      console.log('Redux fetched clients:', camelCasedData); // Debug log
+      return camelCasedData;
     } catch (error) {
       console.error('Redux error fetching clients:', error);
       return thunkAPI.rejectWithValue('Failed to fetch clients.');

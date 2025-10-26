@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from middleware import TimingMiddleware
-from routers import clients, process
+from routers import clients, process, countries
 from database import startup_event
 
 from logging_config import logger  # Import logger from the config module
@@ -22,6 +22,8 @@ app.add_middleware(TimingMiddleware)
 
 app.include_router(clients.router)
 app.include_router(process.router)
+app.include_router(countries.router)
+
 
 @app.on_event("startup")
 async def startup():

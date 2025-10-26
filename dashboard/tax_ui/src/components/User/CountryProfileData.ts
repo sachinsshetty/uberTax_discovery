@@ -1,0 +1,462 @@
+// CountryProfileData.ts
+export interface CountryProfileData {
+  country: string;
+  mandateStatus: string;
+  archivingPeriod: string;
+  scope: {
+    triggers: {
+      residents: string;
+      nonResidentsWithVatId: string;
+      logic: string;
+    };
+    b2b: {
+      status: string;
+      startDate: string;
+      posRelevant: string;
+      staggered: {
+        applies: string;
+        threshold: string;
+      };
+    };
+    b2g: {
+      status: string;
+      startDate: string;
+      staggered: {
+        applies: string;
+        threshold: string;
+      };
+    };
+    b2c: {
+      reportingObligation: string;
+      startDate: string;
+    };
+    buyersChoice: {
+      applies: string;
+      condition: string;
+    };
+  };
+  architecture: {
+    model: {
+      type: string;
+      cornerModel: string;
+      description: string;
+    };
+    formats: {
+      en16931: {
+        status: string;
+        version: string;
+      };
+      nationalCius: {
+        applies: string;
+        schemaName: string;
+      };
+      allowedSyntaxes: string[];
+      pdfConform: string;
+    };
+    transmission: {
+      peppol: {
+        status: string;
+      };
+    };
+  };
+  reporting: {
+    statePlatform: {
+      applies: string;
+      name: string;
+      mandatory: string;
+    };
+    clearance: {
+      realTimeCtc: string;
+      validityAfterRelease: string;
+    };
+    reportingReq: {
+      drr: string;
+      realTime: string;
+      frequency: string;
+    };
+  };
+  additional: {
+    systemCert: string;
+    saft: {
+      obligation: string;
+      submission: string;
+    };
+    localIds: {
+      obligation: string;
+      type: string;
+    };
+    transactionStatusReporting: string;
+    specialNotes: string;
+    sanctions: string;
+  };
+}
+
+export const CountryProfilesData: CountryProfileData[] = [
+  {
+    country: 'Croatia',
+    mandateStatus: 'Law passed (B2G), Consultation (B2B)',
+    archivingPeriod: '',
+    scope: {
+      triggers: {
+        residents: 'Yes',
+        nonResidentsWithVatId: 'Yes',
+        logic: 'OR',
+      },
+      b2b: {
+        status: 'Mandatory (from 01.01.2026)',
+        startDate: '01.01.2026',
+        posRelevant: '',
+        staggered: {
+          applies: 'Yes',
+          threshold: 'No revenue threshold, but staggered by company type',
+        },
+      },
+      b2g: {
+        status: 'Mandatory',
+        startDate: '01.07.2019',
+        staggered: {
+          applies: 'No',
+          threshold: '',
+        },
+      },
+      b2c: {
+        reportingObligation: 'No',
+        startDate: '',
+      },
+      buyersChoice: {
+        applies: '',
+        condition: '',
+      },
+    },
+    architecture: {
+      model: {
+        type: 'Centralized Clearance (CTC)',
+        cornerModel: '4-Corner',
+        description: 'Servis eRačun za državu, managed by FINA',
+      },
+      formats: {
+        en16931: {
+          status: 'Required',
+          version: '',
+        },
+        nationalCius: {
+          applies: 'Yes',
+          schemaName: 'National CIUS covering Croatian VAT legislation',
+        },
+        allowedSyntaxes: ['UBL 2.1', 'CII'],
+        pdfConform: 'No',
+      },
+      transmission: {
+        peppol: {
+          status: 'Allowed',
+        },
+      },
+    },
+    reporting: {
+      statePlatform: {
+        applies: 'Yes',
+        name: 'Servis eRačun za državu',
+        mandatory: 'Mandatory',
+      },
+      clearance: {
+        realTimeCtc: 'No (expected from 2026)',
+        validityAfterRelease: '',
+      },
+      reportingReq: {
+        drr: 'No (expected from 2026)',
+        realTime: 'No',
+        frequency: '',
+      },
+    },
+    additional: {
+      systemCert: '',
+      saft: {
+        obligation: '',
+        submission: '',
+      },
+      localIds: {
+        obligation: '',
+        type: '',
+      },
+      transactionStatusReporting: 'Yes',
+      specialNotes: 'B2G obligation also applies to procurements below EU thresholds.',
+      sanctions: '',
+    },
+  },
+  // Germany
+  {
+    country: 'Germany',
+    mandateStatus: 'B2G: YES (since 2018); B2B: Mandatory receiving from 2025, issuing from 2027/2028',
+    archivingPeriod: 'Not specified',
+    scope: {
+      triggers: {
+        residents: 'Not specified',
+        nonResidentsWithVatId: 'Not specified',
+        logic: '',
+      },
+      b2b: {
+        status: 'Mandatory receiving from 2025, issuing from 2027 (large) / 2028 (all)',
+        startDate: '2025',
+        posRelevant: '',
+        staggered: {
+          applies: 'Yes',
+          threshold: 'Staggered by business size',
+        },
+      },
+      b2g: {
+        status: 'Mandatory since 2018',
+        startDate: '2018',
+        staggered: {
+          applies: 'No',
+          threshold: '',
+        },
+      },
+      b2c: {
+        reportingObligation: 'No',
+        startDate: '',
+      },
+      buyersChoice: {
+        applies: 'Yes',
+        condition: 'Suppliers can issue paper or non-EN compliant EDI with buyer consent',
+      },
+    },
+    architecture: {
+      model: {
+        type: 'Decentralised',
+        cornerModel: '',
+        description: 'Decentralised model with platforms like ZRE, OZG-RE, unified routing via Leitweg ID',
+      },
+      formats: {
+        en16931: {
+          status: 'Adopted',
+          version: '',
+        },
+        nationalCius: {
+          applies: 'Yes',
+          schemaName: 'XRechnung (primary), ZUGFeRD 2.1 (hybrid)',
+        },
+        allowedSyntaxes: ['UBL 2.1', 'UN/CEFACT CII'],
+        pdfConform: 'ZUGFeRD 2.1 hybrid PDF/XML',
+      },
+      transmission: {
+        peppol: {
+          status: 'Supported',
+        },
+      },
+    },
+    reporting: {
+      statePlatform: {
+        applies: '',
+        name: '',
+        mandatory: '',
+      },
+      clearance: {
+        realTimeCtc: 'No',
+        validityAfterRelease: '',
+      },
+      reportingReq: {
+        drr: '',
+        realTime: 'No',
+        frequency: '',
+      },
+    },
+    additional: {
+      systemCert: '',
+      saft: {
+        obligation: '',
+        submission: '',
+      },
+      localIds: {
+        obligation: '',
+        type: 'Leitweg ID for routing',
+      },
+      transactionStatusReporting: '',
+      specialNotes: 'KoSIT maintains XRechnung and Peppol Authority',
+      sanctions: '',
+    },
+  },
+  // France
+  {
+    country: 'France',
+    mandateStatus: 'B2G: YES (since 2020); B2B: Phased from Sep 2026; B2C: Real-time reporting from 2026/2027',
+    archivingPeriod: 'Not specified',
+    scope: {
+      triggers: {
+        residents: 'VAT-registered in France',
+        nonResidentsWithVatId: 'Foreign entities in France',
+        logic: 'Applies to taxable persons',
+      },
+      b2b: {
+        status: 'Mandatory phased',
+        startDate: 'Sep 2026 (receive)',
+        posRelevant: '',
+        staggered: {
+          applies: 'Yes',
+          threshold: 'By company size',
+        },
+      },
+      b2g: {
+        status: 'Mandatory since 2020',
+        startDate: '2020',
+        staggered: {
+          applies: 'No',
+          threshold: '',
+        },
+      },
+      b2c: {
+        reportingObligation: 'Yes (real-time)',
+        startDate: 'Sep 2026 (large), Sep 2027 (small)',
+      },
+      buyersChoice: {
+        applies: 'Must choose accredited platform',
+        condition: '',
+      },
+    },
+    architecture: {
+      model: {
+        type: 'Centralized with P2P platforms',
+        cornerModel: '',
+        description: 'National portal Chorus Pro',
+      },
+      formats: {
+        en16931: {
+          status: 'Required',
+          version: '',
+        },
+        nationalCius: {
+          applies: 'Yes',
+          schemaName: 'National CIUS with guidelines',
+        },
+        allowedSyntaxes: ['UBL 2.1', 'UN/CEFACT CII', 'Factur-X'],
+        pdfConform: 'Factur-X hybrid',
+      },
+      transmission: {
+        peppol: {
+          status: 'Enabled via Chorus Pro',
+        },
+      },
+    },
+    reporting: {
+      statePlatform: {
+        applies: 'Yes for B2G',
+        name: 'Chorus Pro',
+        mandatory: 'Yes for B2G',
+      },
+      clearance: {
+        realTimeCtc: '',
+        validityAfterRelease: '',
+      },
+      reportingReq: {
+        drr: 'VAT Real-Time Reporting from 2026/2027',
+        realTime: 'Yes for B2C/cross-border',
+        frequency: '',
+      },
+    },
+    additional: {
+      systemCert: '',
+      saft: {
+        obligation: '',
+        submission: '',
+      },
+      localIds: {
+        obligation: '',
+        type: '',
+      },
+      transactionStatusReporting: 'Yes via Chorus Pro',
+      specialNotes: 'Abandoned public portal for companies; use private platforms',
+      sanctions: '',
+    },
+  },
+  // Italy
+  {
+    country: 'Italy',
+    mandateStatus: 'B2G: YES (since 2015); B2B: YES (since 2019); B2C: YES (since 2019)',
+    archivingPeriod: '10 years',
+    scope: {
+      triggers: {
+        residents: 'All VAT-registered',
+        nonResidentsWithVatId: 'Excluded',
+        logic: '',
+      },
+      b2b: {
+        status: 'Mandatory',
+        startDate: 'Jan 2019',
+        posRelevant: '',
+        staggered: {
+          applies: 'Yes (phased exclusions removed 2024)',
+          threshold: 'Previously ≤ EUR 25,000',
+        },
+      },
+      b2g: {
+        status: 'Mandatory',
+        startDate: 'Mar 2015',
+        staggered: {
+          applies: 'No',
+          threshold: '',
+        },
+      },
+      b2c: {
+        reportingObligation: 'Yes',
+        startDate: 'Jan 2019',
+      },
+      buyersChoice: {
+        applies: '',
+        condition: 'Public may use EN or FatturaPA',
+      },
+    },
+    architecture: {
+      model: {
+        type: 'Centralised',
+        cornerModel: '',
+        description: 'Sistema di Interscambio (SDI)',
+      },
+      formats: {
+        en16931: {
+          status: 'Adopted',
+          version: 'Aligned with EN 16931',
+        },
+        nationalCius: {
+          applies: 'Mandatory',
+          schemaName: 'FatturaPA',
+        },
+        allowedSyntaxes: ['FatturaPA XML'],
+        pdfConform: '',
+      },
+      transmission: {
+        peppol: {
+          status: '',
+        },
+      },
+    },
+    reporting: {
+      statePlatform: {
+        applies: 'Yes',
+        name: 'Sistema di Interscambio (SDI)',
+        mandatory: 'Yes',
+      },
+      clearance: {
+        realTimeCtc: 'Yes (near real-time)',
+        validityAfterRelease: '',
+      },
+      reportingReq: {
+        drr: '',
+        realTime: 'Yes for non-domestic',
+        frequency: '',
+      },
+    },
+    additional: {
+      systemCert: '',
+      saft: {
+        obligation: '',
+        submission: '',
+      },
+      localIds: {
+        obligation: '',
+        type: '',
+      },
+      transactionStatusReporting: 'Yes (SDI checks)',
+      specialNotes: 'SDI converts to FatturaPA; continued until 2027',
+      sanctions: '',
+    },
+  },
+];

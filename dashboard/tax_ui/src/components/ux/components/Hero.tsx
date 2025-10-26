@@ -221,10 +221,11 @@ export default function Hero() {
                 color="primary"
                 aria-label="dwani.ai uberTax Dashboard"
               >
-                Dashboard
+                KI- Workflow
               </Link>.
             </Typography>
-
+<div style={{ display: 'none' }}> 
+        
             <Button
               variant="contained"
               color="primary"
@@ -235,6 +236,19 @@ export default function Hero() {
               aria-label="Try Multimodal Inference for Legal Docs"
             >
               Ausprobieren - KI-Workflow
+            </Button>
+</div>
+
+            <Button
+              variant="contained"
+              color="primary"
+              href="https://tax.dwani.ai/dashboard"
+              target="_blank"
+              size="large"
+              sx={{ mt: 2, px: 4, py: 1.5, borderRadius: 2 }}
+              aria-label="Try Multimodal Inference for Legal Docs"
+            >
+              Ausprobieren - Dashboard
             </Button>
 
             <Divider sx={{ width: '60%', mx: 'auto', my: 2 }} />

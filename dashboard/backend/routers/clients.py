@@ -2,10 +2,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db, ClientProfile
-from schemas import ClientProfileCreate, ClientProfileUpdate, ClientProfileResponse  # Updated schemas
+from schemas import ClientProfileCreate, ClientProfileUpdate, ClientProfileResponse, RegulatoryFeed  # Updated schemas
 from datetime import date
 from typing import List
-from pydantic import Field  # If using explicit Fields in schemas
+from pydantic import Field, BaseModel  # If using explicit Fields in schemas
 
 import os
 from openai import OpenAI
@@ -94,16 +94,6 @@ async def delete_client(
     db.delete(db_client)
     db.commit()
     return None
-
-# File: routers/clients.py (corrected query_database function)
-
-import os
-from openai import OpenAI
-import json
-from sqlalchemy import text
-from typing import Any, Dict
-
-# ... (existing imports and code remain the same)
 
 # Define the query_database tool function
 def query_database(sql_query: str, db: Session) -> str:

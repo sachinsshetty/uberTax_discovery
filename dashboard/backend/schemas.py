@@ -3,6 +3,12 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import date
 
+class RegulatoryFeed(BaseModel):
+    """Pydantic model for regulatory feed items with validation."""
+    date: str = Field(..., description="Date of the regulatory update, e.g., 'Oct 9, 2025'")
+    country: str = Field(..., description="Country or location, e.g., 'USA'")
+    content: str = Field(..., description="Description of the regulatory update")
+
 class ClientProfileCreate(BaseModel):
     client_id: str
     company_name: str
