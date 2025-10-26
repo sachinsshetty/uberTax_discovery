@@ -1,6 +1,6 @@
 // UserApp.tsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar } from '@mui/material';
+import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider } from '@mui/material';
 import ClientProfiles from './ClientProfiles';
 import CountryProfiles from './CountryProfiles';
 import CountryProfile from './CountryProfile';  // Added missing import
@@ -221,6 +221,7 @@ const UserApp = () => {
 
           {/* Affected Client Profiles */}
           <ClientProfiles clients={clients} />
+          <Divider sx={{ my: 3, borderColor: '#1e2d4a' }} />
 
           {/* Country Profiles Table */}
           <CountryProfiles onSelectCountry={handleSelectCountry} />
@@ -237,6 +238,7 @@ const UserApp = () => {
               <CountryProfile data={selectedCountry} />
             </Box>
           )}
+          <Divider sx={{ my: 3, borderColor: '#1e2d4a' }} />
 
           {/* Regulatory Feed */}
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>

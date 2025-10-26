@@ -27,36 +27,41 @@ interface ClientProfilesProps {
 }
 
 const columns: GridColDef<ClientProfile>[] = [
-  { field: 'clientId', headerName: 'Client ID', width: 150 },
+  { field: 'clientId', headerName: 'Client ID', flex: 0.8, minWidth: 120 },
   {
     field: 'companyName',
     headerName: 'Company Name',
-    width: 250,
+    flex: 1.2,
+    minWidth: 200,
     editable: false,
   },
   {
     field: 'country',
     headerName: 'Country',
-    width: 120,
+    flex: 0.6,
+    minWidth: 100,
     editable: false,
   },
   {
     field: 'newRegulation',
     headerName: 'New Regulation',
-    width: 250,
+    flex: 1.5,
+    minWidth: 200,
     editable: false,
   },
   {
     field: 'deadline',
     headerName: 'Deadline',
-    width: 120,
+    flex: 0.6,
+    minWidth: 100,
     editable: false,
     valueFormatter: (params) => params?.value ?? 'N/A',
   },
   {
     field: 'status',
     headerName: 'Status',
-    width: 120,
+    flex: 0.6,
+    minWidth: 100,
     editable: false,
   },
 ];
@@ -201,7 +206,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
       </Typography>
 
       {/* Search Bar */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'end' }}>
+      <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'end', flexWrap: 'wrap' }}>
         <TextField
           fullWidth
           variant="outlined"
@@ -214,7 +219,11 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
             }
           }}
           disabled={searchLoading}
-          sx={{ '& .MuiOutlinedInput-root': { backgroundColor: '#1e2d4a' } }}
+          sx={{ 
+            '& .MuiOutlinedInput-root': { backgroundColor: '#1e2d4a' },
+            flex: 1,
+            minWidth: 300,
+          }}
         />
         <Button
           variant="contained"
@@ -273,6 +282,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         checkboxSelection
         disableRowSelectionOnClick
         sx={{
+          height: 500,
           '& .MuiDataGrid-cell': {
             fontSize: '0.875rem',
           },
@@ -286,6 +296,9 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
           '& .MuiDataGrid-columnHeaders': {
             backgroundColor: '#1e2d4a',
             color: 'grey.400',
+          },
+          '& .MuiDataGrid-virtualScroller': {
+            overflowX: 'auto',
           },
         }}
       />
