@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db, ClientProfile
-from schemas import ClientProfileCreate, ClientProfileUpdate, ClientProfileResponse  # Updated schemas
+from schemas import ClientProfileCreate, ClientProfileUpdate, ClientProfileResponse, RegulatoryFeed  # Updated schemas
 from datetime import date
 from typing import List
 from pydantic import Field, BaseModel  # If using explicit Fields in schemas
@@ -16,11 +16,6 @@ from typing import Any, Dict
 
 router = APIRouter(prefix="/api/clients", tags=["clients"])
 
-class RegulatoryFeed(BaseModel):
-    """Pydantic model for regulatory feed items with validation."""
-    date: str = Field(..., description="Date of the regulatory update, e.g., 'Oct 9, 2025'")
-    country: str = Field(..., description="Country or location, e.g., 'USA'")
-    content: str = Field(..., description="Description of the regulatory update")
 
 
 @router.get("/", response_model=List[ClientProfileResponse])
