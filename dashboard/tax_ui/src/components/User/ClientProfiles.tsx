@@ -146,7 +146,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ user_query: searchQuery }),
+        body: JSON.stringify({ user_query: searchQuery, table_name: "client_profiles" }),
       });
 
       if (!response.ok) {

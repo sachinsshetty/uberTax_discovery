@@ -98,10 +98,9 @@ async def delete_client(
 # Define the query_database tool function
 def query_database(sql_query: str, db: Session) -> str:
     """
-    Execute a SQL query on the client_profiles table and return results as JSON.
+    Execute a SQL query on the specified table and return results as JSON.
     """
     try:
-        # Assuming the table name is 'client_profiles' based on the model name
         # Add safety: only allow SELECT queries starting with 'SELECT'
         if not sql_query.strip().upper().startswith('SELECT'):
             raise ValueError("Only SELECT queries are allowed.")
@@ -118,16 +117,19 @@ DWANI_API_BASE_URL = os.getenv('DWANI_API_BASE_URL')
 
 @router.post("/natural-query", response_model=Dict[str, Any])
 async def natural_query(
-    query_data: Dict[str, str],  # e.g., {"user_query": "Show me all pending clients from USA"}
+    query_data: Dict[str, str],  # e.g., {"user_query": "Show me all pending clients from USA", "table_name": "client_profiles"}
     db: Session = Depends(get_db)
 ):
     """
-    Query the client profiles table using natural language via Qwen3-VL tool calling.
-    Expects JSON body with 'user_query' key.
+    Query any table using natural language via Qwen3-VL tool calling.
+    Expects JSON body with 'user_query' and 'table_name' keys.
     """
     user_query = query_data.get("user_query")
+    table_name = query_data.get("table_name")
     if not user_query:
         raise HTTPException(status_code=400, detail="Missing 'user_query' in request body")
+    if not table_name:
+        raise HTTPException(status_code=400, detail="Missing 'table_name' in request body")
     
     # Initialize OpenAI-compatible client for DashScope
     client = OpenAI(
@@ -141,13 +143,13 @@ async def natural_query(
             "type": "function",
             "function": {
                 "name": "query_database",
-                "description": "Execute a SQL SELECT query on the client_profiles table to retrieve client profiles based on the natural language request. Use only SELECT statements on columns: client_id, company_name, country, new_regulation, deadline, status.",
+                "description": f"Execute a SQL SELECT query on the {table_name} table to retrieve data based on the natural language request. Use only SELECT statements on the {table_name} table.",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "sql_query": {
                             "type": "string",
-                            "description": "A valid SQL SELECT query, e.g., 'SELECT * FROM client_profiles WHERE status = \"pending\" AND country = \"USA\"'",
+                            "description": f"A valid SQL SELECT query, e.g., 'SELECT * FROM {table_name} WHERE status = \"pending\" AND country = \"USA\"'",
                         }
                     },
                     "required": ["sql_query"],
@@ -160,7 +162,7 @@ async def natural_query(
     messages = [
         {
             "role": "system",
-            "content": """You are a helpful database assistant. Analyze the user's natural language query about client profiles and use the query_database tool to fetch relevant data from the client_profiles table. After getting the results, summarize them clearly in your response, including key details like company names, countries, statuses, and deadlines if applicable. If no data matches, explain why."""
+            "content": f"""You are a helpful database assistant. Analyze the user's natural language query about the {table_name} table and use the query_database tool to fetch relevant data from the {table_name} table. After getting the results, summarize them clearly in your response, including key details relevant to the query. If no data matches, explain why."""
         },
         {"role": "user", "content": user_query}
     ]
@@ -205,5 +207,6 @@ async def natural_query(
     return {
         "natural_response": assistant_message.content,
         "raw_data": None,  # Optionally parse and include raw JSON data here if needed
-        "query_used": user_query
+        "query_used": user_query,
+        "table_name": table_name
     }
