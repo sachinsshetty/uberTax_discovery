@@ -27,19 +27,22 @@
 
 -- 
 
-deployment
+- deployment
 
-- server
+    - Dashboard 
+        - server
+            - docker compose -f deployment/server.yml up -d
 
-    - docker compose -f deployment/server.yml up -d
+        - dashboard client
+            - docker compose -f deployment/client.yml up -d
+        - dev client
+            - docker compose -f deployment/dev-client.yml up -d 
 
-- dashboard client
-    - docker compose -f deployment/client.yml up -d
-- dev client
-    - docker compose -f deployment/dev-client.yml up -d 
+        - vllm
+            - docker compose -f deployment/vllm.yml up -d 
 
-- vllm
-    - docker compose -f deployment/vllm.yml up -d 
+    - Analytics
+        - docker compose -f analytics/compose.yml up -d
 
 <!--
 --
