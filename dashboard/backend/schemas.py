@@ -9,6 +9,14 @@ class RegulatoryFeed(BaseModel):
     country: str = Field(..., description="Country or location, e.g., 'USA'")
     content: str = Field(..., description="Description of the regulatory update")
 
+class RegulatoryFeedResponse(BaseModel):
+    date: str = Field(..., alias="date")
+    country: str = Field(..., alias="country")
+    content: str = Field(..., alias="content")
+
+    class Config:
+        from_attributes = True  # Allows mapping from SQLAlchemy models
+
 class ClientProfileCreate(BaseModel):
     client_id: str
     company_name: str

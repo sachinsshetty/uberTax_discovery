@@ -1,0 +1,250 @@
+[
+  {
+    "client_id": "CI2001",
+    "company_name": "Split Hospitality Group j.d.o.o.",
+    "country": "Croatia",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2002",
+    "company_name": "KreativWerkstatt S.C.",
+    "country": "Poland",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2003",
+    "company_name": "Global Dynamics Sp. z o.o.",
+    "country": "Poland",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2004",
+    "company_name": "Copenhagen Consulting ApS",
+    "country": "Denmark",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2005",
+    "company_name": "Adriatic Solutions d.o.o.",
+    "country": "Croatia",
+    "new_regulation": "Croatian B2B e-Invoicing Mandate",
+    "deadline": "2026-01-01",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2006",
+    "company_name": "Aarhus Retail IVS",
+    "country": "Denmark",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2007",
+    "company_name": "Baltic Trade Partners OÜ",
+    "country": "Estonia",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2008",
+    "company_name": "Scandinavian Tech Hub AB",
+    "country": "Sweden",
+    "new_regulation": "Swedish Digital Tax Reporting Mandate",
+    "deadline": "2025-07-01",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2009",
+    "company_name": "Prague Innovation Labs s.r.o.",
+    "country": "Czech Republic",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2010",
+    "company_name": "Vienna Financial Services GmbH",
+    "country": "Austria",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2011",
+    "company_name": "Lisbon Creative Studios Lda",
+    "country": "Portugal",
+    "new_regulation": "Portuguese VAT Digitalization",
+    "deadline": "2026-03-15",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2012",
+    "company_name": "Madrid Logistics Group SA",
+    "country": "Spain",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2013",
+    "company_name": "Berlin Startup Collective UG",
+    "country": "Germany",
+    "new_regulation": "German e-Invoicing for SMEs",
+    "deadline": "2025-11-01",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2014",
+    "company_name": "Amsterdam Design Works BV",
+    "country": "Netherlands",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2015",
+    "company_name": "Zurich Asset Management AG",
+    "country": "Switzerland",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2016",
+    "company_name": "Brussels Policy Advisors SCRL",
+    "country": "Belgium",
+    "new_regulation": "Belgian Corporate Tax Reform",
+    "deadline": "2026-09-30",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2017",
+    "company_name": "Helsinki Green Energy Oy",
+    "country": "Finland",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2018",
+    "company_name": "Oslo Maritime Solutions AS",
+    "country": "Norway",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2019",
+    "company_name": "Reykjavik Eco Ventures ehf",
+    "country": "Iceland",
+    "new_regulation": "Icelandic Sustainability Reporting",
+    "deadline": "2025-12-01",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2020",
+    "company_name": "Dublin Fintech Partners Ltd",
+    "country": "Ireland",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2021",
+    "company_name": "Edinburgh Heritage Trust Ltd",
+    "country": "United Kingdom",
+    "new_regulation": "UK Digital Services Tax Update",
+    "deadline": "2026-01-15",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2022",
+    "company_name": "Paris Cultural Exchange SARL",
+    "country": "France",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2023",
+    "company_name": "Rome Artisan Guild Srl",
+    "country": "Italy",
+    "new_regulation": "Italian e-Invoicing Extension",
+    "deadline": "2025-06-01",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2024",
+    "company_name": "Athens Tourism Network AE",
+    "country": "Greece",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2025",
+    "company_name": "Sofia Tech Accelerators EOOD",
+    "country": "Bulgaria",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2026",
+    "company_name": "Bucharest Media House SRL",
+    "country": "Romania",
+    "new_regulation": "Romanian Digital Tax Compliance",
+    "deadline": "2026-04-01",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2027",
+    "company_name": "Belgrade Innovation Center d.o.o.",
+    "country": "Serbia",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2028",
+    "company_name": "Zagreb Eco Solutions d.o.o.",
+    "country": "Croatia",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2029",
+    "company_name": "Warsaw Cultural Foundation Sp. z o.o.",
+    "country": "Poland",
+    "new_regulation": "Polish VAT e-Invoicing",
+    "deadline": "2025-08-01",
+    "status": "MONITORED"
+  },
+  {
+    "client_id": "CI2030",
+    "company_name": "Copenhagen Green Initiatives ApS",
+    "country": "Denmark",
+    "new_regulation": "N/A",
+    "deadline": "",
+    "status": "LIVE"
+  },
+  {
+    "client_id": "CI2031",
+    "company_name": "Tallinn Digital Nomads OÜ",
+    "country": "Estonia",
+    "new_regulation": "Estonian e-Residency Tax Changes",
+    "deadline": "2026-02-01",
+    "status": "MONITORED"
+  }
+]

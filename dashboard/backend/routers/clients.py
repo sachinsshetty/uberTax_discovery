@@ -98,10 +98,9 @@ async def delete_client(
 # Define the query_database tool function
 def query_database(sql_query: str, db: Session) -> str:
     """
-    Execute a SQL query on the client_profiles table and return results as JSON.
+    Execute a SQL query on the specified table and return results as JSON.
     """
     try:
-        # Assuming the table name is 'client_profiles' based on the model name
         # Add safety: only allow SELECT queries starting with 'SELECT'
         if not sql_query.strip().upper().startswith('SELECT'):
             raise ValueError("Only SELECT queries are allowed.")
@@ -118,16 +117,44 @@ DWANI_API_BASE_URL = os.getenv('DWANI_API_BASE_URL')
 
 @router.post("/natural-query", response_model=Dict[str, Any])
 async def natural_query(
-    query_data: Dict[str, str],  # e.g., {"user_query": "Show me all pending clients from USA"}
+    query_data: Dict[str, str],  # e.g., {"user_query": "Show me all pending clients from USA", "table_name": "client_profiles"}
     db: Session = Depends(get_db)
 ):
     """
-    Query the client profiles table using natural language via Qwen3-VL tool calling.
-    Expects JSON body with 'user_query' key.
+    Query any table using natural language via Qwen3-VL tool calling.
+    Expects JSON body with 'user_query' and 'table_name' keys.
     """
     user_query = query_data.get("user_query")
+    table_name = query_data.get("table_name")
     if not user_query:
         raise HTTPException(status_code=400, detail="Missing 'user_query' in request body")
+    if not table_name:
+        raise HTTPException(status_code=400, detail="Missing 'table_name' in request body")
+    
+    # Fetch schema dynamically for SQLite
+    schema_description = ""
+    try:
+        schema_result = db.execute(text(f"PRAGMA table_info({table_name})")).fetchall()
+        schema_fields = []
+        for row in schema_result:
+            col_name = row[1]
+            col_type = row[2].lower()
+            # Map to simple types
+            if 'char' in col_type or 'text' in col_type:
+                type_str = 'string'
+            elif 'int' in col_type or 'integer' in col_type:
+                type_str = 'integer'
+            elif 'real' in col_type:
+                type_str = 'float'
+            elif 'blob' in col_type:
+                type_str = 'binary'
+            else:
+                type_str = col_type
+            schema_fields.append(f"- {col_name}: {type_str}")
+        schema_description = " The table schema is:\n" + "\n".join(schema_fields)
+    except Exception as e:
+        print(f"Error fetching schema: {e}")
+        schema_description = ""
     
     # Initialize OpenAI-compatible client for DashScope
     client = OpenAI(
@@ -141,13 +168,13 @@ async def natural_query(
             "type": "function",
             "function": {
                 "name": "query_database",
-                "description": "Execute a SQL SELECT query on the client_profiles table to retrieve client profiles based on the natural language request. Use only SELECT statements on columns: client_id, company_name, country, new_regulation, deadline, status.",
+                "description": f"Execute a SQL SELECT query on the {table_name} table to retrieve data based on the natural language request. Use only SELECT statements on the {table_name} table.",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "sql_query": {
                             "type": "string",
-                            "description": "A valid SQL SELECT query, e.g., 'SELECT * FROM client_profiles WHERE status = \"pending\" AND country = \"USA\"'",
+                            "description": f"A valid SQL SELECT query, e.g., 'SELECT * FROM {table_name} WHERE status = \"pending\" AND country = \"USA\"'",
                         }
                     },
                     "required": ["sql_query"],
@@ -156,11 +183,14 @@ async def natural_query(
         }
     ]
 
-    # Initialize messages with system prompt
+    # Initialize messages with updated system prompt
     messages = [
         {
             "role": "system",
-            "content": """You are a helpful database assistant. Analyze the user's natural language query about client profiles and use the query_database tool to fetch relevant data from the client_profiles table. After getting the results, summarize them clearly in your response, including key details like company names, countries, statuses, and deadlines if applicable. If no data matches, explain why."""
+            "content": f"""You are a helpful and precise database assistant specialized in translating natural language to SQL for the {table_name} table.{schema_description}
+Analyze the user's natural language query carefully. Generate an efficient SQL SELECT query that exactly matches the request, using appropriate WHERE clauses, ORDER BY, LIMIT if needed, and JOINs only if necessary (but prefer simple queries on this single table).
+Use the query_database tool exactly once with your generated SQL query.
+After receiving the tool results (which will be a JSON array of rows), respond ONLY with the raw JSON array of results as your message content. Do not add summaries, explanations, or any other text. If no data matches, the array will be empty []. Ensure your final response is valid JSON."""
         },
         {"role": "user", "content": user_query}
     ]
@@ -176,13 +206,15 @@ async def natural_query(
     assistant_message = response.choices[0].message
     messages.append(assistant_message)
 
-    # Handle tool calls in a loop until no more are needed
+    # Handle tool calls in a loop until no more are needed (typically one call)
+    query_results = []  # Capture all tool results
     while assistant_message.tool_calls:
         for tool_call in assistant_message.tool_calls:
             function_name = tool_call.function.name
             if function_name == "query_database":
                 arguments = json.loads(tool_call.function.arguments)
                 tool_result = query_database(arguments["sql_query"], db)
+                query_results.append(tool_result)
                 tool_message = {
                     "role": "tool",
                     "content": tool_result,
@@ -196,14 +228,23 @@ async def natural_query(
             model="gemma3",
             messages=messages,
             tools=tools,
-            tool_choice="auto",
+            tool_choice="auto",  # Set to "none" if you want to force final response without further tools
         )
         assistant_message = response.choices[0].message
         messages.append(assistant_message)
 
-    # Return the final natural language response
-    return {
-        "natural_response": assistant_message.content,
-        "raw_data": None,  # Optionally parse and include raw JSON data here if needed
-        "query_used": user_query
-    }
+    # Use the final assistant message as the raw JSON results (per updated prompt)
+    final_results = []
+    if assistant_message.content:
+        try:
+            # Expecting just the JSON array
+            final_results = json.loads(assistant_message.content)
+        except json.JSONDecodeError:
+            # Fallback to last tool result if AI didn't output clean JSON
+            if query_results:
+                last_result = query_results[-1]
+                if "Error" not in last_result:
+                    final_results = json.loads(last_result)
+
+    # Return only the final results in JSON format
+    return {"results": final_results}
