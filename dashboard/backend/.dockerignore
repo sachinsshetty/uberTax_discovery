@@ -89,3 +89,4 @@ __pypackages__
 
 #!model_requirements.txt
 #!server_requirements.txt
+!mock_regulatory_feed.json

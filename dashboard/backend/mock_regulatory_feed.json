@@ -1,0 +1,129 @@
+[
+  {
+    "date": "Nov 5, 2025",
+    "country": "Germany",
+    "content": "Bundesrat approves amendments to the Digital Services Act (DSA) implementation, mandating AI-driven content moderation tools for platforms with over 1 million EU users; compliance deadline set for March 2026."
+  },
+  {
+    "date": "Nov 6, 2025",
+    "country": "France",
+    "content": "CNIL issues guidelines on legal tech applications under GDPR, emphasizing anonymization techniques in contract analysis AI; fines up to €20 million for non-compliance."
+  },
+  {
+    "date": "Nov 7, 2025",
+    "country": "Netherlands",
+    "content": "Dutch Data Protection Authority releases framework for blockchain-based e-discovery in litigation, integrating with EU AI Act risk classifications."
+  },
+  {
+    "date": "Nov 8, 2025",
+    "country": "Spain",
+    "content": "AEPD announces pilot program for RegTech solutions in AML compliance, offering subsidies for SMEs adopting automated legal reporting tools."
+  },
+  {
+    "date": "Nov 9, 2025",
+    "country": "Italy",
+    "content": "Italian Ministry of Justice updates eIDAS regulations to include quantum-resistant digital signatures for smart contracts in legal tech platforms."
+  },
+  {
+    "date": "Nov 10, 2025",
+    "country": "Sweden",
+    "content": "Swedish Authority for Privacy Protection clarifies data portability rights in legal tech apps, requiring seamless export of case management data."
+  },
+  {
+    "date": "Nov 11, 2025",
+    "country": "Belgium",
+    "content": "Belgian Federal Public Service Justice launches consultation on AI ethics in predictive policing software, aligning with EU AI Act high-risk categories."
+  },
+  {
+    "date": "Nov 12, 2025",
+    "country": "Poland",
+    "country": "Poland",
+    "content": "Polish Office of the Personal Data Protection Commissioner enforces new standards for legal tech firms using NLP for document redaction under GDPR."
+  },
+  {
+    "date": "Nov 13, 2025",
+    "country": "Austria",
+    "content": "Austrian Data Protection Authority issues binding rules for automated decision-making in employment law tech, prohibiting solely AI-based hiring tools."
+  },
+  {
+    "date": "Nov 14, 2025",
+    "country": "Denmark",
+    "country": "Denmark",
+    "content": "Danish Business Authority approves sandbox for legal tech innovations in cross-border dispute resolution, focusing on VR arbitration platforms."
+  },
+  {
+    "date": "Nov 15, 2025",
+    "country": "Finland",
+    "content": "Finnish Ministry of Justice releases report on cybersecurity requirements for cloud-based legal document management systems under NIS2 Directive."
+  },
+  {
+    "date": "Nov 16, 2025",
+    "country": "Portugal",
+    "content": "Portuguese National Data Protection Commission mandates transparency reports for AI chatbots in legal advice services, effective Q1 2026."
+  },
+  {
+    "date": "Nov 17, 2025",
+    "country": "Greece",
+    "content": "Hellenic Data Protection Authority updates guidelines for RegTech in tax dispute resolution, integrating with EU Digital Markets Act provisions."
+  },
+  {
+    "date": "Nov 18, 2025",
+    "country": "Ireland",
+    "content": "Irish Data Protection Commission consults on extraterritorial application of GDPR to non-EU legal tech firms serving EU clients."
+  },
+  {
+    "date": "Nov 19, 2025",
+    "country": "Czech Republic",
+    "content": "Czech Office for Personal Data Protection enforces interoperability standards for e-signature tools in legal proceedings under eIDAS 2.0."
+  },
+  {
+    "date": "Nov 20, 2025",
+    "country": "Hungary",
+    "content": "Hungarian National Authority for Data Protection and Freedom of Information approves incentives for AI adoption in public sector legal tech."
+  },
+  {
+    "date": "Nov 21, 2025",
+    "country": "Romania",
+    "content": "Romanian National Supervisory Authority for Personal Data Processing issues fines framework for breaches in legal analytics platforms."
+  },
+  {
+    "date": "Nov 22, 2025",
+    "country": "Bulgaria",
+    "content": "Bulgarian Commission for Personal Data Protection launches awareness campaign on DSA obligations for online legal marketplaces."
+  },
+  {
+    "date": "Nov 23, 2025",
+    "country": "Slovakia",
+    "content": "Slovak Office of the Personal Data Protection Commissioner finalizes rules for biometric data use in access control for law firms."
+  },
+  {
+    "date": "Nov 24, 2025",
+    "country": "Croatia",
+    "content": "Croatian Personal Data Protection Agency aligns national laws with EU AI Act, classifying contract review bots as limited-risk systems."
+  },
+  {
+    "date": "Nov 25, 2025",
+    "country": "Slovenia",
+    "content": "Slovenian Information Commissioner releases toolkit for SMEs implementing legal tech compliance under the Product Liability Directive updates."
+  },
+  {
+    "date": "Nov 26, 2025",
+    "country": "Latvia",
+    "content": "Latvian Data State Inspectorate mandates audit trails for AI-generated legal opinions in advisory services."
+  },
+  {
+    "date": "Nov 27, 2025",
+    "country": "Lithuania",
+    "content": "Lithuanian State Data Protection Inspectorate approves cross-border data flow guidelines for legal tech collaborations in the Baltics."
+  },
+  {
+    "date": "Nov 28, 2025",
+    "country": "Estonia",
+    "content": "Estonian Data Protection Inspectorate integrates X-Road with new EU standards for secure legal data sharing in digital courts."
+  },
+  {
+    "date": "Nov 29, 2025",
+    "country": "Luxembourg",
+    "content": "Luxembourg Commission Nationale pour la Protection des Données updates fintech-legal tech hybrid regulations under DORA for operational resilience."
+  }
+]

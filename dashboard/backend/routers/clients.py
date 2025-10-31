@@ -131,6 +131,31 @@ async def natural_query(
     if not table_name:
         raise HTTPException(status_code=400, detail="Missing 'table_name' in request body")
     
+    # Fetch schema dynamically for SQLite
+    schema_description = ""
+    try:
+        schema_result = db.execute(text(f"PRAGMA table_info({table_name})")).fetchall()
+        schema_fields = []
+        for row in schema_result:
+            col_name = row[1]
+            col_type = row[2].lower()
+            # Map to simple types
+            if 'char' in col_type or 'text' in col_type:
+                type_str = 'string'
+            elif 'int' in col_type or 'integer' in col_type:
+                type_str = 'integer'
+            elif 'real' in col_type:
+                type_str = 'float'
+            elif 'blob' in col_type:
+                type_str = 'binary'
+            else:
+                type_str = col_type
+            schema_fields.append(f"- {col_name}: {type_str}")
+        schema_description = " The table schema is:\n" + "\n".join(schema_fields)
+    except Exception as e:
+        print(f"Error fetching schema: {e}")
+        schema_description = ""
+    
     # Initialize OpenAI-compatible client for DashScope
     client = OpenAI(
         api_key="asdasd",
@@ -157,17 +182,6 @@ async def natural_query(
             },
         }
     ]
-
-    # Schema description for the client_profiles table (extend for other tables if needed)
-    schema_description = ""
-    if table_name.lower() == "client_profiles":
-        schema_description = """ The table schema is:
-- client_id: string (unique identifier)
-- company_name: string (company name)
-- country: string (country of the company)
-- new_regulation: string (description of new regulation)
-- deadline: date (compliance deadline in YYYY-MM-DD format)
-- status: string (e.g., 'pending', 'in_progress', 'completed')"""
 
     # Initialize messages with updated system prompt
     messages = [

@@ -1,5 +1,6 @@
 # File: database.py (updated)
 import os
+import json
 from pathlib import Path
 from sqlalchemy import create_engine, Column, Integer, String, Date, Enum as SQLEnum
 from sqlalchemy.ext.declarative import declarative_base
@@ -7,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 import logging
 import csv
 from datetime import date
-from constants import MOCK_DATA_CSV, REGULATORY_FEED_CSV  # Assuming REGULATORY_FEED_CSV is added to constants.py
+from constants import MOCK_DATA_CSV, REGULATORY_FEED_JSON  # Assuming REGULATORY_FEED_JSON is added to constants.py
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -111,24 +112,16 @@ async def startup_event():
 
         # Handle RegulatoryFeed mock data insertion
         if db.query(RegulatoryFeed).count() == 0:
-            if not REGULATORY_FEED_CSV.exists():
-                logger.warning(f"Regulatory feed CSV file not found at {REGULATORY_FEED_CSV}. Skipping regulatory feed data insertion.")
+            if not REGULATORY_FEED_JSON.exists():
+                logger.warning(f"Regulatory feed JSON file not found at {REGULATORY_FEED_JSON}. Skipping regulatory feed data insertion.")
             else:
                 try:
-                    feed_data = []
-                    with open(REGULATORY_FEED_CSV, 'r', newline='', encoding='utf-8') as csvfile:
-                        reader = csv.DictReader(csvfile)
-                        for row in reader:
-                            data = {
-                                "date": row.get('date'),
-                                "country": row.get('country'),
-                                "content": row.get('content'),
-                            }
-                            feed_data.append(data)
+                    with open(REGULATORY_FEED_JSON, 'r', encoding='utf-8') as jsonfile:
+                        feed_data = json.load(jsonfile)
                     
-                    logger.info(f"Loaded {len(feed_data)} regulatory feed items from CSV.")
+                    logger.info(f"Loaded {len(feed_data)} regulatory feed items from JSON.")
                 except Exception as e:
-                    logger.error(f"Failed to load regulatory feed CSV: {str(e)}. Skipping regulatory feed data insertion.")
+                    logger.error(f"Failed to load regulatory feed JSON: {str(e)}. Skipping regulatory feed data insertion.")
                     feed_data = []
 
                 for data in feed_data:
