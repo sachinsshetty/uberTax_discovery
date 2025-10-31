@@ -158,11 +158,25 @@ async def natural_query(
         }
     ]
 
-    # Initialize messages with system prompt
+    # Schema description for the client_profiles table (extend for other tables if needed)
+    schema_description = ""
+    if table_name.lower() == "client_profiles":
+        schema_description = """ The table schema is:
+- client_id: string (unique identifier)
+- company_name: string (company name)
+- country: string (country of the company)
+- new_regulation: string (description of new regulation)
+- deadline: date (compliance deadline in YYYY-MM-DD format)
+- status: string (e.g., 'pending', 'in_progress', 'completed')"""
+
+    # Initialize messages with updated system prompt
     messages = [
         {
             "role": "system",
-            "content": f"""You are a helpful database assistant. Analyze the user's natural language query about the {table_name} table and use the query_database tool to fetch relevant data from the {table_name} table. After getting the results, summarize them clearly in your response, including key details relevant to the query. If no data matches, explain why."""
+            "content": f"""You are a helpful and precise database assistant specialized in translating natural language to SQL for the {table_name} table.{schema_description}
+Analyze the user's natural language query carefully. Generate an efficient SQL SELECT query that exactly matches the request, using appropriate WHERE clauses, ORDER BY, LIMIT if needed, and JOINs only if necessary (but prefer simple queries on this single table).
+Use the query_database tool exactly once with your generated SQL query.
+After receiving the tool results (which will be a JSON array of rows), respond ONLY with the raw JSON array of results as your message content. Do not add summaries, explanations, or any other text. If no data matches, the array will be empty []. Ensure your final response is valid JSON."""
         },
         {"role": "user", "content": user_query}
     ]
@@ -178,13 +192,15 @@ async def natural_query(
     assistant_message = response.choices[0].message
     messages.append(assistant_message)
 
-    # Handle tool calls in a loop until no more are needed
+    # Handle tool calls in a loop until no more are needed (typically one call)
+    query_results = []  # Capture all tool results
     while assistant_message.tool_calls:
         for tool_call in assistant_message.tool_calls:
             function_name = tool_call.function.name
             if function_name == "query_database":
                 arguments = json.loads(tool_call.function.arguments)
                 tool_result = query_database(arguments["sql_query"], db)
+                query_results.append(tool_result)
                 tool_message = {
                     "role": "tool",
                     "content": tool_result,
@@ -198,15 +214,23 @@ async def natural_query(
             model="gemma3",
             messages=messages,
             tools=tools,
-            tool_choice="auto",
+            tool_choice="auto",  # Set to "none" if you want to force final response without further tools
         )
         assistant_message = response.choices[0].message
         messages.append(assistant_message)
 
-    # Return the final natural language response
-    return {
-        "natural_response": assistant_message.content,
-        "raw_data": None,  # Optionally parse and include raw JSON data here if needed
-        "query_used": user_query,
-        "table_name": table_name
-    }
+    # Use the final assistant message as the raw JSON results (per updated prompt)
+    final_results = []
+    if assistant_message.content:
+        try:
+            # Expecting just the JSON array
+            final_results = json.loads(assistant_message.content)
+        except json.JSONDecodeError:
+            # Fallback to last tool result if AI didn't output clean JSON
+            if query_results:
+                last_result = query_results[-1]
+                if "Error" not in last_result:
+                    final_results = json.loads(last_result)
+
+    # Return only the final results in JSON format
+    return {"results": final_results}
