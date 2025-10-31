@@ -6,17 +6,16 @@ from sqlalchemy import create_engine, Column, Integer, String, Date, Enum as SQL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import logging
-import csv
 from datetime import date
-from constants import MOCK_DATA_CSV, REGULATORY_FEED_JSON  # Assuming REGULATORY_FEED_JSON is added to constants.py
+from constants import MOCK_DATA_JSON, REGULATORY_FEED_JSON  # Updated to use MOCK_DATA_JSON; assuming added to constants.py
 from enum import Enum
-
 logger = logging.getLogger(__name__)
 
 # Define Status Enum for consistency
 class StatusEnum(str, Enum):
     PENDING = "pending"
     LIVE = "LIVE"
+    MONITORED = "MONITORED"
     # Add other statuses as needed, e.g., COMPLETED = "completed", EXPIRED = "expired"
 
 SQLITE_DB_PATH = os.getenv("SQLITE_DB_PATH", "app.db")
@@ -59,27 +58,16 @@ async def startup_event():
     try:
         # Handle ClientProfile mock data insertion
         if db.query(ClientProfile).count() == 0:
-            if not MOCK_DATA_CSV.exists():
-                logger.warning(f"Mock data CSV file not found at {MOCK_DATA_CSV}. Skipping mock data insertion.")
+            if not MOCK_DATA_JSON.exists():
+                logger.warning(f"Mock data JSON file not found at {MOCK_DATA_JSON}. Skipping mock data insertion.")
             else:
                 try:
-                    mock_data = []
-                    with open(MOCK_DATA_CSV, 'r', newline='', encoding='utf-8') as csvfile:
-                        reader = csv.DictReader(csvfile)
-                        for row in reader:
-                            data = {
-                                "client_id": row.get('client_id'),
-                                "company_name": row.get('company_name'),
-                                "country": row.get('country'),
-                                "new_regulation": row.get('new_regulation'),
-                                "deadline": row.get('deadline'),
-                                "status": row.get('status'),
-                            }
-                            mock_data.append(data)
+                    with open(MOCK_DATA_JSON, 'r', encoding='utf-8') as jsonfile:
+                        mock_data = json.load(jsonfile)
                     
-                    logger.info(f"Loaded {len(mock_data)} client profiles from CSV.")
+                    logger.info(f"Loaded {len(mock_data)} client profiles from JSON.")
                 except Exception as e:
-                    logger.error(f"Failed to load mock data CSV: {str(e)}. Skipping mock data insertion.")
+                    logger.error(f"Failed to load mock data JSON: {str(e)}. Skipping mock data insertion.")
                     mock_data = []
 
                 for data in mock_data:
