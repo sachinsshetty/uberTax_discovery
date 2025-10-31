@@ -5,4 +5,5 @@ services:
       - "80:18889"
     environment:
       - SQLITE_DB_PATH=/app/data/app.db
+      - DWANI_API_BASE_URL=https://<vllm-ip>.dwani.ai
     restart: unless-stopped
