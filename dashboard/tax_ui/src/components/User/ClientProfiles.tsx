@@ -106,6 +106,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
   // Use prop data primarily; fallback to Redux if needed
   const originalData = clients || [];
   const [filteredData, setFilteredData] = React.useState<ClientProfile[]>([]);
+  const [searchResults, setSearchResults] = React.useState<any[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchLoading, setSearchLoading] = React.useState(false);
   const [naturalResponse, setNaturalResponse] = React.useState('');
@@ -138,6 +139,8 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
 
     setSearchLoading(true);
     setNaturalResponse('');
+    setFilteredData([]);
+    setSearchResults([]);
     try {
       const url = `${API_URL}/api/clients/natural-query`;
       console.log('Querying natural language search:', url, searchQuery);
@@ -160,11 +163,17 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
 
       setNaturalResponse(data.natural_response || '');
 
-      if (data.raw_data && Array.isArray(data.raw_data)) {
-        const camelized = camelizeKeys(data.raw_data);
-        setFilteredData(camelized);
+      if (data.results && Array.isArray(data.results)) {
+        const camelized = camelizeKeys(data.results);
+        // Check if full profile data (has clientId)
+        if (camelized.length > 0 && camelized[0].clientId) {
+          setFilteredData(camelized as ClientProfile[]);
+        } else {
+          // Partial data, e.g., only companyName, show as simple text list
+          setSearchResults(camelized);
+        }
       } else {
-        // Fallback to original data if no raw_data
+        // Fallback to original data if no results
         setFilteredData(originalData);
       }
     } catch (error) {
@@ -178,11 +187,14 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
 
   const handleClear = () => {
     setFilteredData([]);
+    setSearchResults([]);
     setNaturalResponse('');
     setSearchQuery('');
   };
 
   const displayData = filteredData.length > 0 ? filteredData : originalData;
+  const hasSearchResults = searchResults.length > 0;
+  const showGrid = !hasSearchResults && (displayData.length > 0 || effectiveLoading);
 
   if (effectiveError) {
     return (
@@ -233,7 +245,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         >
           {searchLoading ? <CircularProgress size={20} color="inherit" /> : 'Query'}
         </Button>
-        {filteredData.length > 0 && (
+        {(filteredData.length > 0 || hasSearchResults) && (
           <Button
             variant="outlined"
             onClick={handleClear}
@@ -262,46 +274,79 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         </Box>
       )}
 
-      <DataGrid
-        rows={displayData}
-        columns={columns}
-        getRowId={(row) => row.clientId}
-        slots={{
-          toolbar: CustomToolbar,
-        }}
-        loading={effectiveLoading || searchLoading}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
-              page: 0,
+      {/* Simple Text Box Output for Partial Search Results */}
+      {hasSearchResults && (
+        <Box
+          sx={{
+            mb: 2,
+            p: 2,
+            backgroundColor: '#1e2d4a',
+            border: '1px solid #2a3b5a',
+            borderRadius: 1,
+            maxHeight: 400,
+            overflowY: 'auto',
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ mb: 1, color: 'grey.400' }}>
+            Search Results:
+          </Typography>
+          {searchResults.map((item, index) => (
+            <Typography key={index} variant="body2" sx={{ color: 'grey.300', mb: 0.5 }}>
+              {item.companyName || item.company_name || 'Unknown Company'}
+            </Typography>
+          ))}
+        </Box>
+      )}
+
+      {/* DataGrid for Full Profiles */}
+      {showGrid && (
+        <DataGrid
+          rows={displayData}
+          columns={columns}
+          getRowId={(row) => row.clientId}
+          slots={{
+            toolbar: CustomToolbar,
+          }}
+          loading={effectiveLoading || searchLoading}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
+                page: 0,
+              },
             },
-          },
-        }}
-        pageSizeOptions={[5, 10, 25]}
-        checkboxSelection
-        disableRowSelectionOnClick
-        sx={{
-          height: 500,
-          '& .MuiDataGrid-cell': {
-            fontSize: '0.875rem',
-          },
-          // Theme adjustments for dark mode consistency
-          backgroundColor: '#112240',
-          border: '1px solid #1e2d4a',
-          color: 'grey.200',
-          '& .MuiDataGrid-row:hover': {
-            backgroundColor: '#1e2d4a',
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#1e2d4a',
-            color: 'grey.400',
-          },
-          '& .MuiDataGrid-virtualScroller': {
-            overflowX: 'auto',
-          },
-        }}
-      />
+          }}
+          pageSizeOptions={[5, 10, 25]}
+          checkboxSelection
+          disableRowSelectionOnClick
+          sx={{
+            height: 500,
+            '& .MuiDataGrid-cell': {
+              fontSize: '0.875rem',
+            },
+            // Theme adjustments for dark mode consistency
+            backgroundColor: '#112240',
+            border: '1px solid #1e2d4a',
+            color: 'grey.200',
+            '& .MuiDataGrid-row:hover': {
+              backgroundColor: '#1e2d4a',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: '#1e2d4a',
+              color: 'grey.400',
+            },
+            '& .MuiDataGrid-virtualScroller': {
+              overflowX: 'auto',
+            },
+          }}
+        />
+      )}
+
+      {!showGrid && !hasSearchResults && !effectiveLoading && displayData.length === 0 && (
+        <Box sx={{ textAlign: 'center', py: 4, color: 'grey.500' }}>
+          <Typography>No data available.</Typography>
+        </Box>
+      )}
     </Box>
   );
 };
