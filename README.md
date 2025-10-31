@@ -1,6 +1,4 @@
-## uberTax - Agentic Tax Analytics  
-
-- juris-diction-AI-ry
+## juris-diction-AI-ry - Agentic Tax Analytics  
 
 #### powered by dwani.ai
 
@@ -21,28 +19,14 @@
         - Frankfurt, Germany
 
 - Team
-    - Hueseyin
+    - Hueseyin - 
     - Sachin - [linkedIn](https://linkedin.com/in/sachinlabs)
-    - Tobias
+    - Tobias - 
 
 -- 
 
-- deployment
+- Installation Steps - [Document](docs/install_steps.md) 
 
-    - Dashboard 
-        - server
-            - docker compose -f deployment/server.yml up -d
-
-        - dashboard client
-            - docker compose -f deployment/client.yml up -d
-        - dev client
-            - docker compose -f deployment/dev-client.yml up -d 
-
-        - vllm
-            - docker compose -f deployment/vllm.yml up -d 
-
-    - Analytics
-        - docker compose -f analytics/compose.yml up -d
 
 <!--
 --
@@ -50,22 +34,10 @@
 curl -X POST "http://localhost:80/api/clients/natural-query" \
   -H "Content-Type: application/json" \
   -d '{
-    "user_query": "Show me all pending clients from USA"
+    "user_query": "Show me all pending clients from Croatia"
   }'
 
 docker build -t dwani/ubertax-dev -f client.Dockerfile .
-
-
-
-PaddlePaddle/PaddleOCR-VL
-
-HuggingFaceTB/SmolVLM-256M-Instruct
-
-OpenGVLab/InternVL3_5-1B-Flash
-
-OpenGVLab/InternVL3_5-1B-Instruct
-
-OpenGVLab/InternVL3_5-2B-Instruct
 
 
 With H100 GPU 
