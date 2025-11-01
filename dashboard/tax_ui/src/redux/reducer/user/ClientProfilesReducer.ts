@@ -20,10 +20,11 @@ const camelizeKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(camelizeKeys);
   } else if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj).reduce((result, key) => {
+    // FIXED: Type the accumulator and initial value to include an index signature
+    return Object.keys(obj).reduce((result: Record<string, any>, key: string) => {
       result[camelize(key)] = camelizeKeys(obj[key]);
       return result;
-    }, {});
+    }, {} as Record<string, any>);
   }
   return obj;
 };

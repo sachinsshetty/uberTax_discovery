@@ -1,4 +1,3 @@
-// File: CountryProfiles.tsx (updated - fetch from backend)
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextField, CircularProgress, Box } from '@mui/material';
 import { CountryProfileData } from './CountryProfileData';  // ES module import
@@ -40,10 +39,11 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
     if (Array.isArray(obj)) {
       return obj.map(camelizeKeys);
     } else if (obj !== null && typeof obj === 'object') {
-      return Object.keys(obj).reduce((result, key) => {
+      // FIXED: Type the accumulator and initial value to include an index signature
+      return Object.keys(obj).reduce((result: Record<string, any>, key: string) => {
         result[camelize(key)] = camelizeKeys(obj[key]);
         return result;
-      }, {});
+      }, {} as Record<string, any>);
     }
     return obj;
   };
@@ -99,13 +99,13 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log('Query response:', data);
+      const responseData = await response.json();
+      console.log('Query response:', responseData);
 
-      setNaturalResponse(data.natural_response || '');
+      setNaturalResponse(responseData.natural_response || '');
 
-      if (data.results && Array.isArray(data.results)) {
-        const camelized = camelizeKeys(data.results);
+      if (responseData.results && Array.isArray(responseData.results)) {
+        const camelized = camelizeKeys(responseData.results);
         // Check if full profile data (has country)
         if (camelized.length > 0 && camelized[0].country) {
           setFilteredData(camelized as CountryProfileData[]);
