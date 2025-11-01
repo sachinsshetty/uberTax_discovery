@@ -1,4 +1,4 @@
-# File: schemas.py (updated)
+# File: schemas.py (updated - add from_orm to CountryProfile and use it for response)
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import date
@@ -154,152 +154,128 @@ class CountryProfile(BaseModel):
     reporting: Reporting
     additional: Additional
 
-class CountryProfileResponse(BaseModel):
-    country: str = Field(..., alias="country")
-    mandateStatus: str = Field(..., alias="mandate_status")
-    archivingPeriod: str = Field(..., alias="archiving_period")
-    scopeTriggersResidents: str = Field(..., alias="scope_triggers_residents")
-    scopeTriggersNonResidentsWithVatId: str = Field(..., alias="scope_triggers_non_residents_with_vat_id")
-    scopeTriggersLogic: str = Field(..., alias="scope_triggers_logic")
-    scopeB2bStatus: str = Field(..., alias="scope_b2b_status")
-    scopeB2bStartDate: str = Field(..., alias="scope_b2b_start_date")
-    scopeB2bPosRelevant: str = Field(..., alias="scope_b2b_pos_relevant")
-    scopeB2bStaggeredApplies: str = Field(..., alias="scope_b2b_staggered_applies")
-    scopeB2bStaggeredThreshold: str = Field(..., alias="scope_b2b_staggered_threshold")
-    scopeB2gStatus: str = Field(..., alias="scope_b2g_status")
-    scopeB2gStartDate: str = Field(..., alias="scope_b2g_start_date")
-    scopeB2gStaggeredApplies: str = Field(..., alias="scope_b2g_staggered_applies")
-    scopeB2gStaggeredThreshold: str = Field(..., alias="scope_b2g_staggered_threshold")
-    scopeB2cReportingObligation: str = Field(..., alias="scope_b2c_reporting_obligation")
-    scopeB2cStartDate: str = Field(..., alias="scope_b2c_start_date")
-    scopeBuyersChoiceApplies: str = Field(..., alias="scope_buyers_choice_applies")
-    scopeBuyersChoiceCondition: str = Field(..., alias="scope_buyers_choice_condition")
-    architectureModelType: str = Field(..., alias="architecture_model_type")
-    architectureModelCornerModel: str = Field(..., alias="architecture_model_corner_model")
-    architectureModelDescription: str = Field(..., alias="architecture_model_description")
-    architectureFormatsEn16931Status: str = Field(..., alias="architecture_formats_en16931_status")
-    architectureFormatsEn16931Version: str = Field(..., alias="architecture_formats_en16931_version")
-    architectureFormatsNationalCiusApplies: str = Field(..., alias="architecture_formats_national_cius_applies")
-    architectureFormatsNationalCiusSchemaName: str = Field(..., alias="architecture_formats_national_cius_schema_name")
-    architectureFormatsAllowedSyntaxes: List[str] = Field(..., alias="architecture_formats_allowed_syntaxes")
-    architectureFormatsPdfConform: str = Field(..., alias="architecture_formats_pdf_conform")
-    architectureTransmissionPeppolStatus: str = Field(..., alias="architecture_transmission_peppol_status")
-    reportingStatePlatformApplies: str = Field(..., alias="reporting_state_platform_applies")
-    reportingStatePlatformName: str = Field(..., alias="reporting_state_platform_name")
-    reportingStatePlatformMandatory: str = Field(..., alias="reporting_state_platform_mandatory")
-    reportingClearanceRealTimeCtc: str = Field(..., alias="reporting_clearance_real_time_ctc")
-    reportingClearanceValidityAfterRelease: str = Field(..., alias="reporting_clearance_validity_after_release")
-    reportingReqDrr: str = Field(..., alias="reporting_req_drr")
-    reportingReqRealTime: str = Field(..., alias="reporting_req_real_time")
-    reportingReqFrequency: str = Field(..., alias="reporting_req_frequency")
-    additionalSystemCert: str = Field(..., alias="additional_system_cert")
-    additionalSaftObligation: str = Field(..., alias="additional_saft_obligation")
-    additionalSaftSubmission: str = Field(..., alias="additional_saft_submission")
-    additionalLocalIdsObligation: str = Field(..., alias="additional_local_ids_obligation")
-    additionalLocalIdsType: str = Field(..., alias="additional_local_ids_type")
-    additionalTransactionStatusReporting: str = Field(..., alias="additional_transaction_status_reporting")
-    additionalSpecialNotes: str = Field(..., alias="additional_special_notes")
-    additionalSanctions: str = Field(..., alias="additional_sanctions")
-
     @classmethod
     def from_orm(cls, obj):
-        # Custom from_orm to reconstruct nested structure
-        scope = {
-            "triggers": {
-                "residents": obj.scope_triggers_residents,
-                "nonResidentsWithVatId": obj.scope_triggers_non_residents_with_vat_id,
-                "logic": obj.scope_triggers_logic,
-            },
-            "b2b": {
-                "status": obj.scope_b2b_status,
-                "startDate": obj.scope_b2b_start_date,
-                "posRelevant": obj.scope_b2b_pos_relevant,
-                "staggered": {
-                    "applies": obj.scope_b2b_staggered_applies,
-                    "threshold": obj.scope_b2b_staggered_threshold,
-                },
-            },
-            "b2g": {
-                "status": obj.scope_b2g_status,
-                "startDate": obj.scope_b2g_start_date,
-                "staggered": {
-                    "applies": obj.scope_b2g_staggered_applies,
-                    "threshold": obj.scope_b2g_staggered_threshold,
-                },
-            },
-            "b2c": {
-                "reportingObligation": obj.scope_b2c_reporting_obligation,
-                "startDate": obj.scope_b2c_start_date,
-            },
-            "buyersChoice": {
-                "applies": obj.scope_buyers_choice_applies,
-                "condition": obj.scope_buyers_choice_condition,
-            },
-        }
-        architecture = {
-            "model": {
-                "type": obj.architecture_model_type,
-                "cornerModel": obj.architecture_model_corner_model,
-                "description": obj.architecture_model_description,
-            },
-            "formats": {
-                "en16931": {
-                    "status": obj.architecture_formats_en16931_status,
-                    "version": obj.architecture_formats_en16931_version,
-                },
-                "nationalCius": {
-                    "applies": obj.architecture_formats_national_cius_applies,
-                    "schemaName": obj.architecture_formats_national_cius_schema_name,
-                },
-                "allowedSyntaxes": json.loads(obj.architecture_formats_allowed_syntaxes) if obj.architecture_formats_allowed_syntaxes else [],
-                "pdfConform": obj.architecture_formats_pdf_conform,
-            },
-            "transmission": {
-                "peppol": {
-                    "status": obj.architecture_transmission_peppol_status,
-                },
-            },
-        }
-        reporting = {
-            "statePlatform": {
-                "applies": obj.reporting_state_platform_applies,
-                "name": obj.reporting_state_platform_name,
-                "mandatory": obj.reporting_state_platform_mandatory,
-            },
-            "clearance": {
-                "realTimeCtc": obj.reporting_clearance_real_time_ctc,
-                "validityAfterRelease": obj.reporting_clearance_validity_after_release,
-            },
-            "reportingReq": {
-                "drr": obj.reporting_req_drr,
-                "realTime": obj.reporting_req_real_time,
-                "frequency": obj.reporting_req_frequency,
-            },
-        }
-        additional = {
-            "systemCert": obj.additional_system_cert,
-            "saft": {
-                "obligation": obj.additional_saft_obligation,
-                "submission": obj.additional_saft_submission,
-            },
-            "localIds": {
-                "obligation": obj.additional_local_ids_obligation,
-                "type": obj.additional_local_ids_type,
-            },
-            "transactionStatusReporting": obj.additional_transaction_status_reporting,
-            "specialNotes": obj.additional_special_notes,
-            "sanctions": obj.additional_sanctions,
-        }
+        # Reconstruct nested structures from flat ORM attributes
+        # Scope
+        triggers = ScopeTriggers(
+            residents=obj.scope_triggers_residents or '',
+            nonResidentsWithVatId=obj.scope_triggers_non_residents_with_vat_id or '',
+            logic=obj.scope_triggers_logic or ''
+        )
+        b2b_staggered = Staggered(
+            applies=obj.scope_b2b_staggered_applies or '',
+            threshold=obj.scope_b2b_staggered_threshold or ''
+        )
+        b2b = B2B(
+            status=obj.scope_b2b_status or '',
+            startDate=obj.scope_b2b_start_date or '',
+            posRelevant=obj.scope_b2b_pos_relevant or '',
+            staggered=b2b_staggered
+        )
+        b2g_staggered = Staggered(
+            applies=obj.scope_b2g_staggered_applies or '',
+            threshold=obj.scope_b2g_staggered_threshold or ''
+        )
+        b2g = B2G(
+            status=obj.scope_b2g_status or '',
+            startDate=obj.scope_b2g_start_date or '',
+            staggered=b2g_staggered
+        )
+        b2c = B2C(
+            reportingObligation=obj.scope_b2c_reporting_obligation or '',
+            startDate=obj.scope_b2c_start_date or ''
+        )
+        buyers_choice = BuyersChoice(
+            applies=obj.scope_buyers_choice_applies or '',
+            condition=obj.scope_buyers_choice_condition or ''
+        )
+        scope = Scope(
+            triggers=triggers,
+            b2b=b2b,
+            b2g=b2g,
+            b2c=b2c,
+            buyersChoice=buyers_choice
+        )
+
+        # Architecture
+        model = Model(
+            type=obj.architecture_model_type or '',
+            cornerModel=obj.architecture_model_corner_model or '',
+            description=obj.architecture_model_description or ''
+        )
+        en16931 = EN16931(
+            status=obj.architecture_formats_en16931_status or '',
+            version=obj.architecture_formats_en16931_version or ''
+        )
+        national_cius = NationalCius(
+            applies=obj.architecture_formats_national_cius_applies or '',
+            schemaName=obj.architecture_formats_national_cius_schema_name or ''
+        )
+        allowed_syntaxes = json.loads(obj.architecture_formats_allowed_syntaxes or '[]')
+        formats = Formats(
+            en16931=en16931,
+            nationalCius=national_cius,
+            allowedSyntaxes=allowed_syntaxes,
+            pdfConform=obj.architecture_formats_pdf_conform or ''
+        )
+        peppol = Peppol(
+            status=obj.architecture_transmission_peppol_status or ''
+        )
+        transmission = Transmission(
+            peppol=peppol
+        )
+        architecture = Architecture(
+            model=model,
+            formats=formats,
+            transmission=transmission
+        )
+
+        # Reporting
+        state_platform = StatePlatform(
+            applies=obj.reporting_state_platform_applies or '',
+            name=obj.reporting_state_platform_name or '',
+            mandatory=obj.reporting_state_platform_mandatory or ''
+        )
+        clearance = Clearance(
+            realTimeCtc=obj.reporting_clearance_real_time_ctc or '',
+            validityAfterRelease=obj.reporting_clearance_validity_after_release or ''
+        )
+        reporting_req = ReportingReq(
+            drr=obj.reporting_req_drr or '',
+            realTime=obj.reporting_req_real_time or '',
+            frequency=obj.reporting_req_frequency or ''
+        )
+        reporting = Reporting(
+            statePlatform=state_platform,
+            clearance=clearance,
+            reportingReq=reporting_req
+        )
+
+        # Additional
+        saft = Saft(
+            obligation=obj.additional_saft_obligation or '',
+            submission=obj.additional_saft_submission or ''
+        )
+        local_ids = LocalIds(
+            obligation=obj.additional_local_ids_obligation or '',
+            type=obj.additional_local_ids_type or ''
+        )
+        additional = Additional(
+            systemCert=obj.additional_system_cert or '',
+            saft=saft,
+            localIds=local_ids,
+            transactionStatusReporting=obj.additional_transaction_status_reporting or '',
+            specialNotes=obj.additional_special_notes or '',
+            sanctions=obj.additional_sanctions or ''
+        )
+
         return cls(
-            country=obj.country,
-            mandateStatus=obj.mandate_status,
-            archivingPeriod=obj.archiving_period,
+            country=obj.country or '',
+            mandateStatus=obj.mandate_status or '',
+            archivingPeriod=obj.archiving_period or '',
             scope=scope,
             architecture=architecture,
             reporting=reporting,
             additional=additional
         )
-
-    class Config:
-        from_attributes = True
-        arbitrary_types_allowed = True
