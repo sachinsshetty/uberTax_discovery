@@ -1,19 +1,35 @@
-// CountryProfiles.tsx - Table component for selecting countries
+// RegulatoryFeed.tsx - Table component for regulatory feed with search
 import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextField, CircularProgress, Box } from '@mui/material';
-import { CountryProfileData, CountryProfilesData } from './CountryProfileData';  // ES module import
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  TextField,
+  CircularProgress,
+  Box,
+  Button,
+} from '@mui/material';
 
-interface CountryProfilesProps {
-  onSelectCountry: (country: CountryProfileData) => void;
+interface RegulatoryFeedItem {
+  date: string;
+  country: string;
+  content: string;
+}
+
+interface RegulatoryFeedProps {
+  feed: RegulatoryFeedItem[];
 }
 
 const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
 
-const columns: any[] = []; // Not used, keeping Table for simplicity
-
-const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) => {
-  const originalData = CountryProfilesData;
-  const [filteredData, setFilteredData] = useState<CountryProfileData[]>([]);
+const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
+  const originalData = feed;
+  const [filteredData, setFilteredData] = useState<RegulatoryFeedItem[]>([]);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
@@ -48,7 +64,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ user_query: searchQuery, table_name: "country_profiles" }),
+        body: JSON.stringify({ user_query: searchQuery, table_name: "regulatory_feed" }),
       });
 
       if (!response.ok) {
@@ -64,11 +80,11 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
 
       if (data.results && Array.isArray(data.results)) {
         const camelized = camelizeKeys(data.results);
-        // Check if full profile data (has country)
-        if (camelized.length > 0 && camelized[0].country) {
-          setFilteredData(camelized as CountryProfileData[]);
+        // Check if full profile data (has date, country, content)
+        if (camelized.length > 0 && camelized[0].date && camelized[0].country && camelized[0].content) {
+          setFilteredData(camelized as RegulatoryFeedItem[]);
         } else {
-          // Partial data, e.g., only country, show as simple text list
+          // Partial data, e.g., only content snippets, show as simple text list
           setSearchResults(camelized);
         }
       } else {
@@ -76,7 +92,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
         setFilteredData(originalData);
       }
     } catch (error) {
-      console.error('Error querying countries:', error);
+      console.error('Error querying regulatory feed:', error);
       // Optionally set an error state
       setFilteredData(originalData);
     } finally {
@@ -102,7 +118,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Ask a question about countries, e.g., Show me countries with B2B mandate"
+          placeholder="Ask a question about regulatory updates, e.g., Show me updates from EU in 2025"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={(e) => {
@@ -172,52 +188,41 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
           </Typography>
           {searchResults.map((item, index) => (
             <Typography key={index} variant="body2" sx={{ color: 'grey.300', mb: 0.5 }}>
-              {item.country || item.country_name || 'Unknown Country'}
+              {item.content || item.update || 'No content'}
             </Typography>
           ))}
         </Box>
       )}
 
-      {/* Table for Full Profiles */}
+      {/* Table for Full Feed */}
       {showTable && (
-        <Paper sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
-          <TableContainer sx={{ '& .MuiTableCell-root': { color: 'grey.300' } }}>
+        <Paper sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
+          <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Country</TableCell>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Mandate Status</TableCell>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>B2B Start Date</TableCell>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Actions</TableCell>
+                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Date & Location</TableCell>
+                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Update</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {displayData.map((country, index) => (
+                {displayData.map((item, index) => (
                   <TableRow key={index} hover sx={{ '&:hover': { backgroundColor: '#1e2d4a' } }}>
                     <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2" fontWeight="500">{country.country}</Typography>
+                      <Typography variant="body2" color="cyan.400" fontWeight="600">
+                        [{item.date || 'N/A'}] {item.country || 'Unknown'}:
+                      </Typography>
                     </TableCell>
                     <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2">{country.mandateStatus}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2">{country.scope?.b2b?.startDate || 'N/A'}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => onSelectCountry(country)}
-                        sx={{ color: '#64ffda', borderColor: '#64ffda', '&:hover': { borderColor: '#64ffda', bgcolor: 'rgba(100, 255, 218, 0.04)' } }}
-                      >
-                        View Details
-                      </Button>
+                      <Typography variant="body2" color="grey.500">
+                        {item.content || 'No content'}
+                      </Typography>
                     </TableCell>
                   </TableRow>
                 ))}
                 {displayData.length === 0 && searchLoading && (
                   <TableRow>
-                    <TableCell colSpan={4} sx={{ textAlign: 'center', py: 4 }}>
+                    <TableCell colSpan={2} sx={{ textAlign: 'center', py: 4 }}>
                       <CircularProgress size={20} />
                     </TableCell>
                   </TableRow>
@@ -237,4 +242,4 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
   );
 };
 
-export default CountryProfiles;
+export default RegulatoryFeed;

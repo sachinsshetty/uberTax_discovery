@@ -5,6 +5,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ClientProfiles from './ClientProfiles';
 import CountryProfiles from './CountryProfiles';
 import CountryProfile from './CountryProfile';  // Added missing import
+import RegulatoryFeed from './RegulatoryFeed';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { CountryProfileData } from './CountryProfileData';
 import { CountryProfilesData } from './CountryProfileData';
@@ -278,39 +279,7 @@ const UserApp = () => {
                       <Typography variant="body1" sx={{ ml: 2 }}>Loading regulatory feed...</Typography>
                     </Box>
                   ) : (
-                    <TableContainer>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Date & Location</TableCell>
-                            <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Update</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {regulatoryFeed.map((item, index) => (
-                            <TableRow key={index} hover>
-                              <TableCell>
-                                <Typography variant="body2" color="cyan.400" fontWeight="600">
-                                  [{item.date || 'N/A'}] {item.country || 'Unknown'}:
-                                </Typography>
-                              </TableCell>
-                              <TableCell>
-                                <Typography variant="body2" color="grey.500">
-                                  {item.content || 'No content'}
-                                </Typography>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                          {regulatoryFeed.length === 0 && !loadingRegulatory && (
-                            <TableRow>
-                              <TableCell colSpan={2} sx={{ textAlign: 'center', py: 4 }}>
-                                <Typography variant="body2" color="grey.500">No regulatory updates available.</Typography>
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                    <RegulatoryFeed feed={regulatoryFeed} />
                   )}
                 </AccordionDetails>
               </Accordion>
