@@ -5,9 +5,7 @@ import ClientProfiles from './ClientProfiles';
 import CountryProfiles from './CountryProfiles';
 import CountryProfile from './CountryProfile';  // Added missing import
 import RegulatoryFeed from './RegulatoryFeed';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { CountryProfileData } from './CountryProfileData';
-import { CountryProfilesData } from './CountryProfileData';
 
 const camelizeKeys = (obj: any): any => {
   const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
