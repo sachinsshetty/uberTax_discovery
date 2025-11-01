@@ -1,6 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000/';
+const getApiBaseUrl = (): string => {
+  let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace(/^http:/, 'https:');
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://localhost:8000';
+    }
+  }
+  return baseUrl;
+};
+
+const API_URL = getApiBaseUrl();
 
 const camelizeKeys = (obj: any): any => {
   const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -8,10 +19,10 @@ const camelizeKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(camelizeKeys);
   } else if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj).reduce((result, key) => {
+    return Object.keys(obj).reduce((result: Record<string, any>, key: string) => {
       result[camelize(key)] = camelizeKeys(obj[key]);
       return result;
-    }, {});
+    }, {} as Record<string, any>);
   }
   return obj;
 };
@@ -31,8 +42,8 @@ export const fetchClientProfiles = createAsyncThunk<
   'sanjeeviniApp/fetchClientProfiles',
   async (_, thunkAPI) => {
     try {
-      const url = `${API_URL}api/clients`;
-      console.log('Redux fetching from:', url); // Debug log
+      const url = `${API_URL}/api/clients`;
+      console.log('Redux fetching from:', url);
       const response = await fetch(url);
       if (!response.ok) {
         const errorText = await response.text();
@@ -41,7 +52,7 @@ export const fetchClientProfiles = createAsyncThunk<
       }
       const data = await response.json();
       const camelCasedData = camelizeKeys(data);
-      console.log('Redux fetched clients:', camelCasedData); // Debug log
+      console.log('Redux fetched clients:', camelCasedData);
       return camelCasedData;
     } catch (error) {
       console.error('Redux error fetching clients:', error);

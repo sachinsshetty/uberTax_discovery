@@ -1,14 +1,20 @@
-// File: UserApp.tsx (updated - no changes needed, as CountryProfiles now handles fetch internally)
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ClientProfiles from './ClientProfiles';
 import CountryProfiles from './CountryProfiles';
-import CountryProfile from './CountryProfile';  // Added missing import
+import CountryProfile from './CountryProfile';
 import RegulatoryFeed from './RegulatoryFeed';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { CountryProfileData } from './CountryProfileData';
-import { CountryProfilesData } from './CountryProfileData';
+
+interface Client {
+  clientId: string;
+  companyName: string;
+  country: string;
+  newRegulation: string;
+  deadline: string | null;
+  status: string;
+}
 
 const camelizeKeys = (obj: any): any => {
   const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -16,26 +22,37 @@ const camelizeKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(camelizeKeys);
   } else if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj).reduce((result, key) => {
+    return Object.keys(obj).reduce((result: Record<string, any>, key: string) => {
       result[camelize(key)] = camelizeKeys(obj[key]);
       return result;
-    }, {});
+    }, {} as Record<string, any>);
   }
   return obj;
 };
 
+const getApiBaseUrl = (): string => {
+  let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace(/^http:/, 'https:');
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://localhost:8000';
+    }
+  }
+  return baseUrl;
+};
+
 const UserApp = () => {
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [regulatoryFeed, setRegulatoryFeed] = useState([]);
-  const [error, setError] = useState(null);
-  const [errorRegulatory, setErrorRegulatory] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [errorRegulatory, setErrorRegulatory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingRegulatory, setLoadingRegulatory] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState<CountryProfileData | null>(null);
 
   const fetchClients = async (retries = 3) => {
     try {
-      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+      const DWANI_API_BASE_URL = getApiBaseUrl();
       const apiUrl = `${DWANI_API_BASE_URL}/api/clients`;
 
       console.log('Fetching from:', apiUrl);
@@ -53,11 +70,12 @@ const UserApp = () => {
       console.log('Fetched clients:', camelCasedData);
     } catch (err) {
       console.error('Error fetching clients:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       if (retries > 0) {
         console.log(`Retrying in 1s... (${retries} left)`);
         setTimeout(() => fetchClients(retries - 1), 1000);
       } else {
-        setError(`Failed to load clients: ${err.message}. Check backend (port 8000) & Docker network.`);
+        setError(`Failed to load clients: ${errorMessage}. Check backend (port 8000) & Docker network.`);
       }
     } finally {
       setLoading(false);
@@ -66,7 +84,7 @@ const UserApp = () => {
 
   const fetchRegulatory = async (retries = 3) => {
     try {
-      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+      const DWANI_API_BASE_URL = getApiBaseUrl();
       const apiUrl = `${DWANI_API_BASE_URL}/api/countries/regulatory-feed`;
 
       console.log('Fetching regulatory feed from:', apiUrl);
@@ -84,11 +102,12 @@ const UserApp = () => {
       console.log('Fetched regulatory feed:', camelCasedData);
     } catch (err) {
       console.error('Error fetching regulatory feed:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       if (retries > 0) {
         console.log(`Retrying in 1s... (${retries} left)`);
         setTimeout(() => fetchRegulatory(retries - 1), 1000);
       } else {
-        setErrorRegulatory(`Failed to load regulatory feed: ${err.message}. Check backend (port 8000) & Docker network.`);
+        setErrorRegulatory(`Failed to load regulatory feed: ${errorMessage}. Check backend (port 8000) & Docker network.`);
       }
     } finally {
       setLoadingRegulatory(false);
@@ -101,7 +120,7 @@ const UserApp = () => {
   }, []);
 
   const handleSelectCountry = (country: CountryProfileData) => {
-    console.log('Setting selectedCountry:', country);  // Debug log
+    console.log('Setting selectedCountry:', country);
     setSelectedCountry(country);
   };
 
@@ -109,7 +128,6 @@ const UserApp = () => {
     setSelectedCountry(null);
   };
 
-  // Memoized stats
   const totalClients = clients.length;
   const impactedClients = useMemo(
     () => clients.filter(c => c.newRegulation !== "N/A" && c.deadline !== null).length,
@@ -122,8 +140,7 @@ const UserApp = () => {
   );
   const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
 
-  // Urgency calculation
-  const currentDate = new Date();  // Dynamic date
+  const currentDate = new Date();
   let urgencyLevel = 'LOW';
   let urgencyColor = 'green';
   for (const c of clients) {
@@ -185,7 +202,6 @@ const UserApp = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} lg={8}>
-          {/* Overview */}
           <Card sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
             <CardContent>
               <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Overview</Typography>
@@ -221,7 +237,6 @@ const UserApp = () => {
             </CardContent>
           </Card>
 
-          {/* Affected Client Profiles - Collapsible */}
           <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={true}>
             <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
               <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Affected Client Profiles</Typography>
@@ -232,7 +247,6 @@ const UserApp = () => {
           </Accordion>
           <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
-          {/* Country Profiles Table - Collapsible */}
           <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={false}>
             <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
               <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Country Profiles</Typography>
@@ -242,7 +256,6 @@ const UserApp = () => {
             </AccordionDetails>
           </Accordion>
 
-          {/* Expanded Country Profile */}
           {selectedCountry && (
             <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -256,7 +269,6 @@ const UserApp = () => {
           )}
           <Divider sx={{ my: 1, borderColor: '#1e2d4a' }} />
 
-          {/* Regulatory Feed - Collapsible */}
           <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
             <CardContent>
               <Accordion defaultExpanded={false} sx={{ boxShadow: 'none' }}>
@@ -286,40 +298,37 @@ const UserApp = () => {
             </CardContent>
           </Card>
         </Grid>
-        <div style={{ display: 'none' }}> 
-        
-        {/* Right Column */}
-        <Grid item xs={12} lg={4}>
-          <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', mb: 3 }}>
-            <CardContent>
-              <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Quick Actions</Typography>
-              <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
-                Run New Scan
-              </Button>
-              <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
-                Generate Report
-              </Button>
-              <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
-                Client Database
-              </Button>
-              <Button fullWidth variant="outlined" sx={{ color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
-                Settings
-              </Button>
-            </CardContent>
-          </Card>
-          <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', mb: 3, textAlign: 'center' }}>
-            <CardContent>
-              <Typography variant="body2" color="grey.500">
-                USER: <Typography component="span" variant="body2" fontWeight="600" color="grey.200">TAX_ADVISOR/USERNAME</Typography>
-              </Typography>
-              <Typography variant="caption" sx={{ mt: 0.5, display: 'block' }}>LAST UPDATE: JUST NOW</Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', opacity: 0.2, minHeight: 200 }} />
-        </Grid>
+        <div style={{ display: 'none' }}>
+          <Grid item xs={12} lg={4}>
+            <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', mb: 3 }}>
+              <CardContent>
+                <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Quick Actions</Typography>
+                <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
+                  Run New Scan
+                </Button>
+                <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
+                  Generate Report
+                </Button>
+                <Button fullWidth variant="outlined" sx={{ mb: 1, color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
+                  Client Database
+                </Button>
+                <Button fullWidth variant="outlined" sx={{ color: '#a8b2d1', borderColor: '#1e2d4a', '&:hover': { bgcolor: '#1e2d4a', color: '#64ffda' } }}>
+                  Settings
+                </Button>
+              </CardContent>
+            </Card>
+            <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', mb: 3, textAlign: 'center' }}>
+              <CardContent>
+                <Typography variant="body2" color="grey.500">
+                  USER: <Typography component="span" variant="body2" fontWeight="600" color="grey.200">TAX_ADVISOR/USERNAME</Typography>
+                </Typography>
+                <Typography variant="caption" sx={{ mt: 0.5, display: 'block' }}>LAST UPDATE: JUST NOW</Typography>
+              </CardContent>
+            </Card>
+            <Card sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a', opacity: 0.2, minHeight: 200 }} />
+          </Grid>
         </div>
       </Grid>
-      
     </Container>
   );
 };

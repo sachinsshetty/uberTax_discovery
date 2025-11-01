@@ -1,6 +1,11 @@
 # Build stage
 FROM node:20-alpine AS builder
 WORKDIR /app
+
+# Declare build arg and set as env for Vite to access
+ARG VITE_DWANI_API_BASE_URL
+ENV VITE_DWANI_API_BASE_URL=$VITE_DWANI_API_BASE_URL
+
 COPY package*.json ./
 RUN npm ci 
 COPY . .

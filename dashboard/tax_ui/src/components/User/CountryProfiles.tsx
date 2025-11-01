@@ -1,15 +1,27 @@
-// File: CountryProfiles.tsx (updated - fetch from backend)
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextField, CircularProgress, Box } from '@mui/material';
 import { CountryProfileData } from './CountryProfileData';  // ES module import
+
+// FIXED: Helper to ensure HTTPS for API URLs (fallback to localhost for dev)
+const getApiBaseUrl = (): string => {
+  let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+  // Force HTTPS in production (detect via window.location)
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace(/^http:/, 'https:');
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://localhost:8000'; // Adjust port if needed; use self-signed cert for local HTTPS
+    }
+  }
+  return baseUrl;
+};
+
+const API_URL = getApiBaseUrl();  // FIXED: Use HTTPS-safe URL
 
 interface CountryProfilesProps {
   onSelectCountry: (country: CountryProfileData) => void;
 }
 
-const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
-
-const columns: any[] = []; // Not used, keeping Table for simplicity
+// FIXED: Removed unused 'columns' declaration
 
 const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) => {
   const [data, setData] = useState<CountryProfileData[]>([]);
@@ -27,10 +39,11 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
     if (Array.isArray(obj)) {
       return obj.map(camelizeKeys);
     } else if (obj !== null && typeof obj === 'object') {
-      return Object.keys(obj).reduce((result, key) => {
+      // FIXED: Type the accumulator and initial value to include an index signature
+      return Object.keys(obj).reduce((result: Record<string, any>, key: string) => {
         result[camelize(key)] = camelizeKeys(obj[key]);
         return result;
-      }, {});
+      }, {} as Record<string, any>);
     }
     return obj;
   };
@@ -38,6 +51,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
   // Fetch country profiles from backend
   const fetchCountryProfiles = async () => {
     try {
+      // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/countries/profiles`;
       const response = await fetch(url);
       if (!response.ok) {
@@ -50,7 +64,8 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
       setError(null);
     } catch (err) {
       console.error('Error fetching country profiles:', err);
-      setError(`Failed to load country profiles: ${err.message}`);
+      // FIXED: Type guard 'err' as Error to safely access .message
+      setError(`Failed to load country profiles: ${(err as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -68,6 +83,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
     setFilteredData([]);
     setSearchResults([]);
     try {
+      // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/clients/natural-query`;
       console.log('Querying natural language search:', url, searchQuery);
       const response = await fetch(url, {
@@ -84,13 +100,13 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log('Query response:', data);
+      const responseData = await response.json();
+      console.log('Query response:', responseData);
 
-      setNaturalResponse(data.natural_response || '');
+      setNaturalResponse(responseData.natural_response || '');
 
-      if (data.results && Array.isArray(data.results)) {
-        const camelized = camelizeKeys(data.results);
+      if (responseData.results && Array.isArray(responseData.results)) {
+        const camelized = camelizeKeys(responseData.results);
         // Check if full profile data (has country)
         if (camelized.length > 0 && camelized[0].country) {
           setFilteredData(camelized as CountryProfileData[]);
