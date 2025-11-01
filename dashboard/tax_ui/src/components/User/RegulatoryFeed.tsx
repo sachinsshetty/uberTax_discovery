@@ -57,7 +57,7 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
     setFilteredData([]);
     setSearchResults([]);
     try {
-      const url = `${API_URL}/api/countries/natural-query`;
+      const url = `${API_URL}/api/clients/natural-query`;
       console.log('Querying natural language search:', url, searchQuery);
       const response = await fetch(url, {
         method: 'POST',
