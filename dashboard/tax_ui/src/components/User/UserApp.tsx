@@ -13,10 +13,11 @@ const camelizeKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(camelizeKeys);
   } else if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj).reduce((result, key) => {
+    // FIXED: Type the accumulator and initial value to include an index signature
+    return Object.keys(obj).reduce((result: Record<string, any>, key: string) => {
       result[camelize(key)] = camelizeKeys(obj[key]);
       return result;
-    }, {});
+    }, {} as Record<string, any>);
   }
   return obj;
 };
@@ -37,8 +38,8 @@ const getApiBaseUrl = (): string => {
 const UserApp = () => {
   const [clients, setClients] = useState([]);
   const [regulatoryFeed, setRegulatoryFeed] = useState([]);
-  const [error, setError] = useState(null);
-  const [errorRegulatory, setErrorRegulatory] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [errorRegulatory, setErrorRegulatory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingRegulatory, setLoadingRegulatory] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState<CountryProfileData | null>(null);
@@ -64,11 +65,12 @@ const UserApp = () => {
       console.log('Fetched clients:', camelCasedData);
     } catch (err) {
       console.error('Error fetching clients:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       if (retries > 0) {
         console.log(`Retrying in 1s... (${retries} left)`);
         setTimeout(() => fetchClients(retries - 1), 1000);
       } else {
-        setError(`Failed to load clients: ${err.message}. Check backend (port 8000) & Docker network.`);
+        setError(`Failed to load clients: ${errorMessage}. Check backend (port 8000) & Docker network.`);
       }
     } finally {
       setLoading(false);
@@ -96,11 +98,12 @@ const UserApp = () => {
       console.log('Fetched regulatory feed:', camelCasedData);
     } catch (err) {
       console.error('Error fetching regulatory feed:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       if (retries > 0) {
         console.log(`Retrying in 1s... (${retries} left)`);
         setTimeout(() => fetchRegulatory(retries - 1), 1000);
       } else {
-        setErrorRegulatory(`Failed to load regulatory feed: ${err.message}. Check backend (port 8000) & Docker network.`);
+        setErrorRegulatory(`Failed to load regulatory feed: ${errorMessage}. Check backend (port 8000) & Docker network.`);
       }
     } finally {
       setLoadingRegulatory(false);

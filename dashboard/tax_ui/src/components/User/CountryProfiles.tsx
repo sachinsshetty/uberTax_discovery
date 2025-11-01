@@ -21,7 +21,7 @@ interface CountryProfilesProps {
   onSelectCountry: (country: CountryProfileData) => void;
 }
 
-const columns: any[] = []; // Not used, keeping Table for simplicity
+// FIXED: Removed unused 'columns' declaration
 
 const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) => {
   const [data, setData] = useState<CountryProfileData[]>([]);
@@ -64,7 +64,8 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
       setError(null);
     } catch (err) {
       console.error('Error fetching country profiles:', err);
-      setError(`Failed to load country profiles: ${err.message}`);
+      // FIXED: Type guard 'err' as Error to safely access .message
+      setError(`Failed to load country profiles: ${(err as Error).message}`);
     } finally {
       setLoading(false);
     }
