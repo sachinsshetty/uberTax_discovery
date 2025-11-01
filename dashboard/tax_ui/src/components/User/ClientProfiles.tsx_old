@@ -1,18 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
+import Box from '@mui/material/Box';
+import { Button, Typography, TextField, CircularProgress } from '@mui/material';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
-  TextField,
-  CircularProgress,
-  Box,
-  Button,
-} from '@mui/material';
+  DataGrid,
+  GridColDef,
+  GridToolbarContainer,
+  useGridApiContext,
+} from '@mui/x-data-grid';
 
 const getApiBaseUrl = (): string => {
   let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
@@ -44,13 +38,77 @@ interface ClientProfilesProps {
   clients: ClientProfile[];
 }
 
+const columns: GridColDef<ClientProfile>[] = [
+  { field: 'clientId', headerName: 'Client ID', flex: 0.8, minWidth: 120 },
+  {
+    field: 'companyName',
+    headerName: 'Company Name',
+    flex: 1.2,
+    minWidth: 200,
+    editable: false,
+  },
+  {
+    field: 'country',
+    headerName: 'Country',
+    flex: 0.6,
+    minWidth: 100,
+    editable: false,
+  },
+  {
+    field: 'newRegulation',
+    headerName: 'New Regulation',
+    flex: 1.5,
+    minWidth: 200,
+    editable: false,
+  },
+  {
+    field: 'deadline',
+    headerName: 'Deadline',
+    flex: 0.6,
+    minWidth: 100,
+    editable: false,
+    valueFormatter: (value) => value ?? 'N/A',
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
+    flex: 0.6,
+    minWidth: 100,
+    editable: false,
+  },
+];
+
+function CustomExportButton() {
+  const apiRef = useGridApiContext();
+
+  const handleExport = () => {
+    apiRef.current.exportDataAsCsv({
+      fileName: 'client-profiles',
+    });
+  };
+
+  return (
+    <Button onClick={handleExport} variant="outlined" size="small">
+      Download CSV
+    </Button>
+  );
+}
+
+function CustomToolbar() {
+  return (
+    <GridToolbarContainer>
+      <CustomExportButton />
+    </GridToolbarContainer>
+  );
+}
+
 const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
   const originalData = clients;
-  const [filteredData, setFilteredData] = useState<ClientProfile[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [naturalResponse, setNaturalResponse] = useState('');
+  const [filteredData, setFilteredData] = React.useState<ClientProfile[]>([]);
+  const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchLoading, setSearchLoading] = React.useState(false);
+  const [naturalResponse, setNaturalResponse] = React.useState('');
 
   const camelizeKeys = (obj: any): any => {
     const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -122,15 +180,14 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
 
   const displayData = filteredData.length > 0 ? filteredData : originalData;
   const hasSearchResults = searchResults.length > 0;
-  const showTable = !hasSearchResults && (displayData.length > 0 || searchLoading);
+  const showGrid = !hasSearchResults && (displayData.length > 0 || searchLoading);
 
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
-      <Typography variant="h6" gutterBottom sx={{ mb: 2, color: 'grey.400' }}>
+      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Client Profiles
       </Typography>
 
-      {/* Search Bar */}
       <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'end', flexWrap: 'wrap' }}>
         <TextField
           fullWidth
@@ -170,7 +227,6 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         )}
       </Box>
 
-      {/* Natural Response */}
       {naturalResponse && (
         <Box
           sx={{
@@ -187,7 +243,6 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         </Box>
       )}
 
-      {/* Simple Text Box Output for Partial Search Results */}
       {hasSearchResults && (
         <Box
           sx={{
@@ -211,60 +266,49 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         </Box>
       )}
 
-      {/* Table for Full Feed */}
-      {showTable && (
-        <Paper sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Client ID</TableCell>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Company Name</TableCell>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Country</TableCell>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>New Regulation</TableCell>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Deadline</TableCell>
-                  <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {displayData.map((item, index) => (
-                  <TableRow key={index} hover sx={{ '&:hover': { backgroundColor: '#1e2d4a' } }}>
-                    <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2" color="cyan.400" fontWeight="600">
-                        {item.clientId}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2">{item.companyName}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2" color="cyan.400">{item.country}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2">{item.newRegulation || 'N/A'}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2">{item.deadline || 'N/A'}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ color: 'grey.300' }}>
-                      <Typography variant="body2" color="success.main">{item.status}</Typography>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {displayData.length === 0 && searchLoading && (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={{ textAlign: 'center', py: 4 }}>
-                      <CircularProgress size={20} />
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+      {showGrid && (
+        <DataGrid
+          rows={displayData}
+          columns={columns}
+          getRowId={(row) => row.clientId}
+          slots={{
+            toolbar: CustomToolbar,
+          }}
+          loading={searchLoading}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
+                page: 0,
+              },
+            },
+          }}
+          pageSizeOptions={[5, 10, 25]}
+          checkboxSelection
+          disableRowSelectionOnClick
+          sx={{
+            height: 500,
+            '& .MuiDataGrid-cell': {
+              fontSize: '0.875rem',
+            },
+            backgroundColor: '#112240',
+            border: '1px solid #1e2d4a',
+            color: 'grey.200',
+            '& .MuiDataGrid-row:hover': {
+              backgroundColor: '#1e2d4a',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: '#1e2d4a',
+              color: 'grey.400',
+            },
+            '& .MuiDataGrid-virtualScroller': {
+              overflowX: 'auto',
+            },
+          }}
+        />
       )}
 
-      {!showTable && !hasSearchResults && displayData.length === 0 && (
+      {!showGrid && !hasSearchResults && !searchLoading && displayData.length === 0 && (
         <Box sx={{ textAlign: 'center', py: 4, color: 'grey.500' }}>
           <Typography>No data available.</Typography>
         </Box>
