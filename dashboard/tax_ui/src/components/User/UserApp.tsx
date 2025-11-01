@@ -1,4 +1,4 @@
-// UserApp.tsx
+// File: UserApp.tsx (updated - no changes needed, as CountryProfiles now handles fetch internally)
 import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';

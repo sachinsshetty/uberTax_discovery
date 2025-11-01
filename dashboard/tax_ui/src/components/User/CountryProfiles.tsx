@@ -1,7 +1,7 @@
-// CountryProfiles.tsx - Table component for selecting countries
-import React, { useState } from 'react';
+// File: CountryProfiles.tsx (updated - fetch from backend)
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextField, CircularProgress, Box } from '@mui/material';
-import { CountryProfileData, CountryProfilesData } from './CountryProfileData';  // ES module import
+import { CountryProfileData } from './CountryProfileData';  // ES module import
 
 interface CountryProfilesProps {
   onSelectCountry: (country: CountryProfileData) => void;
@@ -12,12 +12,14 @@ const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:800
 const columns: any[] = []; // Not used, keeping Table for simplicity
 
 const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) => {
-  const originalData = CountryProfilesData;
+  const [data, setData] = useState<CountryProfileData[]>([]);
   const [filteredData, setFilteredData] = useState<CountryProfileData[]>([]);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
   const [naturalResponse, setNaturalResponse] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const camelizeKeys = (obj: any): any => {
     const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -32,6 +34,31 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
     }
     return obj;
   };
+
+  // Fetch country profiles from backend
+  const fetchCountryProfiles = async () => {
+    try {
+      const url = `${API_URL}/api/countries/profiles`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const rawData = await response.json();
+      const camelized = camelizeKeys(rawData);
+      setData(camelized);
+      setFilteredData(camelized);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching country profiles:', err);
+      setError(`Failed to load country profiles: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCountryProfiles();
+  }, []);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -72,28 +99,48 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
           setSearchResults(camelized);
         }
       } else {
-        // Fallback to original data if no results
-        setFilteredData(originalData);
+        // Fallback to fetched data if no results
+        setFilteredData(data);
       }
     } catch (error) {
       console.error('Error querying countries:', error);
       // Optionally set an error state
-      setFilteredData(originalData);
+      setFilteredData(data);
     } finally {
       setSearchLoading(false);
     }
   };
 
   const handleClear = () => {
-    setFilteredData([]);
+    setFilteredData(data);
     setSearchResults([]);
     setNaturalResponse('');
     setSearchQuery('');
   };
 
-  const displayData = filteredData.length > 0 ? filteredData : originalData;
+  const displayData = filteredData.length > 0 ? filteredData : data;
   const hasSearchResults = searchResults.length > 0;
-  const showTable = !hasSearchResults && (displayData.length > 0 || searchLoading);
+  const showTable = !hasSearchResults && (displayData.length > 0 || searchLoading || loading);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+        <CircularProgress />
+        <Typography variant="body1" sx={{ ml: 2 }}>Loading country profiles...</Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4, color: 'error.main' }}>
+        <Typography>{error}</Typography>
+        <Button variant="outlined" onClick={fetchCountryProfiles} sx={{ mt: 1 }}>
+          Retry
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -215,7 +262,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
                     </TableCell>
                   </TableRow>
                 ))}
-                {displayData.length === 0 && searchLoading && (
+                {displayData.length === 0 && (searchLoading || loading) && (
                   <TableRow>
                     <TableCell colSpan={4} sx={{ textAlign: 'center', py: 4 }}>
                       <CircularProgress size={20} />
@@ -228,7 +275,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
         </Paper>
       )}
 
-      {!showTable && !hasSearchResults && displayData.length === 0 && (
+      {!showTable && !hasSearchResults && displayData.length === 0 && !loading && (
         <Box sx={{ textAlign: 'center', py: 4, color: 'grey.500' }}>
           <Typography>No data available.</Typography>
         </Box>

@@ -7,3 +7,4 @@ SESSION_FILE = Path("/app/data/sessions.json")  # Absolute path for Docker persi
 MOCK_DATA_JSON = Path("mock_data.json")  # Path to CSV file containing mock data
 REGULATORY_FEED_JSON = Path("mock_regulatory_feed.json")
 DWANI_API_BASE_URL = os.getenv('DWANI_API_BASE_URL')
+COUNTRY_PROFILES_JSON = Path("country_profiles.json")
