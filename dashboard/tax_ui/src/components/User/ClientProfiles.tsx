@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { Button, Typography, TextField, CircularProgress } from '@mui/material';
 import {
@@ -8,10 +7,7 @@ import {
   GridToolbarContainer,
   useGridApiContext,
 } from '@mui/x-data-grid';
-import { fetchClientProfiles } from '../../redux/reducer/user/ClientProfilesReducer';
-import { RootState, AppDispatch } from '../../redux/store';
 
-// FIXED: Use the same helper from UserApp (or duplicate for modularity)
 const getApiBaseUrl = (): string => {
   let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
   if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
@@ -23,7 +19,7 @@ const getApiBaseUrl = (): string => {
   return baseUrl;
 };
 
-const API_URL = getApiBaseUrl();  // FIXED: Use HTTPS-safe URL
+const API_URL = getApiBaseUrl();
 
 interface ClientProfile {
   clientId: string;
@@ -32,6 +28,10 @@ interface ClientProfile {
   newRegulation: string;
   deadline: string | null;
   status: string;
+}
+
+interface SearchResult {
+  companyName: string;
 }
 
 interface ClientProfilesProps {
@@ -78,9 +78,6 @@ const columns: GridColDef<ClientProfile>[] = [
   },
 ];
 
-/** render
- * @return {return}
- */
 function CustomExportButton() {
   const apiRef = useGridApiContext();
 
@@ -97,9 +94,6 @@ function CustomExportButton() {
   );
 }
 
-/** render
- * @return {return}
- */
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
@@ -109,28 +103,12 @@ function CustomToolbar() {
 }
 
 const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
-  // Optional: Keep Redux for other features, but use props for data to avoid duplicate fetches
-  const dispatch = useDispatch<AppDispatch>();
-  const { loading: reduxLoading, error: reduxError } = useSelector(
-    (state: RootState) => state.clientProfiles
-  );
-
-  // Use prop data primarily; fallback to Redux if needed
-  const originalData = clients || [];
+  const originalData = clients;
   const [filteredData, setFilteredData] = React.useState<ClientProfile[]>([]);
-  const [searchResults, setSearchResults] = React.useState<any[]>([]);
+  const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchLoading, setSearchLoading] = React.useState(false);
   const [naturalResponse, setNaturalResponse] = React.useState('');
-  const effectiveLoading = reduxLoading || originalData.length === 0;
-  const effectiveError = reduxError;
-
-  React.useEffect(() => {
-    // Optional: Dispatch if no prop data, but prefer prop to match UserApp
-    if (originalData.length === 0) {
-      dispatch(fetchClientProfiles());
-    }
-  }, [dispatch, originalData.length]);
 
   const camelizeKeys = (obj: any): any => {
     const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -138,7 +116,6 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
     if (Array.isArray(obj)) {
       return obj.map(camelizeKeys);
     } else if (obj !== null && typeof obj === 'object') {
-      // FIXED: Type the accumulator and initial value to include an index signature
       return Object.keys(obj).reduce((result: Record<string, any>, key: string) => {
         result[camelize(key)] = camelizeKeys(obj[key]);
         return result;
@@ -155,7 +132,6 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
     setFilteredData([]);
     setSearchResults([]);
     try {
-      // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/clients/natural-query`;
       console.log('Querying natural language search:', url, searchQuery);
       const response = await fetch(url, {
@@ -179,20 +155,16 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
 
       if (data.results && Array.isArray(data.results)) {
         const camelized = camelizeKeys(data.results);
-        // Check if full profile data (has clientId)
         if (camelized.length > 0 && camelized[0].clientId) {
           setFilteredData(camelized as ClientProfile[]);
         } else {
-          // Partial data, e.g., only companyName, show as simple text list
-          setSearchResults(camelized);
+          setSearchResults(camelized as SearchResult[]);
         }
       } else {
-        // Fallback to original data if no results
         setFilteredData(originalData);
       }
     } catch (error) {
       console.error('Error querying clients:', error);
-      // Optionally set an error state
       setFilteredData(originalData);
     } finally {
       setSearchLoading(false);
@@ -208,22 +180,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
 
   const displayData = filteredData.length > 0 ? filteredData : originalData;
   const hasSearchResults = searchResults.length > 0;
-  const showGrid = !hasSearchResults && (displayData.length > 0 || effectiveLoading);
-
-  if (effectiveError) {
-    return (
-      <Box
-        sx={{
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography color="error">{effectiveError}</Typography>
-      </Box>
-    );
-  }
+  const showGrid = !hasSearchResults && (displayData.length > 0 || searchLoading);
 
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
@@ -231,7 +188,6 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         Client Profiles
       </Typography>
 
-      {/* Search Bar */}
       <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'end', flexWrap: 'wrap' }}>
         <TextField
           fullWidth
@@ -271,7 +227,6 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         )}
       </Box>
 
-      {/* Natural Response */}
       {naturalResponse && (
         <Box
           sx={{
@@ -288,7 +243,6 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         </Box>
       )}
 
-      {/* Simple Text Box Output for Partial Search Results */}
       {hasSearchResults && (
         <Box
           sx={{
@@ -306,13 +260,12 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
           </Typography>
           {searchResults.map((item, index) => (
             <Typography key={index} variant="body2" sx={{ color: 'grey.300', mb: 0.5 }}>
-              {item.companyName || item.company_name || 'Unknown Company'}
+              {item.companyName}
             </Typography>
           ))}
         </Box>
       )}
 
-      {/* DataGrid for Full Profiles */}
       {showGrid && (
         <DataGrid
           rows={displayData}
@@ -321,7 +274,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
           slots={{
             toolbar: CustomToolbar,
           }}
-          loading={effectiveLoading || searchLoading}
+          loading={searchLoading}
           initialState={{
             pagination: {
               paginationModel: {
@@ -338,7 +291,6 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
             '& .MuiDataGrid-cell': {
               fontSize: '0.875rem',
             },
-            // Theme adjustments for dark mode consistency
             backgroundColor: '#112240',
             border: '1px solid #1e2d4a',
             color: 'grey.200',
@@ -356,7 +308,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
         />
       )}
 
-      {!showGrid && !hasSearchResults && !effectiveLoading && displayData.length === 0 && (
+      {!showGrid && !hasSearchResults && !searchLoading && displayData.length === 0 && (
         <Box sx={{ textAlign: 'center', py: 4, color: 'grey.500' }}>
           <Typography>No data available.</Typography>
         </Box>
