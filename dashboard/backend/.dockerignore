@@ -91,3 +91,4 @@ __pypackages__
 #!server_requirements.txt
 !mock_regulatory_feed.json
 !mock_data.json
+!country_profiles.json

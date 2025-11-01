@@ -15,16 +15,12 @@ import Highlights from './components/ux/components/Highlights';
 import Pricing from './components/ux/components/Pricing';
 import Features from './components/ux/components/Features';
 import Testimonials from './components/ux/components/Testimonials';
-//import FAQ from './components/ux/components/FAQ';
 import Footer from './components/ux/components/Footer';
 import AppTheme from './components/ux/shared-theme/AppTheme';
 //import Blog from './components/ux/blog/Blog';
 //import Tutorials from './components/ux/components/Tutorials';
-//import IndicDocumentFeatures from './components/ux/components/IndicDocumentFeatures';
-import Research from './components/ux/components/Research';
 import UserApp from './components/User/UserApp';
 import TaxAnalysisChat from './components/ux/components/TaxAnalysis';
-//import API from './components/ux/components/API';
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
