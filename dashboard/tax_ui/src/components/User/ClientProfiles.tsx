@@ -67,7 +67,7 @@ const columns: GridColDef<ClientProfile>[] = [
     flex: 0.6,
     minWidth: 100,
     editable: false,
-    valueFormatter: (params) => params?.value ?? 'N/A',
+    valueFormatter: (value) => value ?? 'N/A',
   },
   {
     field: 'status',
