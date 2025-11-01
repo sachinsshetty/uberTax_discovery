@@ -3,11 +3,24 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextField, CircularProgress, Box } from '@mui/material';
 import { CountryProfileData } from './CountryProfileData';  // ES module import
 
+// FIXED: Helper to ensure HTTPS for API URLs (fallback to localhost for dev)
+const getApiBaseUrl = (): string => {
+  let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+  // Force HTTPS in production (detect via window.location)
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace(/^http:/, 'https:');
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://localhost:8000'; // Adjust port if needed; use self-signed cert for local HTTPS
+    }
+  }
+  return baseUrl;
+};
+
+const API_URL = getApiBaseUrl();  // FIXED: Use HTTPS-safe URL
+
 interface CountryProfilesProps {
   onSelectCountry: (country: CountryProfileData) => void;
 }
-
-const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
 
 const columns: any[] = []; // Not used, keeping Table for simplicity
 
@@ -38,6 +51,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
   // Fetch country profiles from backend
   const fetchCountryProfiles = async () => {
     try {
+      // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/countries/profiles`;
       const response = await fetch(url);
       if (!response.ok) {
@@ -68,6 +82,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
     setFilteredData([]);
     setSearchResults([]);
     try {
+      // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/clients/natural-query`;
       console.log('Querying natural language search:', url, searchQuery);
       const response = await fetch(url, {

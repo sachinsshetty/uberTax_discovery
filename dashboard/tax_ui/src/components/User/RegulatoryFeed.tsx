@@ -1,4 +1,3 @@
-// RegulatoryFeed.tsx - Table component for regulatory feed with search
 import React, { useState } from 'react';
 import {
   Table,
@@ -15,6 +14,21 @@ import {
   Button,
 } from '@mui/material';
 
+// FIXED: Helper to ensure HTTPS for API URLs (fallback to localhost for dev)
+const getApiBaseUrl = (): string => {
+  let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+  // Force HTTPS in production (detect via window.location)
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace(/^http:/, 'https:');
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://localhost:8000'; // Adjust port if needed; use self-signed cert for local HTTPS
+    }
+  }
+  return baseUrl;
+};
+
+const API_URL = getApiBaseUrl();  // FIXED: Use HTTPS-safe URL
+
 interface RegulatoryFeedItem {
   date: string;
   country: string;
@@ -24,8 +38,6 @@ interface RegulatoryFeedItem {
 interface RegulatoryFeedProps {
   feed: RegulatoryFeedItem[];
 }
-
-const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
 
 const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
   const originalData = feed;
@@ -57,6 +69,7 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
     setFilteredData([]);
     setSearchResults([]);
     try {
+      // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/clients/natural-query`;
       console.log('Querying natural language search:', url, searchQuery);
       const response = await fetch(url, {

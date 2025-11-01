@@ -1,4 +1,3 @@
-// File: UserApp.tsx (updated - no changes needed, as CountryProfiles now handles fetch internally)
 import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Grid, Typography, Card, CardContent, Button, Box, CircularProgress, Alert, Avatar, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -24,6 +23,19 @@ const camelizeKeys = (obj: any): any => {
   return obj;
 };
 
+// FIXED: Helper to ensure HTTPS for API URLs (fallback to localhost for dev)
+const getApiBaseUrl = (): string => {
+  let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+  // Force HTTPS in production (detect via window.location)
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace(/^http:/, 'https:');
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://localhost:8000'; // Adjust port if needed; use self-signed cert for local HTTPS
+    }
+  }
+  return baseUrl;
+};
+
 const UserApp = () => {
   const [clients, setClients] = useState([]);
   const [regulatoryFeed, setRegulatoryFeed] = useState([]);
@@ -35,7 +47,8 @@ const UserApp = () => {
 
   const fetchClients = async (retries = 3) => {
     try {
-      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+      // FIXED: Use helper for HTTPS-safe URL
+      const DWANI_API_BASE_URL = getApiBaseUrl();
       const apiUrl = `${DWANI_API_BASE_URL}/api/clients`;
 
       console.log('Fetching from:', apiUrl);
@@ -66,7 +79,8 @@ const UserApp = () => {
 
   const fetchRegulatory = async (retries = 3) => {
     try {
-      const DWANI_API_BASE_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+      // FIXED: Use helper for HTTPS-safe URL
+      const DWANI_API_BASE_URL = getApiBaseUrl();
       const apiUrl = `${DWANI_API_BASE_URL}/api/countries/regulatory-feed`;
 
       console.log('Fetching regulatory feed from:', apiUrl);

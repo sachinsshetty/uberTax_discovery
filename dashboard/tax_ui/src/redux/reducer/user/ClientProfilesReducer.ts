@@ -1,6 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000/';
+// FIXED: Helper to ensure HTTPS for API URLs (fallback to localhost for dev)
+const getApiBaseUrl = (): string => {
+  let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace(/^http:/, 'https:');
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://localhost:8000';
+    }
+  }
+  return baseUrl;
+};
+
+const API_URL = getApiBaseUrl();  // Use HTTPS-safe URL
 
 const camelizeKeys = (obj: any): any => {
   const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -31,7 +43,8 @@ export const fetchClientProfiles = createAsyncThunk<
   'sanjeeviniApp/fetchClientProfiles',
   async (_, thunkAPI) => {
     try {
-      const url = `${API_URL}api/clients`;
+      // FIXED: Add missing '/' to prevent malformed URL (e.g., 'aiapi')
+      const url = `${API_URL}/api/clients`;
       console.log('Redux fetching from:', url); // Debug log
       const response = await fetch(url);
       if (!response.ok) {

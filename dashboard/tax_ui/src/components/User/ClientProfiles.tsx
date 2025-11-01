@@ -11,7 +11,19 @@ import {
 import { fetchClientProfiles } from '../../redux/reducer/user/ClientProfilesReducer';
 import { RootState, AppDispatch } from '../../redux/store';
 
-const API_URL = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+// FIXED: Use the same helper from UserApp (or duplicate for modularity)
+const getApiBaseUrl = (): string => {
+  let baseUrl = import.meta.env.VITE_DWANI_API_BASE_URL || 'http://localhost:8000';
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace(/^http:/, 'https:');
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://localhost:8000';
+    }
+  }
+  return baseUrl;
+};
+
+const API_URL = getApiBaseUrl();  // FIXED: Use HTTPS-safe URL
 
 interface ClientProfile {
   clientId: string;
@@ -142,6 +154,7 @@ const ClientProfiles: React.FC<ClientProfilesProps> = ({ clients }) => {
     setFilteredData([]);
     setSearchResults([]);
     try {
+      // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/clients/natural-query`;
       console.log('Querying natural language search:', url, searchQuery);
       const response = await fetch(url, {
