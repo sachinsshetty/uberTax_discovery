@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -46,6 +46,7 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
   const [naturalResponse, setNaturalResponse] = useState('');
+  const [error, setError] = useState<string | null>(null); // NEW: Error state for UX
 
   const camelizeKeys = (obj: any): any => {
     const camelize = (str: string): string => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -69,6 +70,7 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
     setNaturalResponse('');
     setFilteredData([]);
     setSearchResults([]);
+    setError(null); // NEW: Clear previous errors
     try {
       // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/clients/natural-query`;
@@ -107,6 +109,7 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
       }
     } catch (error) {
       console.error('Error querying regulatory feed:', error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred'); // NEW: Set user-friendly error
       // Optionally set an error state
       setFilteredData(originalData);
     } finally {
@@ -119,14 +122,41 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
     setSearchResults([]);
     setNaturalResponse('');
     setSearchQuery('');
+    setError(null); // NEW: Clear errors on reset
   };
 
-  const displayData = filteredData.length > 0 ? filteredData : originalData;
+  // NEW: Sort display data by date descending for better UX (most recent first)
+  const displayData = useMemo(() => {
+    const dataToSort = filteredData.length > 0 ? filteredData : originalData;
+    return [...dataToSort].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return dateB - dateA; // Descending
+    });
+  }, [filteredData, originalData]);
+
   const hasSearchResults = searchResults.length > 0;
   const showTable = !hasSearchResults && (displayData.length > 0 || searchLoading);
+  const shouldScrollTable = displayData.length > 10; // NEW: Conditional scrollbar
+
+  // NEW: Table container styles with conditional maxHeight for scrollbar
+  const tableContainerSx = useMemo(() => ({
+    maxHeight: shouldScrollTable ? 400 : 'none',
+    overflow: shouldScrollTable ? 'auto' : 'visible',
+  }), [shouldScrollTable]);
 
   return (
     <>
+      {/* NEW: Component Header for better UX */}
+      <Typography variant="h6" sx={{ mb: 2, color: 'grey.300', fontWeight: 600 }}>
+        Regulatory Feed Updates
+        {displayData.length > 0 && (
+          <Typography component="span" variant="body2" sx={{ ml: 1, color: 'grey.500' }}>
+            ({displayData.length} items)
+          </Typography>
+        )}
+      </Typography>
+
       {/* Search Bar */}
       <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'end', flexWrap: 'wrap' }}>
         <TextField
@@ -167,6 +197,24 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
         )}
       </Box>
 
+      {/* NEW: Error Display */}
+      {error && (
+        <Box
+          sx={{
+            mb: 2,
+            p: 2,
+            backgroundColor: '#3d2b1f',
+            border: '1px solid #5d4037',
+            borderRadius: 1,
+            color: 'warning.main',
+          }}
+        >
+          <Typography variant="body2">
+            Error: {error}
+          </Typography>
+        </Box>
+      )}
+
       {/* Natural Response */}
       {naturalResponse && (
         <Box
@@ -198,7 +246,7 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
           }}
         >
           <Typography variant="subtitle2" sx={{ mb: 1, color: 'grey.400' }}>
-            Search Results:
+            Search Results ({searchResults.length}):
           </Typography>
           {searchResults.map((item, index) => (
             <Typography key={index} variant="body2" sx={{ color: 'grey.300', mb: 0.5 }}>
@@ -211,8 +259,9 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
       {/* Table for Full Feed */}
       {showTable && (
         <Paper sx={{ backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
-          <TableContainer>
-            <Table>
+          <TableContainer sx={tableContainerSx}>
+            {/* NEW: Sticky header for better UX when scrolling */}
+            <Table stickyHeader>
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Date & Location</TableCell>
@@ -238,6 +287,9 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
                   <TableRow>
                     <TableCell colSpan={2} sx={{ textAlign: 'center', py: 4 }}>
                       <CircularProgress size={20} />
+                      <Typography variant="body2" sx={{ mt: 1, color: 'grey.500' }}>
+                        Searching...
+                      </Typography>
                     </TableCell>
                   </TableRow>
                 )}
@@ -247,9 +299,9 @@ const RegulatoryFeed: React.FC<RegulatoryFeedProps> = ({ feed }) => {
         </Paper>
       )}
 
-      {!showTable && !hasSearchResults && displayData.length === 0 && (
+      {!showTable && !hasSearchResults && displayData.length === 0 && !searchLoading && (
         <Box sx={{ textAlign: 'center', py: 4, color: 'grey.500' }}>
-          <Typography>No data available.</Typography>
+          <Typography>No data available. Try searching for specific updates!</Typography>
         </Box>
       )}
     </>

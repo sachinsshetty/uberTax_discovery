@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextField, CircularProgress, Box } from '@mui/material';
 import { CountryProfileData } from './CountryProfileData';  // ES module import
 
@@ -82,6 +82,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
     setNaturalResponse('');
     setFilteredData([]);
     setSearchResults([]);
+    setError(null); // NEW: Clear previous errors
     try {
       // FIXED: Use HTTPS-safe API_URL
       const url = `${API_URL}/api/clients/natural-query`;
@@ -120,6 +121,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
       }
     } catch (error) {
       console.error('Error querying countries:', error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred'); // NEW: Set user-friendly error
       // Optionally set an error state
       setFilteredData(data);
     } finally {
@@ -132,11 +134,25 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
     setSearchResults([]);
     setNaturalResponse('');
     setSearchQuery('');
+    setError(null); // NEW: Clear errors on reset
   };
 
-  const displayData = filteredData.length > 0 ? filteredData : data;
+  // NEW: Sort display data by country name ascending for better UX (alphabetical)
+  const displayData = useMemo(() => {
+    const dataToSort = filteredData.length > 0 ? filteredData : data;
+    return [...dataToSort].sort((a, b) => (a.country || '').localeCompare(b.country || ''));
+  }, [filteredData, data]);
+
   const hasSearchResults = searchResults.length > 0;
   const showTable = !hasSearchResults && (displayData.length > 0 || searchLoading || loading);
+  const shouldScrollTable = displayData.length > 10; // NEW: Conditional scrollbar
+
+  // NEW: Table container styles with conditional maxHeight for scrollbar
+  const tableContainerSx = useMemo(() => ({
+    maxHeight: shouldScrollTable ? 400 : 'none',
+    overflow: shouldScrollTable ? 'auto' : 'visible',
+    '& .MuiTableCell-root': { color: 'grey.300' }
+  }), [shouldScrollTable]);
 
   if (loading) {
     return (
@@ -160,6 +176,16 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
 
   return (
     <>
+      {/* NEW: Component Header for better UX */}
+      <Typography variant="h6" sx={{ mb: 2, color: 'grey.300', fontWeight: 600 }}>
+        Country Profiles
+        {displayData.length > 0 && (
+          <Typography component="span" variant="body2" sx={{ ml: 1, color: 'grey.500' }}>
+            ({displayData.length} countries)
+          </Typography>
+        )}
+      </Typography>
+
       {/* Search Bar */}
       <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'end', flexWrap: 'wrap' }}>
         <TextField
@@ -200,6 +226,24 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
         )}
       </Box>
 
+      {/* NEW: Error Display for Search */}
+      {error && !loading && (
+        <Box
+          sx={{
+            mb: 2,
+            p: 2,
+            backgroundColor: '#3d2b1f',
+            border: '1px solid #5d4037',
+            borderRadius: 1,
+            color: 'warning.main',
+          }}
+        >
+          <Typography variant="body2">
+            Error: {error}
+          </Typography>
+        </Box>
+      )}
+
       {/* Natural Response */}
       {naturalResponse && (
         <Box
@@ -231,7 +275,7 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
           }}
         >
           <Typography variant="subtitle2" sx={{ mb: 1, color: 'grey.400' }}>
-            Search Results:
+            Search Results ({searchResults.length}):
           </Typography>
           {searchResults.map((item, index) => (
             <Typography key={index} variant="body2" sx={{ color: 'grey.300', mb: 0.5 }}>
@@ -244,8 +288,9 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
       {/* Table for Full Profiles */}
       {showTable && (
         <Paper sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
-          <TableContainer sx={{ '& .MuiTableCell-root': { color: 'grey.300' } }}>
-            <Table>
+          <TableContainer sx={tableContainerSx}>
+            {/* NEW: Sticky header for better UX when scrolling */}
+            <Table stickyHeader>
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ color: 'grey.400', fontWeight: '600' }}>Country</TableCell>
@@ -282,6 +327,9 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
                   <TableRow>
                     <TableCell colSpan={4} sx={{ textAlign: 'center', py: 4 }}>
                       <CircularProgress size={20} />
+                      <Typography variant="body2" sx={{ mt: 1, color: 'grey.500' }}>
+                        {searchLoading ? 'Searching...' : 'Loading...'}
+                      </Typography>
                     </TableCell>
                   </TableRow>
                 )}
@@ -291,9 +339,9 @@ const CountryProfiles: React.FC<CountryProfilesProps> = ({ onSelectCountry }) =>
         </Paper>
       )}
 
-      {!showTable && !hasSearchResults && displayData.length === 0 && !loading && (
+      {!showTable && !hasSearchResults && displayData.length === 0 && !loading && !searchLoading && (
         <Box sx={{ textAlign: 'center', py: 4, color: 'grey.500' }}>
-          <Typography>No data available.</Typography>
+          <Typography>No data available. Try searching for specific countries!</Typography>
         </Box>
       )}
     </>
