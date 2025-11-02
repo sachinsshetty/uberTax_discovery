@@ -128,6 +128,36 @@ const UserApp = () => {
     setSelectedCountry(null);
   };
 
+  const totalClients = clients.length;
+  const impactedClients = useMemo(
+    () => clients.filter(c => c.newRegulation !== "N/A" && c.deadline !== null).length,
+    [clients]
+  );
+  const percentageImpacted = totalClients > 0 ? (impactedClients / totalClients) : 0;
+  const uniqueNewRegs = useMemo(
+    () => [...new Set(clients.filter(c => c.newRegulation !== "N/A" && c.newRegulation !== "UNDER REVIEW" && c.newRegulation !== "MONITORED").map(c => c.newRegulation))].length,
+    [clients]
+  );
+  const percentageNewRegs = totalClients > 0 ? (uniqueNewRegs / totalClients) : 0;
+
+  const currentDate = new Date();
+  let urgencyLevel = 'LOW';
+  let urgencyColor = 'green';
+  for (const c of clients) {
+    if (c.deadline) {
+      const deadline = new Date(c.deadline);
+      const daysUntilDeadline = (deadline.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (daysUntilDeadline <= 90) {
+        urgencyLevel = 'HIGH';
+        urgencyColor = 'red';
+        break;
+      } else if (daysUntilDeadline <= 180) {
+        urgencyLevel = 'MEDIUM';
+        urgencyColor = 'orange';
+      }
+    }
+  }
+
   if (error) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -172,6 +202,41 @@ const UserApp = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} lg={8}>
+          <Card sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a' }}>
+            <CardContent>
+              <Typography variant="h5" fontWeight="600" sx={{ mb: 2, color: 'grey.400' }}>Overview</Typography>
+              <Grid container spacing={2} justifyContent="center">
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <CircularProgress variant="determinate" value={percentageImpacted * 100} size={120} thickness={4} sx={{ color: '#3b82f6' }} />
+                    <Typography variant="h4" fontWeight="bold" color="blue.400" sx={{ mt: 1 }}>
+                      {impactedClients}
+                    </Typography>
+                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>TOTAL CLIENTS IMPACTED</Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <CircularProgress variant="determinate" value={percentageNewRegs * 100} size={120} thickness={4} sx={{ color: '#10b981' }} />
+                    <Typography variant="h4" fontWeight="bold" color="green.400" sx={{ mt: 1 }}>
+                      {uniqueNewRegs}
+                    </Typography>
+                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>NEW REGULATIONS</Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <CircularProgress variant="determinate" value={urgencyLevel === 'HIGH' ? 100 : urgencyLevel === 'MEDIUM' ? 50 : 0} size={120} thickness={4} sx={{ color: urgencyColor }} />
+                    <Typography variant="h5" fontWeight="bold" sx={{ mt: 1, color: urgencyColor === 'red' ? 'red.500' : urgencyColor === 'orange' ? 'orange.500' : 'success.main' }}>
+                      {urgencyLevel}
+                    </Typography>
+                    <Typography variant="body2" color="grey.500" sx={{ mt: 1 }}>URGENCY LEVEL</Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
           <Accordion sx={{ mb: 3, backgroundColor: '#112240', border: '1px solid #1e2d4a', boxShadow: 'none' }} defaultExpanded={true}>
             <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'grey.400' }} />}>
               <Typography variant="h6" fontWeight="600" sx={{ color: 'grey.400' }}>Affected Client Profiles</Typography>
