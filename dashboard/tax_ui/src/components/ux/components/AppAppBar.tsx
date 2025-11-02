@@ -44,13 +44,13 @@ export default function AppAppBar() {
   };
 
   const handleDashboardClick = () => {
-    navigate('/dash-data');
+    navigate('/dashboard');
     toggleDrawer(false)();
   };
 
 
   const handleResearchClick = () => {
-    navigate('/dashboard');
+    navigate('/dash-data');
     toggleDrawer(false)();
   };
 
