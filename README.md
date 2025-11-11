@@ -8,6 +8,11 @@
 
 ---  
 
+- Tax Tech Hackathon Winner : November 4, 2025 
+    - [Web Article 1](https://www.linkedin.com/posts/sachinlabs_taxtech-dwani-taxconference-activity-7391476671595352066-31zd) 
+    - [Web Article 2](https://www.linkedin.com/posts/stefgross_taxtech-ugcPost-7391419267604377600-tz8O)
+---
+
 - Top 3 Team 
     - Selected for Pitch at Tax Tech Conference, Frankfurt - November , 2025
 
