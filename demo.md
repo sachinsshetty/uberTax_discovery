@@ -1,6 +1,8 @@
 - AI Tinkerers
 - Document Parsing with Open Weight models 
 
+- PDF→image→VLM OCR→structured JSON→text-to-SQL 
+
 
     - Model - [Qwen3-VL-2B-instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct)
 
