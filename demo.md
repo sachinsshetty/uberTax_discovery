@@ -14,3 +14,5 @@ Image to JSON
  [pdf-process](dashboard/backend/services/pdf_processor.py)
 
     - Text To SQL  / natural_query function   : [tool Call](dashboard/backend/routers/clients.py)
+
+- Talk Link : https://berlin.aitinkerers.org/talks/rsvp_5W86mvFdiH0 
