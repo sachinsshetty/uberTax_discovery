@@ -29,6 +29,14 @@ docker compose -f docker-compose.yml up -d
 ```
 
 -- 
+Multi tenant
+docker build -t dwani/ubertax-register-multi -f Dockerfile .
+
+docker compose -f multi-tenant-compose.yml up -d
+
+
+
+-- 
 
 
 ![multi-tenant](../docs/database-upgrade/multi-tenant.png "multi-tenant")
