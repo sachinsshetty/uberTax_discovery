@@ -46,7 +46,7 @@ async def tenant_middleware(request: Request, call_next):
     Main tenant middleware.
     Sets the correct PostgreSQL schema for the entire request.
     """
-    if request.url.path.startswith("/docs") or request.url.path.startswith("/redoc") or request.url.path.startswith("/openapi.json"):
+    if request.url.path.startswith("/docs") or request.url.path.startswith("/redoc") or request.url.path.startswith("/openapi.json") or request.url.path.startswith("/admin/tenants"):
         # Skip tenant check for Swagger/UI
         return await call_next(request)
 

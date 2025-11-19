@@ -1,5 +1,5 @@
 # app/main.py
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -10,7 +10,6 @@ from .middleware import tenant_middleware
 from .routers import legal_persons, natural_persons, graph, search
 from . import tenants
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -18,24 +17,11 @@ app = FastAPI(
     title="Corporate Registry API",
     description="Multi-tenant corporate ownership & UBO registry with full graph support",
     version="2.0.0",
-    license_info={
-        "name": "Proprietary",
-        "url": "https://yourcompany.com/license",
-    },
-    contact={
-        "name": "API Support",
-        "email": "api@yourcompany.com",
-    },
-    openapi_tags=[
-        {"name": "Legal Persons", "description": "Companies, trusts, foundations"},
-        {"name": "Natural Persons", "description": "Individuals, beneficial owners"},
-        {"name": "Ownership Graph", "description": "Shareholdings, directorships, UBO chains"},
-        {"name": "Search", "description": "Global search across all entities"},
-    ],
+    license_info={"name": "Proprietary"},
 )
 
 # ===========================================================================
-# Global exception handler for tenant context errors (optional but recommended)
+# Global exception handler
 # ===========================================================================
 @app.exception_handler(ValueError)
 async def tenant_context_exception_handler(request, exc: ValueError):
@@ -44,18 +30,54 @@ async def tenant_context_exception_handler(request, exc: ValueError):
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"detail": "Tenant not specified. Use subdomain or X-Tenant header."}
         )
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "Internal server error"}
-    )
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 # ===========================================================================
-# Middleware
+# ADMIN ROUTER – NO TENANT MIDDLEWARE
+# ===========================================================================
+admin_router = APIRouter()
+
+@admin_router.post("/admin/tenants/{tenant_id}", tags=["Admin"])
+def create_tenant(tenant_id: str, name: str | None = None):
+    if not tenant_id.replace("_", "").isalnum():
+        raise HTTPException(400, "tenant_id must be alphanumeric or underscore")
+    tenants.onboard_new_tenant(tenant_id, name or tenant_id)
+    logger.info(f"Tenant created: {tenant_id}")
+    return {"success": True, "tenant_id": tenant_id, "message": "Tenant onboarded"}
+
+@admin_router.delete("/admin/tenants/{tenant_id}", tags=["Admin"])
+def delete_tenant(tenant_id: str):
+    schema_name = f"tenant_{tenant_id}"
+    with engine.begin() as conn:
+        result = conn.execute(text("""
+            SELECT 1 FROM information_schema.schemata 
+            WHERE schema_name = :s
+        """), {"s": schema_name}).fetchone()
+        if not result:
+            raise HTTPException(404, f"Tenant {tenant_id} does not exist")
+        conn.execute(text(f"DROP SCHEMA IF EXISTS {schema_name} CASCADE"))
+        conn.execute(text("DELETE FROM public.tenants WHERE id = :id"), {"id": tenant_id})
+    logger.warning(f"Tenant permanently deleted: {tenant_id}")
+    return {"success": True, "message": f"Tenant {tenant_id} deleted"}
+
+# Include admin router BEFORE tenant middleware
+app.include_router(admin_router)
+
+# ===========================================================================
+# Middleware (applies only after admin router)
 # ===========================================================================
 app.middleware("http")(tenant_middleware)
 
 # ===========================================================================
-# Startup: Ensure public schema is ready
+# Regular routers (tenant-protected)
+# ===========================================================================
+app.include_router(legal_persons.router)
+app.include_router(natural_persons.router)
+app.include_router(graph.router)
+app.include_router(search.router)
+
+# ===========================================================================
+# Startup & Health
 # ===========================================================================
 @app.on_event("startup")
 async def startup_event():
@@ -67,85 +89,32 @@ async def startup_event():
                 schema_name VARCHAR(63) UNIQUE NOT NULL,
                 name VARCHAR(255),
                 created_at TIMESTAMPTZ DEFAULT NOW(),
-                updated_at TIMESTAMPTZ DEFAULT NOW(),
                 is_active BOOLEAN DEFAULT TRUE
             )
         """))
-        # Optional: create extension if you use UUIDs or full-text search later
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist"))
-
     logger.info("Public schema initialized")
 
-
-# ===========================================================================
-# Routers
-# ===========================================================================
-app.include_router(legal_persons.router)
-app.include_router(natural_persons.router)
-app.include_router(graph.router)
-app.include_router(search.router)
-
-
-# ===========================================================================
-# Root & Health
-# ===========================================================================
 @app.get("/", tags=["System"])
 def root():
     return {
         "message": "Corporate Registry API",
         "version": "2.0.0",
         "docs": "/docs",
-        "multi_tenant": True,
-        "tenant_resolution": ["subdomain", "X-Tenant header"]
+        "multi_tenant": True
     }
-
 
 @app.get("/health", tags=["System"])
 def health(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
-        current_schema = db.execute(text("SELECT current_schema()")).scalar()
+        current = db.execute(text("SELECT current_schema()")).scalar()
         return {
             "status": "healthy",
-            "database": "connected",
-            "current_schema": current_schema,
-            "tenant_isolated": current_schema.startswith("tenant_")
+            "current_schema": current,
+            "tenant_isolated": current.startswith("tenant_")
         }
     except Exception as e:
         logger.error(f"Health check failed: {e}")
-        raise HTTPException(status_code=503, detail="Database unavailable")
-
-
-# ===========================================================================
-# Admin: Tenant Management (PROTECT IN PRODUCTION!)
-# ===========================================================================
-@app.post("/admin/tenants/{tenant_id}", tags=["Admin"])
-def create_tenant(tenant_id: str, name: str | None = None):
-    """Onboard a new tenant. In production: require API key + rate limit."""
-    if not tenant_id.isalnum() and "_" not in tenant_id:
-        raise HTTPException(400, "tenant_id must be alphanumeric or underscore")
-
-    tenants.onboard_new_tenant(tenant_id, name or tenant_id)
-    logger.info(f"Tenant created: {tenant_id}")
-    return {"success": True, "tenant_id": tenant_id, "message": "Tenant onboarded"}
-
-
-@app.delete("/admin/tenants/{tenant_id}", tags=["Admin"])
-def delete_tenant(tenant_id: str):
-    """GDPR-compliant tenant deletion"""
-    schema_name = f"tenant_{tenant_id}"
-    with engine.begin() as conn:
-        result = conn.execute(
-            text("SELECT 1 FROM information_schema.schemata WHERE schema_name = :s"),
-            {"s": schema_name}
-        ).fetchone()
-
-        if not result:
-            raise HTTPException(404, f"Tenant {tenant_id} does not exist")
-
-        conn.execute(text(f"DROP SCHEMA IF EXISTS {schema_name} CASCADE"))
-        conn.execute(text("DELETE FROM public.tenants WHERE id = :id"), {"id": tenant_id})
-
-    logger.warning(f"Tenant permanently deleted: {tenant_id}")
-    return {"success": True, "message": f"Tenant {tenant_id} and all data deleted"}
+        raise HTTPException(status_code=503, detail="DB unavailable")
