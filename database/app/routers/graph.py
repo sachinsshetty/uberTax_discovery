@@ -1,20 +1,39 @@
-from fastapi import APIRouter, Depends, HTTPException
+# app/routers/graph.py
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from .. import crud, schemas, dependencies
+from typing import List
 
-router = APIRouter(prefix="/graph", tags=["graph"])
+from .. import crud, schemas
+from ..dependencies import get_db
 
-@router.get("/{entity_type}/{entity_id}", response_model=list[schemas.ConnectionResponse])
-def get_entity_graph(
+router = APIRouter(prefix="/graph", tags=["Ownership Graph"])
+
+
+@router.get(
+    "/{entity_type}/{entity_id}",
+    response_model=List[schemas.ConnectionResponse]
+)
+def get_connections(
     entity_type: str,
     entity_id: int,
-    db: Session = Depends(dependencies.get_db)
+    db: Session = Depends(get_db)
 ):
-    if entity_type not in ["legal", "natural"]:
-        raise HTTPException(400, "entity_type must be 'legal' or 'natural'")
+    if entity_type not in {"legal", "natural"}:
+        raise HTTPException(
+            status_code=400,
+            detail="entity_type must be 'legal' or 'natural'"
+        )
     connections = crud.get_connections_for_entity(db, entity_type, entity_id)
     return connections
 
-@router.post("/connections", response_model=schemas.ConnectionResponse, status_code=201)
-def add_connection(conn: schemas.ConnectionCreate, db: Session = Depends(dependencies.get_db)):
+
+@router.post(
+    "/connections",
+    response_model=schemas.ConnectionResponse,
+    status_code=status.HTTP_201_CREATED
+)
+def create_connection(
+    conn: schemas.ConnectionCreate,
+    db: Session = Depends(get_db)
+):
     return crud.create_connection(db, conn)
