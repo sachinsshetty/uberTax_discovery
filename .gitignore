@@ -1,9 +1,3 @@
-tutorials/ollama/ollama
-python/reconaissance/ollama/
-python/ollama
-output.wav
-src/ollama
-models/
 pyautogenvenv/
 venv/
 node_modules/
