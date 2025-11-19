@@ -27,3 +27,8 @@ docker build -t dwani/ubertax-register -f Dockerfile .
 
 docker compose -f docker-compose.yml up -d
 ```
+
+-- 
+
+
+![multi-tenant](../docs/database-upgrade/multi-tenant.png "multi-tenant")
