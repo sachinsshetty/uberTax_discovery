@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 import logging
 
-from .database import engine, get_db
+from .database import base_engine as engine, get_db
 from .middleware import tenant_middleware
 from .routers import legal_persons, natural_persons, graph, search
 from . import tenants
