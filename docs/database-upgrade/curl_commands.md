@@ -1,5 +1,5 @@
-# === 1. Create 3 Legal Persons ===
-curl -X POST http://localhost:8000/legal_persons \
+# === 1. Create 3 Legal Persons (note the trailing /) ===
+curl -X POST http://localhost:8000/legal_persons/ \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Acme Holdings Ltd",
@@ -9,7 +9,7 @@ curl -X POST http://localhost:8000/legal_persons \
     "status": "active"
   }' | jq .
 
-curl -X POST http://localhost:8000/legal_persons \
+curl -X POST http://localhost:8000/legal_persons/ \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Beta Investments SARL",
@@ -18,7 +18,7 @@ curl -X POST http://localhost:8000/legal_persons \
     "incorporation_date": "2018-07-10"
   }' | jq .
 
-curl -X POST http://localhost:8000/legal_persons \
+curl -X POST http://localhost:8000/legal_persons/ \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Gamma Tech LLC",
@@ -29,7 +29,7 @@ curl -X POST http://localhost:8000/legal_persons \
 
 
 # === 2. Create 3 Natural Persons ===
-curl -X POST http://localhost:8000/natural_persons \
+curl -X POST http://localhost:8000/natural_persons/ \
   -H "Content-Type: application/json" \
   -d '{
     "first_name": "Elon",
@@ -39,7 +39,7 @@ curl -X POST http://localhost:8000/natural_persons \
     "tax_id": "TAX-001"
   }' | jq .
 
-curl -X POST http://localhost:8000/natural_persons \
+curl -X POST http://localhost:8000/natural_persons/ \
   -H "Content-Type: application/json" \
   -d '{
     "first_name": "Sundar",
@@ -49,7 +49,7 @@ curl -X POST http://localhost:8000/natural_persons \
     "tax_id": "TAX-002"
   }' | jq .
 
-curl -X POST http://localhost:8000/natural_persons \
+curl -X POST http://localhost:8000/natural_persons/ \
   -H "Content-Type: application/json" \
   -d '{
     "first_name": "Satya",
@@ -60,9 +60,9 @@ curl -X POST http://localhost:8000/natural_persons \
   }' | jq .
 
 
-# === 3. Create some realistic connections (shareholders, directors, etc.) ===
-# Elon Musk is 100% shareholder of Acme Holdings
-curl -X POST http://localhost:8000/graph/connections \
+# === 3. Create connections ===
+# Elon Musk (1) → 100% shareholder of Acme Holdings (1)
+curl -X POST http://localhost:8000/graph/connections/ \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -70,11 +70,11 @@ curl -X POST http://localhost:8000/graph/connections \
     "to_type": "legal",
     "to_id": 1,
     "relation": "shareholder",
-    "share_percentage": "100"
+    "share_percentage": 100.0
   }' | jq .
 
-# Acme Holdings owns 75% of Beta Investments
-curl -X POST http://localhost:8000/graph/connections \
+# Acme Holdings (1) → 75% shareholder of Beta Investments (2)
+curl -X POST http://localhost:8000/graph/connections/ \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "legal",
@@ -82,11 +82,11 @@ curl -X POST http://localhost:8000/graph/connections \
     "to_type": "legal",
     "to_id": 2,
     "relation": "shareholder",
-    "share_percentage": "75"
+    "share_percentage": 75.0
   }' | jq .
 
-# Sundar Pichai is director of Gamma Tech
-curl -X POST http://localhost:8000/graph/connections \
+# Sundar Pichai (2) → director of Gamma Tech (3)
+curl -X POST http://localhost:8000/graph/connections/ \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -96,8 +96,8 @@ curl -X POST http://localhost:8000/graph/connections \
     "relation": "director"
   }' | jq .
 
-# Satya Nadella is 25% shareholder of Beta Investments
-curl -X POST http://localhost:8000/graph/connections \
+# Satya Nadella (3) → 25% shareholder of Beta Investments (2)
+curl -X POST http://localhost:8000/graph/connections/ \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -105,16 +105,16 @@ curl -X POST http://localhost:8000/graph/connections \
     "to_type": "legal",
     "to_id": 2,
     "relation": "shareholder",
-    "share_percentage": "25"
+    "share_percentage": 25.0
   }' | jq .
 
 
-
-  # See all connections from Elon Musk (natural person id=1)
+# === 4. Query the graph (these already work without trailing slash in most setups) ===
+echo "Connections from Elon Musk (natural person 1):"
 curl http://localhost:8000/graph/natural/1 | jq .
 
-# See all connections from Acme Holdings (legal person id=1)
+echo "Connections from Acme Holdings (legal person 1):"
 curl http://localhost:8000/graph/legal/1 | jq .
 
-# See who owns Beta Investments (legal id=2)
+echo "Who owns/controls Beta Investments (legal person 2):"
 curl http://localhost:8000/graph/legal/2 | jq .
