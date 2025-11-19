@@ -1,23 +1,16 @@
 from fastapi import FastAPI
-from api.v1 import legal_persons #, natural_persons, graph
-#from app.core.tenant_middleware import tenant_middleware
-#from app.core.database import engine
-#from app.models import Base
-import asyncio
+from .routers import legal_persons, natural_persons, graph
+from .database import engine, Base
 
 app = FastAPI(title="Corporate Registry API")
 
-#app.add_middleware(tenant_middleware)
+# Create tables
+Base.metadata.create_all(bind=engine)
 
-app.include_router(legal_persons.router, prefix="/legal_persons")
-#app.include_router(natural_persons.router, prefix="/natural_persons")
-#app.include_router(graph.router, prefix="/graph")
+app.include_router(legal_persons.router)
+app.include_router(natural_persons.router)
+app.include_router(graph.router)
 
-'''
-@app.on_event("startup")
-async def startup():
-    async with engine.begin() as conn:
-        # Ensure common schema exists
-        await conn.execute("CREATE SCHEMA IF NOT EXISTS common")
-        await conn.run_sync(Base.metadata.create_all)  # creates tables in current schema
-'''
+@app.get("/")
+def root():
+    return {"message": "Corporate Registry API running"}

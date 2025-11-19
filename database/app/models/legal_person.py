@@ -1,16 +1,15 @@
-from sqlalchemy import Column, String, Date, JSON, DateTime, func, Uuid
-import uuid
-from .base import Base
+from sqlalchemy import Column, String, Date, JSON
+from sqlalchemy.orm import declarative_base
+from .base import BaseModel
 
-class LegalPerson(Base):
-    __tablename__ = "legal_person"
+Base = declarative_base()
 
-    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    registration_no = Column(String, unique=True, nullable=False)
+class LegalPerson(Base, BaseModel):
+    __tablename__ = "legal_persons"
+
+    registration_no = Column(String, unique=True, nullable=False, index=True)
     name = Column(String, nullable=False)
-    jurisdiction = Column(String)
+    jurisdiction = Column(String, nullable=False)
     incorporation_date = Column(Date)
     status = Column(String, default="ACTIVE")
     metadata = Column(JSON, default=dict)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
