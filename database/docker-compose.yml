@@ -18,7 +18,7 @@ services:
 
   api:
     container_name: registry-api
-    build: .
+    image: dwani/ubertax-register:latest
     ports:
       - "8000:8000"
     environment:

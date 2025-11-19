@@ -13,3 +13,7 @@ Steps for Implementation
 - Test Migration
 - Run 3 version of migrations
 
+
+-- 
+
+docker build -t dwani/ubertax-register -f Dockerfile .
