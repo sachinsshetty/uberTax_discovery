@@ -16,5 +16,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  api:
+    build: .
+    container_name: registry-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/registry
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
 volumes:
   postgres_data:
