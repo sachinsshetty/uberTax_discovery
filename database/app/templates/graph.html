@@ -3,63 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ownership Graph + Cycle Detection</title>
+    <title>Ownership Graph - Full Intelligence Platform</title>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #121212; color: #eee; }
-        #mynetwork { width: 100vw; height: 100vh; border: 1px solid #333; }
-        
-        #header {
-            position: absolute; top: 0; left: 0; right: 0; z-index: 1000;
-            background: rgba(0,0,0,0.8); padding: 15px; text-align: center;
-            backdrop-filter: blur(10px);
+        body { margin: 0; background: #0d1117; color: #eee; font-family: 'Segoe UI', sans-serif; }
+        #mynetwork { width: 100vw; height: 100vh; }
+        .panel {
+            position: absolute; top: 15px; left: 15px; z-index: 1000;
+            background: rgba(22, 27, 34, 0.97); padding: 22px; border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); max-width: 400px; border: 1px solid #30363d;
         }
+        h2 { margin: 0 0 18px 0; color: #58a6ff; font-size: 20px; }
+        input, select, button {
+            width: 100%; padding: 12px 14px; margin: 8px 0; border-radius: 10px; border: none;
+            font-size: 15px; box-sizing: border-box;
+        }
+        input, select { background: #21262d; color: #eee; }
+        button { background: #238636; color: white; font-weight: bold; cursor: pointer; }
+        button:hover { background: #2ea043; }
+        button.clear { background: #6e7681; }
+        .results { max-height: 240px; overflow-y: auto; margin-top: 12px; }
+        .result-item {
+            padding: 14px; background: #161b22; margin: 6px 0; border-radius: 8px;
+            cursor: pointer; border-left: 5px solid #238636; transition: 0.2s;
+        }
+        .result-item:hover { background: #1f6feb22; transform: translateX(5px); }
         .warning {
-            background: linear-gradient(90deg, #FF0000, #AA0000);
-            color: white; padding: 12px 20px; border-radius: 8px;
-            font-weight: bold; font-size: 18px; margin: 10px auto; max-width: 600px;
-            box-shadow: 0 0 20px rgba(255,0,0,0.5);
-            animation: pulse 2s infinite;
+            position: absolute; top: 15px; right: 15px; z-index: 1000;
+            background: linear-gradient(90deg, #b91c1c, #991b1b); color: white;
+            padding: 16px 24px; border-radius: 12px; font-weight: bold; font-size: 18px;
+            box-shadow: 0 0 30px rgba(185, 28, 28, 0.6); animation: pulse 2s infinite;
         }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-
-        #controls {
-            position: absolute; top: 80px; left: 20px; z-index: 1000;
-            background: rgba(30,30,30,0.95); padding: 20px; border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6); border: 1px solid #444;
-        }
-        input, button, select {
-            padding: 10px 14px; margin: 6px; border-radius: 8px; border: none;
-            font-size: 14px;
-        }
-        button {
-            background: #4CAF50; color: white; cursor: pointer; font-weight: bold;
-        }
-        button:hover { background: #45a049; }
-        small { color: #aaa; font-size: 12px; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
     </style>
 </head>
 <body>
 
     {% if has_cycles %}
-    <div id="header">
-        <div class="warning">
-            CYCLE DETECTED! {{ cycle_count }} ownership loop(s) found — Possible fraud or data error!
-        </div>
+    <div class="warning">
+        CYCLE DETECTED — Possible fraud or data loop!
     </div>
     {% endif %}
 
-    <div id="controls">
-        <h3>Explore Ownership Graph</h3>
-        <form action="/graph/visualize" method="get">
-            <input type="text" name="entity_type" placeholder="legal or natural" 
-                   value="{{ center_entity.split(':')[0] if center_entity else '' }}" required>
-            <input type="number" name="entity_id" placeholder="Entity ID" 
-                   value="{{ center_entity.split(':')[1] if center_entity else '' }}" required>
-            <input type="number" name="depth" placeholder="Depth" value="3" min="1" max="10">
-            <button type="submit">Load Graph</button>
+    <div class="panel">
+        <h2>Ownership Intelligence Platform</h2>
+        
+        <form method="get">
+            <input type="text" name="search" placeholder="Search: John, ABC Ltd, 12345..." 
+                   value="{{ current_search or '' }}" autofocus>
+
+            <select name="relation">
+                <option value="">All Relations</option>
+                <option value="shareholder" {% if filters.relation == 'shareholder' %}selected{% endif %}>Shareholder</option>
+                <option value="director" {% if filters.relation == 'director' %}selected{% endif %}>Director</option>
+                <option value="ubo" {% if filters.relation == 'ubo' %}selected{% endif %}>UBO</option>
+            </select>
+
+            <input type="number" name="min_share" placeholder="Min share %" step="0.1"
+                   value="{{ filters.min_share or '' }}">
+
+            <select name="entity_type">
+                <option value="">All Entities</option>
+                <option value="legal" {% if filters.entity_type == 'legal' %}selected{% endif %}>Companies Only</option>
+                <option value="natural" {% if filters.entity_type == 'natural' %}selected{% endif %}>Persons Only</option>
+            </select>
+
+            <button type="submit">Search & Explore</button>
+            <button type="button" class="clear" onclick="window.location.href='/graph/visualize'">Clear All</button>
         </form>
-        <small>Red dashed arrows = ownership cycles</small>
+
+        {% if search_results %}
+        <div class="results">
+            <small><strong>{{ search_results|length }} found:</strong></small>
+            {% for r in search_results %}
+            <div class="result-item" onclick="location.href='?start_type={{ r.type }}&start_id={{ r.id }}'">
+                <strong>{{ r.label }}</strong><br>
+                <small>Click to explore ownership →</small>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 
     <div id="mynetwork"></div>
@@ -68,33 +91,27 @@
         const nodes = new vis.DataSet({{ nodes|tojson }});
         const edges = new vis.DataSet({{ edges|tojson }});
 
-        const container = document.getElementById("mynetwork");
-        const data = { nodes, edges };
-
-        const options = {
+        new vis.Network(document.getElementById("mynetwork"), { nodes, edges }, {
             nodes: {
                 shape: "dot",
-                size: 25,
-                font: { size: 14, color: "#ffffff", strokeWidth: 2, strokeColor: "#000000" },
+                size: 30,
+                font: { size: 16, color: "#fff", strokeWidth: 3, strokeColor: "#000" },
                 borderWidth: 3,
                 shadow: true
             },
             edges: {
-                font: { align: "middle", size: 13, strokeWidth: 3, strokeColor: "#000000" },
+                font: { align: "middle", size: 14, strokeWidth: 4, strokeColor: "#000" },
                 smooth: { type: "cubicBezier", roundness: 0.5 },
-                arrows: { to: { enabled: true, scaleFactor: 1 } },
+                arrows: { to: { enabled: true } },
                 shadow: true
             },
             physics: {
-                enabled: true,
                 barnesHut: {
-                    gravitationalConstant: -12000,
-                    centralGravity: 0.3,
-                    springLength: 200,
-                    springConstant: 0.04,
-                    damping: 0.9
+                    gravitationalConstant: -18000,
+                    springLength: 280,
+                    springConstant: 0.09
                 },
-                stabilization: { iterations: 200 }
+                stabilization: { iterations: 300 }
             },
             interaction: {
                 hover: true,
@@ -102,21 +119,16 @@
                 dragView: true,
                 navigationButtons: true,
                 keyboard: true
-            },
-            layout: { improvedLayout: true }
-        };
+            }
+        });
 
-        const network = new vis.Network(container, data, options);
-
-        // Focus on root node
         {% if center_entity %}
         setTimeout(() => {
             network.focus("{{ center_entity }}", {
-                scale: 0.9,
-                animation: { duration: 1000, easingFunction: "easeInOutQuad" }
+                scale: 0.8,
+                animation: { duration: 1200, easingFunction: "easeInOutQuad" }
             });
-            network.selectNodes(["{{ center_entity }}"]);
-        }, 800);
+        }, 1000);
         {% endif %}
     </script>
 </body>
