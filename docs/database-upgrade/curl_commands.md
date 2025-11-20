@@ -62,7 +62,7 @@ curl -X POST http://localhost:8000/natural_persons/ \
 
 # === 3. Create connections ===
 # Elon Musk (1) → 100% shareholder of Acme Holdings (1)
-curl -X POST http://localhost:8000/graph/connections/ \
+curl -X POST http://localhost:8000/graph/connections \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -74,7 +74,7 @@ curl -X POST http://localhost:8000/graph/connections/ \
   }' | jq .
 
 # Acme Holdings (1) → 75% shareholder of Beta Investments (2)
-curl -X POST http://localhost:8000/graph/connections/ \
+curl -X POST http://localhost:8000/graph/connections \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "legal",
@@ -86,7 +86,7 @@ curl -X POST http://localhost:8000/graph/connections/ \
   }' | jq .
 
 # Sundar Pichai (2) → director of Gamma Tech (3)
-curl -X POST http://localhost:8000/graph/connections/ \
+curl -X POST http://localhost:8000/graph/connections \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -97,7 +97,7 @@ curl -X POST http://localhost:8000/graph/connections/ \
   }' | jq .
 
 # Satya Nadella (3) → 25% shareholder of Beta Investments (2)
-curl -X POST http://localhost:8000/graph/connections/ \
+curl -X POST http://localhost:8000/graph/connections \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -109,7 +109,7 @@ curl -X POST http://localhost:8000/graph/connections/ \
   }' | jq .
 
 
-# === 4. Query the graph (these already work without trailing slash in most setups) ===
+# === 4. Query the graph ===
 echo "Connections from Elon Musk (natural person 1):"
 curl http://localhost:8000/graph/natural/1 | jq .
 
