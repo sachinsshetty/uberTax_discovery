@@ -1,7 +1,7 @@
 services:
   db:
     container_name: registry-db-multi-tenant
-    image: postgres:16-alpine
+    image: postgres:18.1-alpine3.22
     environment:
       POSTGRES_DB: registry
       POSTGRES_USER: postgres

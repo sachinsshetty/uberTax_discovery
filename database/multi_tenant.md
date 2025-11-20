@@ -23,3 +23,13 @@ curl -X POST http://localhost:8000/admin/tenants/acme
 curl http://acme.localhost:8000/legal-persons
 # or
 curl -H "X-Tenant: acme" http://localhost:8000/search?q=john
+
+curl -X POST http://acme.localhost:8000/legal_persons/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme Holdings Ltd",
+    "registration_number": "HRB-1001",
+    "jurisdiction": "Germany",
+    "incorporation_date": "2015-03-20",
+    "status": "active"
+  }'
