@@ -1,0 +1,75 @@
+from pydantic import BaseModel, Field
+from typing import Optional, Literal
+from datetime import datetime
+
+class LegalPersonBase(BaseModel):
+    name: str
+    registration_number: str
+    jurisdiction: Optional[str] = None
+    incorporation_date: Optional[str] = None
+    status: Optional[str] = "active"
+
+class LegalPersonCreate(LegalPersonBase):
+    pass
+
+class LegalPersonUpdate(BaseModel):
+    name: Optional[str] = None
+    registration_number: Optional[str] = None
+    jurisdiction: Optional[str] = None
+    incorporation_date: Optional[str] = None
+    status: Optional[str] = None
+
+class LegalPerson(LegalPersonBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class NaturalPersonBase(BaseModel):
+    first_name: str
+    last_name: str
+    nationality: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    tax_id: Optional[str] = None
+
+class NaturalPersonCreate(NaturalPersonBase):
+    pass
+
+class NaturalPersonUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    nationality: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    tax_id: Optional[str] = None
+
+class NaturalPerson(NaturalPersonBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+# Graph schemas
+class ConnectionCreate(BaseModel):
+    from_type: Literal["legal", "natural"]
+    from_id: int
+    to_type: Literal["legal", "natural"]
+    to_id: int
+    relation: str = Field(..., example="shareholder")
+    share_percentage: Optional[str] = None
+
+class ConnectionResponse(BaseModel):
+    id: int
+    from_type: str
+    from_id: int
+    to_type: str
+    to_id: int
+    relation: str
+    share_percentage: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

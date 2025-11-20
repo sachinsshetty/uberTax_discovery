@@ -1,120 +1,16 @@
-# app/main.py
-from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
-from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-import logging
+from fastapi import FastAPI
+from .routers import legal_persons, natural_persons, graph
+from .database import engine, Base
 
-from .database import base_engine as engine, get_db
-from .middleware import tenant_middleware
-from .routers import legal_persons, natural_persons, graph, search
-from . import tenants
+app = FastAPI(title="Corporate Registry API")
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Create tables
+Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="Corporate Registry API",
-    description="Multi-tenant corporate ownership & UBO registry with full graph support",
-    version="2.0.0",
-    license_info={"name": "Proprietary"},
-)
-
-# ===========================================================================
-# Global exception handler
-# ===========================================================================
-@app.exception_handler(ValueError)
-async def tenant_context_exception_handler(request, exc: ValueError):
-    if "No tenant context" in str(exc):
-        return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            content={"detail": "Tenant not specified. Use subdomain or X-Tenant header."}
-        )
-    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
-
-# ===========================================================================
-# ADMIN ROUTER – NO TENANT MIDDLEWARE
-# ===========================================================================
-admin_router = APIRouter()
-
-@admin_router.post("/admin/tenants/{tenant_id}", tags=["Admin"])
-def create_tenant(tenant_id: str, name: str | None = None):
-    if not tenant_id.replace("_", "").isalnum():
-        raise HTTPException(400, "tenant_id must be alphanumeric or underscore")
-    tenants.onboard_new_tenant(tenant_id, name or tenant_id)
-    logger.info(f"Tenant created: {tenant_id}")
-    return {"success": True, "tenant_id": tenant_id, "message": "Tenant onboarded"}
-
-@admin_router.delete("/admin/tenants/{tenant_id}", tags=["Admin"])
-def delete_tenant(tenant_id: str):
-    schema_name = f"tenant_{tenant_id}"
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 1 FROM information_schema.schemata 
-            WHERE schema_name = :s
-        """), {"s": schema_name}).fetchone()
-        if not result:
-            raise HTTPException(404, f"Tenant {tenant_id} does not exist")
-        conn.execute(text(f"DROP SCHEMA IF EXISTS {schema_name} CASCADE"))
-        conn.execute(text("DELETE FROM public.tenants WHERE id = :id"), {"id": tenant_id})
-    logger.warning(f"Tenant permanently deleted: {tenant_id}")
-    return {"success": True, "message": f"Tenant {tenant_id} deleted"}
-
-# Include admin router BEFORE tenant middleware
-app.include_router(admin_router)
-
-# ===========================================================================
-# Middleware (applies only after admin router)
-# ===========================================================================
-app.middleware("http")(tenant_middleware)
-
-# ===========================================================================
-# Regular routers (tenant-protected)
-# ===========================================================================
 app.include_router(legal_persons.router)
 app.include_router(natural_persons.router)
 app.include_router(graph.router)
-app.include_router(search.router)
 
-# ===========================================================================
-# Startup & Health
-# ===========================================================================
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Starting Corporate Registry API...")
-    with engine.begin() as conn:
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS public.tenants (
-                id VARCHAR(50) PRIMARY KEY,
-                schema_name VARCHAR(63) UNIQUE NOT NULL,
-                name VARCHAR(255),
-                created_at TIMESTAMPTZ DEFAULT NOW(),
-                is_active BOOLEAN DEFAULT TRUE
-            )
-        """))
-        conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
-        conn.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist"))
-    logger.info("Public schema initialized")
-
-@app.get("/", tags=["System"])
+@app.get("/")
 def root():
-    return {
-        "message": "Corporate Registry API",
-        "version": "2.0.0",
-        "docs": "/docs",
-        "multi_tenant": True
-    }
-
-@app.get("/health", tags=["System"])
-def health(db: Session = Depends(get_db)):
-    try:
-        db.execute(text("SELECT 1"))
-        current = db.execute(text("SELECT current_schema()")).scalar()
-        return {
-            "status": "healthy",
-            "current_schema": current,
-            "tenant_isolated": current.startswith("tenant_")
-        }
-    except Exception as e:
-        logger.error(f"Health check failed: {e}")
-        raise HTTPException(status_code=503, detail="DB unavailable")
+    return {"message": "Corporate Registry API running"}
