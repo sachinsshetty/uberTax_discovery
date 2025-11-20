@@ -50,3 +50,15 @@ def delete_connection(conn_id: int, db: Session = Depends(dependencies.get_db)):
     if not crud.delete_connection(db, conn_id):
         raise HTTPException(status_code=404, detail="Connection not found")
     return None
+
+@router.get("/{entity_type}/{entity_id}/downstream")
+def downstream(entity_type: str, entity_id: int, depth: int = 10, db: Session = Depends(get_db)):
+    return crud.get_downstream_ownership(db, entity_type, entity_id, depth)
+
+@router.get("/{entity_type}/{entity_id}/ubo")
+def ubo(entity_type: str, entity_id: int, min_share: float = 25.0, db: Session = Depends(get_db)):
+    return crud.get_ultimate_beneficial_owners(db, entity_type, entity_id, min_share)
+
+@router.get("/person/{person_id}/controls/{entity_type}/{entity_id}")
+def control_path(person_id: int, entity_type: str, entity_id: int, db: Session = Depends(get_db)):
+    return crud.get_control_path_from_person(db, person_id, entity_type, entity_id)
