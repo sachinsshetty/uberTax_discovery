@@ -40,3 +40,20 @@ docker compose -f multi-tenant-compose.yml up -d
 
 
 ![multi-tenant](../docs/database-upgrade/multi-tenant.png "multi-tenant")
+
+
+---
+
+Daily Database snapshots 
+
+Datbase backup before any migration 
+
+
+Copy production to staging and run migration to test changes 
+
+
+Use alembic for python or Liquibase for xml based 
+
+
+Utilise postgres containers and test containers for Database related changes
+
