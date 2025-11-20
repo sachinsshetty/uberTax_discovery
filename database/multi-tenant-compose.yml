@@ -18,9 +18,7 @@ services:
 
   api:
     container_name: registry-api-multi-tenant
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: dwani/ubertax-register-multi:latest
     ports:
       - "8000:8000"
     environment:
