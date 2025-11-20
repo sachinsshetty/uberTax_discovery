@@ -1,0 +1,76 @@
+<!-- templates/graph.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ownership Graph Visualization</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; }
+        #controls {
+            position: absolute; top: 10px; left: 10px; z-index: 100;
+            background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #mynetwork { width: 100vw; height: 100vh; border: 1px solid #ddd; }
+        h1 { text-align: center; padding: 20px; color: #333; }
+        input, button { margin: 5px; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Corporate Ownership Graph</h1>
+    
+    <div id="controls">
+        <form action="/graph/visualize" method="get">
+            <input type="text" name="entity_type" placeholder="legal or natural" value="{{ 'legal' if 'legal' in (center_entity or '') else 'natural' if center_entity else '' }}" required>
+            <input type="number" name="entity_id" placeholder="Entity ID" value="{{ center_entity.split(':')[1] if center_entity else '' }}" required>
+            <input type="number" name="depth" min="1" max="10" value="3">
+            <button type="submit">Explore</button>
+        </form>
+        <small>Examples: legal 1 • natural 5</small>
+    </div>
+
+    <div id="mynetwork"></div>
+
+    <script>
+        const nodes = new vis.DataSet({{ nodes|tojson }});
+        const edges = new vis.DataSet({{ edges|tojson }});
+
+        const container = document.getElementById("mynetwork");
+        const data = { nodes, edges };
+        const options = {
+            nodes: {
+                font: { size: 14, face: 'arial' },
+                borderWidth: 2,
+                shadow: true
+            },
+            edges: {
+                font: { align: 'middle', size: 12 },
+                smooth: { type: 'cubicBezier' },
+                shadow: true
+            },
+            physics: {
+                stabilization: { iterations: 200 },
+                barnesHut: { gravitationalConstant: -8000, springLength: 150 }
+            },
+            layout: {
+                improvedLayout: true
+            },
+            interaction: {
+                zoomView: true,
+                dragView: true,
+                hover: true,
+                navigationButtons: true
+            }
+        };
+
+        const network = new vis.Network(container, data, options);
+
+        // Focus on center node
+        {% if center_entity %}
+        setTimeout(() => {
+            network.focus("{{ center_entity }}", { scale: 1.0, animation: true });
+            network.selectNodes(["{{ center_entity }}"]);
+        }, 1000);
+        {% endif %}
+    </script>
+</body>
+</html>
