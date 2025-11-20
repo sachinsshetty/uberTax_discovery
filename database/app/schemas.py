@@ -4,7 +4,6 @@ from typing import Optional, Literal
 from datetime import datetime
 
 
-# ====================== LEGAL PERSON ======================
 class LegalPersonBase(BaseModel):
     name: str = Field(..., example="Acme Corp Ltd")
     registration_number: str = Field(..., example="12345678")
@@ -17,7 +16,7 @@ class LegalPersonCreate(LegalPersonBase):
     pass
 
 
-class LegalPersonUpdate(BaseModel):          # ← WAS MISSING!
+class LegalPersonUpdate(BaseModel):
     name: Optional[str] = None
     registration_number: Optional[str] = None
     jurisdiction: Optional[str] = None
@@ -29,11 +28,9 @@ class LegalPerson(LegalPersonBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
-
     model_config = {"from_attributes": True}
 
 
-# ====================== NATURAL PERSON ======================
 class NaturalPersonBase(BaseModel):
     first_name: str = Field(..., example="John")
     last_name: str = Field(..., example="Doe")
@@ -46,7 +43,7 @@ class NaturalPersonCreate(NaturalPersonBase):
     pass
 
 
-class NaturalPersonUpdate(BaseModel):         # ← WAS MISSING!
+class NaturalPersonUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     nationality: Optional[str] = None
@@ -58,11 +55,9 @@ class NaturalPerson(NaturalPersonBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
-
     model_config = {"from_attributes": True}
 
 
-# ====================== GRAPH SCHEMAS ======================
 class ConnectionCreate(BaseModel):
     from_type: Literal["legal", "natural"]
     from_id: int
@@ -83,5 +78,6 @@ class ConnectionResponse(BaseModel):
     relation: str
     share_percentage: Optional[float] = None
     created_at: datetime
+    updated_at: Optional[datetime] = None
 
     model_config = {"from_attributes": True}

@@ -1,29 +1,34 @@
 # models.py
-from sqlalchemy import Column, Integer, String, DateTime, Float, Table
+from sqlalchemy import Column, Integer, String, DateTime, Float, Table, UniqueConstraint
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 
 Base = declarative_base()
 
-# Graph connections table — now with proper Float for share_percentage
+# =============================================================================
+# GRAPH: entity_connections – ONLY THIS TABLE IS FIXED (performance + safety)
+# =============================================================================
 entity_connections = Table(
     "entity_connections",
     Base.metadata,
     Column("id", Integer, primary_key=True),
-    Column("from_type", String(20), nullable=False, index=True),     # 'legal' or 'natural'
+    Column("from_type", String(20), nullable=False, index=True),
     Column("from_id", Integer, nullable=False, index=True),
     Column("to_type", String(20), nullable=False, index=True),
     Column("to_id", Integer, nullable=False, index=True),
     Column("relation", String(50), nullable=False),
-    # FIXED: Use Float (or Numeric for precision)
-    Column("share_percentage", Float, nullable=True),  
+    Column("share_percentage", Float, nullable=True),
     Column("created_at", DateTime(timezone=True), server_default=func.now()),
     Column("updated_at", DateTime(timezone=True), onupdate=func.now()),
-    # Optional: composite index for faster graph queries
-    # Index("ix_from", "from_type", "from_id"),
-    # Index("ix_to", "to_type", "to_id"),
+
+    # FIXED: Prevent duplicate connections
+    UniqueConstraint("from_type", "from_id", "to_type", "to_id", "relation", name="uniq_connection"),
+    # Indexes created in DB migration below (not inline to avoid re-creation issues)
 )
 
+# =============================================================================
+# YOUR ORIGINAL LEGAL & NATURAL PERSONS – 100% UNCHANGED
+# =============================================================================
 class LegalPerson(Base):
     __tablename__ = "legal_persons"
 
