@@ -33,3 +33,22 @@ curl -X POST http://acme.localhost:8000/legal_persons/ \
     "incorporation_date": "2015-03-20",
     "status": "active"
   }'
+
+
+
+---
+
+
+curl -X POST http://localhost:8000/admin/tenants/acme -d '{"name": "Acme Corp"}'
+
+
+# 2. Now everything works with subdomain
+curl -X POST http://acme.localhost:8000/legal_persons/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme Holdings Ltd",
+    "registration_number": "HRB-1001",
+    "jurisdiction": "Germany",
+    "incorporation_date": "2015-03-20",
+    "status": "active"
+  }'
