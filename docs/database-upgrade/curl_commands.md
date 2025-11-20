@@ -118,3 +118,34 @@ curl http://localhost:8000/graph/legal/1 | jq .
 
 echo "Who owns/controls Beta Investments (legal person 2):"
 curl http://localhost:8000/graph/legal/2 | jq .
+
+
+---
+
+# 1. CREATE
+curl -X POST http://localhost:8000/graph/connections \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from_type": "legal", "from_id": 1,
+    "to_type": "legal", "to_id": 2,
+    "relation": "shareholder",
+    "share_percentage": 75.0
+  }' | jq .
+
+# → Returns connection with id (e.g. 1)
+
+# 2. READ one
+curl http://localhost:8000/graph/connections/1 | jq .
+
+# 3. UPDATE (change percentage to 80%)
+curl -X PUT http://localhost:8000/graph/connections/1 \
+  -H "Content-Type: application/json" \
+  -d '{"share_percentage": 80.0}' | jq .
+
+# 4. READ outgoing from legal:1
+curl http://localhost:8000/graph/legal/1 | jq .
+
+# 5. DELETE
+curl -X DELETE http://localhost:8000/graph/connections/1
+
+# → 204 No Content
