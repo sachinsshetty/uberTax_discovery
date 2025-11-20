@@ -62,7 +62,7 @@ curl -X POST http://localhost:8000/natural_persons/ \
 
 # === 3. Create connections ===
 # Elon Musk (1) → 100% shareholder of Acme Holdings (1)
-curl -X POST http://localhost:8000/graph/connections/ \
+curl -X POST http://localhost:8000/graph/connections \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -74,7 +74,7 @@ curl -X POST http://localhost:8000/graph/connections/ \
   }' | jq .
 
 # Acme Holdings (1) → 75% shareholder of Beta Investments (2)
-curl -X POST http://localhost:8000/graph/connections/ \
+curl -X POST http://localhost:8000/graph/connections \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "legal",
@@ -86,7 +86,7 @@ curl -X POST http://localhost:8000/graph/connections/ \
   }' | jq .
 
 # Sundar Pichai (2) → director of Gamma Tech (3)
-curl -X POST http://localhost:8000/graph/connections/ \
+curl -X POST http://localhost:8000/graph/connections \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -97,7 +97,7 @@ curl -X POST http://localhost:8000/graph/connections/ \
   }' | jq .
 
 # Satya Nadella (3) → 25% shareholder of Beta Investments (2)
-curl -X POST http://localhost:8000/graph/connections/ \
+curl -X POST http://localhost:8000/graph/connections \
   -H "Content-Type: application/json" \
   -d '{
     "from_type": "natural",
@@ -109,7 +109,7 @@ curl -X POST http://localhost:8000/graph/connections/ \
   }' | jq .
 
 
-# === 4. Query the graph (these already work without trailing slash in most setups) ===
+# === 4. Query the graph ===
 echo "Connections from Elon Musk (natural person 1):"
 curl http://localhost:8000/graph/natural/1 | jq .
 
@@ -118,3 +118,34 @@ curl http://localhost:8000/graph/legal/1 | jq .
 
 echo "Who owns/controls Beta Investments (legal person 2):"
 curl http://localhost:8000/graph/legal/2 | jq .
+
+
+---
+
+# 1. CREATE
+curl -X POST http://localhost:8000/graph/connections \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from_type": "legal", "from_id": 1,
+    "to_type": "legal", "to_id": 2,
+    "relation": "shareholder",
+    "share_percentage": 75.0
+  }' | jq .
+
+# → Returns connection with id (e.g. 1)
+
+# 2. READ one
+curl http://localhost:8000/graph/connections/1 | jq .
+
+# 3. UPDATE (change percentage to 80%)
+curl -X PUT http://localhost:8000/graph/connections/1 \
+  -H "Content-Type: application/json" \
+  -d '{"share_percentage": 80.0}' | jq .
+
+# 4. READ outgoing from legal:1
+curl http://localhost:8000/graph/legal/1 | jq .
+
+# 5. DELETE
+curl -X DELETE http://localhost:8000/graph/connections/1
+
+# → 204 No Content
