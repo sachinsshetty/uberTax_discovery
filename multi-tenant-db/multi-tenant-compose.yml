@@ -1,0 +1,34 @@
+services:
+  db:
+    container_name: registry-db-multi-tenant
+    image: postgres:18.1-alpine3.22
+    environment:
+      POSTGRES_DB: registry
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    container_name: registry-api-multi-tenant
+    image: dwani/ubertax-register-multi:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/registry
+    depends_on:
+      db:
+        condition: service_healthy
+    # Optional: mount migrations live during dev
+    volumes:
+      - ./migrations:/migrations:ro   # Remove in production
+
+volumes:
+  postgres_data:
