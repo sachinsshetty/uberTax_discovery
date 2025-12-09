@@ -12,7 +12,9 @@ jfk.wav
 # C extensions
 *.so
 sessions.json
+
 *.jpg
+!architecute-diagram.jpg
 # Distribution / packaging
 .Python
 build/
