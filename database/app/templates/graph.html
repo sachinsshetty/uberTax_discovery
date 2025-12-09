@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ownership Graph - Full Intelligence Platform</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body { margin: 0; background: #0d1117; color: #eee; font-family: 'Segoe UI', sans-serif; }
+        #mynetwork { width: 100vw; height: 100vh; }
+        .panel {
+            position: absolute; top: 15px; left: 15px; z-index: 1000;
+            background: rgba(22, 27, 34, 0.97); padding: 22px; border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); max-width: 400px; border: 1px solid #30363d;
+        }
+        h2 { margin: 0 0 18px 0; color: #58a6ff; font-size: 20px; }
+        input, select, button {
+            width: 100%; padding: 12px 14px; margin: 8px 0; border-radius: 10px; border: none;
+            font-size: 15px; box-sizing: border-box;
+        }
+        input, select { background: #21262d; color: #eee; }
+        button { background: #238636; color: white; font-weight: bold; cursor: pointer; }
+        button:hover { background: #2ea043; }
+        button.clear { background: #6e7681; }
+        .results { max-height: 240px; overflow-y: auto; margin-top: 12px; }
+        .result-item {
+            padding: 14px; background: #161b22; margin: 6px 0; border-radius: 8px;
+            cursor: pointer; border-left: 5px solid #238636; transition: 0.2s;
+        }
+        .result-item:hover { background: #1f6feb22; transform: translateX(5px); }
+        .warning {
+            position: absolute; top: 15px; right: 15px; z-index: 1000;
+            background: linear-gradient(90deg, #b91c1c, #991b1b); color: white;
+            padding: 16px 24px; border-radius: 12px; font-weight: bold; font-size: 18px;
+            box-shadow: 0 0 30px rgba(185, 28, 28, 0.6); animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
+    </style>
+</head>
+<body>
+
+    {% if has_cycles %}
+    <div class="warning">
+        CYCLE DETECTED — Possible fraud or data loop!
+    </div>
+    {% endif %}
+
+    <div class="panel">
+        <h2>Ownership Intelligence Platform</h2>
+        
+        <form method="get">
+            <input type="text" name="search" placeholder="Search: John, ABC Ltd, 12345..." 
+                   value="{{ current_search or '' }}" autofocus>
+
+            <select name="relation">
+                <option value="">All Relations</option>
+                <option value="shareholder" {% if filters.relation == 'shareholder' %}selected{% endif %}>Shareholder</option>
+                <option value="director" {% if filters.relation == 'director' %}selected{% endif %}>Director</option>
+                <option value="ubo" {% if filters.relation == 'ubo' %}selected{% endif %}>UBO</option>
+            </select>
+
+            <input type="number" name="min_share" placeholder="Min share %" step="0.1"
+                   value="{{ filters.min_share or '' }}">
+
+            <select name="entity_type">
+                <option value="">All Entities</option>
+                <option value="legal" {% if filters.entity_type == 'legal' %}selected{% endif %}>Companies Only</option>
+                <option value="natural" {% if filters.entity_type == 'natural' %}selected{% endif %}>Persons Only</option>
+            </select>
+
+            <button type="submit">Search & Explore</button>
+            <button type="button" class="clear" onclick="window.location.href='/graph/visualize'">Clear All</button>
+        </form>
+
+        {% if search_results %}
+        <div class="results">
+            <small><strong>{{ search_results|length }} found:</strong></small>
+            {% for r in search_results %}
+            <div class="result-item" onclick="location.href='?start_type={{ r.type }}&start_id={{ r.id }}'">
+                <strong>{{ r.label }}</strong><br>
+                <small>Click to explore ownership →</small>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div id="mynetwork"></div>
+
+    <script>
+        const nodes = new vis.DataSet({{ nodes|tojson }});
+        const edges = new vis.DataSet({{ edges|tojson }});
+
+        new vis.Network(document.getElementById("mynetwork"), { nodes, edges }, {
+            nodes: {
+                shape: "dot",
+                size: 30,
+                font: { size: 16, color: "#fff", strokeWidth: 3, strokeColor: "#000" },
+                borderWidth: 3,
+                shadow: true
+            },
+            edges: {
+                font: { align: "middle", size: 14, strokeWidth: 4, strokeColor: "#000" },
+                smooth: { type: "cubicBezier", roundness: 0.5 },
+                arrows: { to: { enabled: true } },
+                shadow: true
+            },
+            physics: {
+                barnesHut: {
+                    gravitationalConstant: -18000,
+                    springLength: 280,
+                    springConstant: 0.09
+                },
+                stabilization: { iterations: 300 }
+            },
+            interaction: {
+                hover: true,
+                zoomView: true,
+                dragView: true,
+                navigationButtons: true,
+                keyboard: true
+            }
+        });
+
+        {% if center_entity %}
+        setTimeout(() => {
+            network.focus("{{ center_entity }}", {
+                scale: 0.8,
+                animation: { duration: 1200, easingFunction: "easeInOutQuad" }
+            });
+        }, 1000);
+        {% endif %}
+    </script>
+</body>
+</html>
