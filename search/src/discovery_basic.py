@@ -1,9 +1,9 @@
 """
-Minimal Nia prototype: ingestion + chunking + BM25 + semantic search + HTTP API.
+Minimal Discovery prototype: ingestion + chunking + BM25 + semantic search + HTTP API.
 Requirements (install with pip):
 pip install fastapi uvicorn[standard] rank-bm25 sentence-transformers scikit-learn
 Run:
-uvicorn nia_basic:app --reload
+uvicorn Discovery_basic:app --reload
 Then:
 1) Add documents:
 curl -X POST "http://localhost:8000/documents" \
@@ -57,11 +57,11 @@ class SearchResponse(BaseModel):
 
 
 # ---------------------------------
-# Simple in-memory Nia core engine
+# Simple in-memory Discovery core engine
 # ---------------------------------
-class NiaCore:
+class DiscoveryCore:
     """
-    Minimal in-memory Nia core.
+    Minimal in-memory Discovery core.
     - Stores documents and chunks.
     - Maintains BM25 and embedding indices.
     - Supports hybrid search over chunks.
@@ -203,3 +203,39 @@ def normalize(d: Dict[str, float]) -> Dict[str, float]:
     if hi == lo:
         return {k: 1.0 for k in d}
     return {k: (v - lo) / (hi - lo) for k, v in d.items()}
+
+
+# --------------------
+# FastAPI integration
+# --------------------
+app = FastAPI(title="Discovery Minimal Prototype")
+# Single global engine for demo.
+Discovery_core = DiscoveryCore(use_embeddings=True)
+@app.post("/documents", response_model=str)
+def add_document(doc: DocumentCreate):
+    """
+    Ingest a document into Discovery.
+    Returns a document ID.
+    """
+    if not doc.content.strip():
+        raise HTTPException(status_code=400, detail="Document content cannot be empty.")
+    doc_id = Discovery_core.add_document(doc.title, doc.content)
+    return doc_id
+
+@app.get("/search", response_model=SearchResponse)
+def search(q: str = Query(..., min_length=1), k: int = Query(5, ge=1, le=20)):
+    """
+    Hybrid search over all ingested chunks.
+    """
+    results = Discovery_core.search(query=q, k=k)
+    return SearchResponse(query=q, results=results)
+
+@app.get("/documents/{doc_id}", response_model=DocumentCreate)
+def get_document(doc_id: str):
+    """
+    Fetch a document (raw) by ID.
+    """
+    doc = Discovery_core.documents.get(doc_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found.")
+    return DocumentCreate(title=doc.title, content=doc.content)
