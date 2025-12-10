@@ -1,4 +1,16 @@
 # api.py
+"""
+FastAPI wrapper around Nia ingestion + index.
+Endpoints:
+- GET /health
+: liveness check
+- POST /ingest
+: ingest a document (string) and index its chunks
+- POST /search
+: hybrid search (BM25 + embeddings)
+- GET /search?q= : convenience search for manual testing [web:64][web:75]
+"""
+
 from __future__ import annotations
 from dataclasses import asdict
 from typing import List
